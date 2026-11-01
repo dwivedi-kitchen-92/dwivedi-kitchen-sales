@@ -83,10 +83,10 @@
                 <h2>Naya Order</h2>
                 <div class="card">
                     <label>Society</label>
-                    <select id="order-society" onchange="populateTowers()"></select>
+                    <select id="order-society"></select>
 
                     <label>Tower</label>
-                    <select id="order-tower"></select>
+                    <input type="text" id="order-tower" placeholder="Tower number/code, jaise A, 2 ya Block-C">
 
                     <div class="flex-row">
                         <div>
@@ -409,20 +409,6 @@
             });
         }
 
-        function populateTowers() {
-            const socId = document.getElementById('order-society').value;
-            const towerSelect = document.getElementById('order-tower');
-            towerSelect.innerHTML = '<option value="">Select Tower</option>';
-            
-            if (!socId) return;
-
-            sheetData.Towers.forEach(t => {
-                if (t[1] === socId && (t[3] === 'TRUE' || t[3] === 'Active' || t[3] === 'active' || !t[3])) {
-                    towerSelect.innerHTML += `<option value="${t[0]}">${t[2]}</option>`;
-                }
-            });
-        }
-
         function autoCalcFloor() {
             const flat = document.getElementById('order-flat').value;
             if (!flat) return;
@@ -466,14 +452,14 @@
 
         async function saveOrder() {
             const socId = document.getElementById('order-society').value;
-            const towerId = document.getElementById('order-tower').value;
+            const towerName = document.getElementById('order-tower').value.trim();
             const flat = document.getElementById('order-flat').value;
             const floor = document.getElementById('order-floor').value;
             const address = document.getElementById('order-address').value;
             const name = document.getElementById('order-name').value;
             const contact = document.getElementById('order-contact').value;
             
-            if (!socId || !towerId || !flat) {
+            if (!socId || !towerName || !flat) {
                 showMessage('Please fill Society, Tower, and Flat Number.', true);
                 return;
             }
@@ -503,7 +489,6 @@
             const orderId = 'ORD-' + Date.now();
 
             const socName = document.getElementById('order-society').options[document.getElementById('order-society').selectedIndex].text;
-            const towerName = document.getElementById('order-tower').options[document.getElementById('order-tower').selectedIndex].text;
 
             try {
                 // 1. Save to Orders
@@ -523,6 +508,7 @@
                 // Reset Form
                 document.getElementById('order-items-container').innerHTML = '';
                 document.getElementById('order-flat').value = '';
+                document.getElementById('order-tower').value = '';
                 document.getElementById('order-floor').value = '';
                 document.getElementById('order-name').value = '';
                 document.getElementById('order-contact').value = '';
