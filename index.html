@@ -178,6 +178,10 @@
                     <input type="text" id="new-tower-name" placeholder="Tower Name (e.g. A, B, 1)">
                     <button class="btn" onclick="addTower()">Add Tower</button>
                 </div>
+                <div class="card">
+                    <h3>Existing Societies aur unke Towers</h3>
+                    <div id="society-tower-list">Loading list…</div>
+                </div>
             </div>
 
             <!-- MORE (Images) -->
@@ -330,6 +334,7 @@
                 renderMenu();
                 renderOrders();
                 renderPurchases();
+                renderSocietyTowerList();
                 renderDashboard();
                 calculateOrderTotals();
                 calculatePurchaseTotals();
@@ -394,7 +399,7 @@
             manSocSelect.innerHTML = '<option value="">Select Society</option>';
 
             sheetData.Societies.forEach(soc => {
-                if (soc[2] === 'TRUE' || soc[2] === 'Active' || soc[2] === 'active' || !soc[2]) { // Check active status
+                if (!soc[2] || ['TRUE', 'ACTIVE'].includes(String(soc[2]).trim().toUpperCase())) {
                     const opt = `<option value="${soc[0]}">${soc[1]}</option>`;
                     socSelect.innerHTML += opt;
                     manSocSelect.innerHTML += opt;
@@ -415,7 +420,7 @@
             towerSelect.innerHTML = '<option value="">Select Tower</option>';
             if (!societyId) return;
             sheetData.Towers.forEach(tower => {
-                const active = !tower[3] || ['TRUE', 'Active', 'active'].includes(String(tower[3]));
+                const active = !tower[3] || ['TRUE', 'ACTIVE'].includes(String(tower[3]).trim().toUpperCase());
                 if (tower[1] === societyId && active) {
                     const option = document.createElement('option');
                     option.value = tower[0];
@@ -712,6 +717,29 @@
                     <div style="margin-top:8px"><strong>Total: ₹${purchase[2] || 0}</strong></div>
                 </div>`;
             }).join('');
+        }
+
+        function renderSocietyTowerList() {
+            const container = document.getElementById('society-tower-list');
+            if (!container) return;
+            container.replaceChildren();
+            if (!sheetData.Societies.length) {
+                container.textContent = 'Koi society record nahi mila. Google Sheet ke Societies tab mein records check karein.';
+                return;
+            }
+            sheetData.Societies.forEach(society => {
+                const societyName = society[1] || '(Naam missing)';
+                const towers = sheetData.Towers.filter(tower => tower[1] === society[0]).map(tower => tower[2]).filter(Boolean);
+                const row = document.createElement('div');
+                row.style.cssText = 'padding:10px 0;border-bottom:1px solid #eee';
+                const title = document.createElement('strong');
+                title.textContent = societyName;
+                const detail = document.createElement('div');
+                detail.style.cssText = 'margin-top:4px;color:#666';
+                detail.textContent = towers.length ? 'Towers: ' + towers.join(', ') : 'Abhi koi tower add nahi hai';
+                row.append(title, detail);
+                container.appendChild(row);
+            });
         }
 
         // --- MANAGE SOCIETY/TOWER ---
