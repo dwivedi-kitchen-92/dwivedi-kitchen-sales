@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dwivedi Kitchen Sales</title>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://accounts.google.com/gsi/client" defer onload="onGoogleIdentityLoaded()"></script>
     <style>
         :root { --primary: #ff6b6b; --bg: #f8f9fa; --text: #333; --card: #fff; }
         body { font-family: system-ui, -apple-system, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 60px; }
@@ -39,12 +39,6 @@
     <div id="login-view" class="container" style="text-align: center; margin-top: 50px;">
         <h1>Dwivedi Kitchen</h1>
         <p>Please sign in with your authorized Google account to manage sales.</p>
-        <div id="g_id_onload"
-             data-client_id="91521766084-r2ekts6unmvvnh0ho640qh7vjvbem10v.apps.googleusercontent.com"
-             data-callback="handleCredentialResponse"
-             data-auto_prompt="false">
-        </div>
-        <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left" style="display: flex; justify-content: center;"></div>
         <p id="login-msg" style="color: red; margin-top: 20px;"></p>
         <button id="auth-btn" class="btn" onclick="initAuth()" style="margin-top: 20px;">Sign in with Google</button>
     </div>
@@ -143,6 +137,16 @@
             <div id="menu" class="view">
                 <h2>Menu Items</h2>
                 <div id="menu-list" class="card"></div>
+                <div class="card">
+                    <h3>Menu mein naya item jodein</h3>
+                    <label>Item Name</label>
+                    <input type="text" id="new-menu-name" placeholder="Jaise: Special Thali">
+                    <label>Full Details / Contents</label>
+                    <textarea id="new-menu-details" rows="3" placeholder="Item mein kya-kya hai? (Optional)"></textarea>
+                    <label>Price (₹)</label>
+                    <input type="number" id="new-menu-price" min="0" step="0.01" placeholder="Price">
+                    <button class="btn" onclick="addMenuItem()">Menu Item Save Karein</button>
+                </div>
             </div>
 
             <!-- PURCHASE -->
@@ -219,8 +223,40 @@
         };
         let menuItemsData = [];
 
+        // Store all app timestamps in the same readable India format as the existing sheet rows.
+        function formatDateTimeForSheet(date = new Date()) {
+            const parts = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric',
+                hour: 'numeric', minute: '2-digit', hour12: true
+            }).formatToParts(date);
+            const p = Object.fromEntries(parts.map(part => [part.type, part.value]));
+            const month = p.month.charAt(0).toUpperCase() + p.month.slice(1).toLowerCase();
+            return `${p.day}-${month}-${p.year} ${p.hour}:${p.minute} ${p.dayPeriod.toUpperCase()}`;
+        }
+
+        function formatDateTimeForDisplay(value) {
+            const date = parseSheetDate(value);
+            return date ? formatDateTimeForSheet(date) : String(value || '');
+        }
+
+        function parseSheetDate(value) {
+            if (!value) return null;
+            const text = String(value).trim();
+            const readable = text.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+            if (readable) {
+                const month = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 }[readable[2].toLowerCase()];
+                let hour = Number(readable[4]) % 12;
+                if (readable[6].toUpperCase() === 'PM') hour += 12;
+                const date = new Date(Number(readable[3]), month, Number(readable[1]), hour, Number(readable[5]));
+                return Number.isNaN(date.getTime()) ? null : date;
+            }
+            const date = new Date(text);
+            return Number.isNaN(date.getTime()) ? null : date;
+        }
+
         // --- AUTHENTICATION ---
-        window.onload = () => {
+        function onGoogleIdentityLoaded() {
+            if (!window.google?.accounts?.oauth2) return;
             tokenClient = google.accounts.oauth2.initTokenClient({
                 client_id: CLIENT_ID,
                 scope: SCOPES,
@@ -233,10 +269,13 @@
                     }
                 },
             });
-            // Auto login attempt if token exists in session (optional, but GIS handles prompt)
-        };
+        }
 
         function initAuth() {
+            if (!tokenClient) {
+                document.getElementById('login-msg').innerText = 'Google sign-in load nahi hua. Page refresh karke dobara try karein.';
+                return;
+            }
             tokenClient.requestAccessToken({prompt: 'consent'});
         }
 
@@ -307,7 +346,7 @@
             sheetData.Orders.forEach(order => {
                 // order[1] is Date & Time, order[11] is Final Total
                 if (order.length < 12) return;
-                const orderDate = new Date(order[1]);
+                const orderDate = parseSheetDate(order[1]);
                 if (isNaN(orderDate)) return;
                 const total = parseFloat(order[11]) || 0;
 
@@ -457,7 +496,7 @@
 
             const totalQty = document.getElementById('order-total-qty').innerText;
             const totalAmount = document.getElementById('order-total-amount').innerText;
-            const dateTime = new Date().toISOString();
+            const dateTime = formatDateTimeForSheet();
             const orderId = 'ORD-' + Date.now();
 
             const socName = document.getElementById('order-society').options[document.getElementById('order-society').selectedIndex].text;
@@ -506,7 +545,7 @@
                     <div class="card">
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                             <strong>${order[0]}</strong>
-                            <span style="color:gray; font-size:12px;">${new Date(order[1]).toLocaleString()}</span>
+                            <span style="color:gray; font-size:12px;">${formatDateTimeForDisplay(order[1])}</span>
                         </div>
                         <div><strong>Location:</strong> ${order[2]}, ${order[3]} - Flat ${order[4]} (Floor ${order[5]})</div>
                         <div><strong>Customer:</strong> ${order[7] || 'N/A'} (${order[8] || 'N/A'})</div>
@@ -535,6 +574,28 @@
                     </div>
                 `;
             });
+        }
+
+        async function addMenuItem() {
+            const name = document.getElementById('new-menu-name').value.trim();
+            const details = document.getElementById('new-menu-details').value.trim();
+            const priceText = document.getElementById('new-menu-price').value;
+            const price = Number(priceText);
+            if (!name || priceText === '' || !Number.isFinite(price) || price < 0) {
+                showMessage('Item ka naam aur valid price bharein.', true);
+                return;
+            }
+            const itemId = 'MENU-' + Date.now();
+            try {
+                await appendSheetData('Menu', [itemId, name, details, price, 'TRUE', formatDateTimeForSheet()]);
+                document.getElementById('new-menu-name').value = '';
+                document.getElementById('new-menu-details').value = '';
+                document.getElementById('new-menu-price').value = '';
+                await loadAllData();
+                showMessage('Menu item add ho gaya.');
+            } catch (err) {
+                showMessage('Menu item save nahi hua: ' + err.message, true);
+            }
         }
 
         // --- PURCHASE ---
@@ -596,7 +657,7 @@
             }
 
             const totalAmount = document.getElementById('purchase-total-amount').innerText;
-            const dateTime = new Date().toISOString();
+            const dateTime = formatDateTimeForSheet();
             const purchaseId = 'PUR-' + Date.now();
 
             try {
@@ -626,7 +687,7 @@
             if (!name) return;
             
             const socId = 'SOC-' + Date.now();
-            const createdAt = new Date().toISOString();
+            const createdAt = formatDateTimeForSheet();
             try {
                 await appendSheetData('Societies', [socId, name, 'TRUE', createdAt]);
                 showMessage('Society added!');
@@ -646,7 +707,7 @@
             }
 
             const towerId = 'TWR-' + Date.now();
-            const createdAt = new Date().toISOString();
+            const createdAt = formatDateTimeForSheet();
             try {
                 await appendSheetData('Towers', [towerId, socId, name, 'TRUE', createdAt]);
                 showMessage('Tower added!');
