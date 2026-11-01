@@ -160,6 +160,8 @@
                     </div>
                     <button class="btn" onclick="savePurchase()" style="margin-top: 15px;">Save Purchase</button>
                 </div>
+                <h3>Purane Purchases</h3>
+                <div id="purchase-history-list"></div>
             </div>
 
             <!-- MANAGE SOCIETY/TOWER -->
@@ -327,6 +329,7 @@
                 populateDropdowns();
                 renderMenu();
                 renderOrders();
+                renderPurchases();
                 renderDashboard();
                 calculateOrderTotals();
                 calculatePurchaseTotals();
@@ -679,6 +682,33 @@
             } catch (err) {
                 showMessage('Error saving purchase: ' + err.message, true);
             }
+        }
+
+        function renderPurchases() {
+            const container = document.getElementById('purchase-history-list');
+            if (!container) return;
+            if (!sheetData.Purchases.length) {
+                container.innerHTML = '<div class="card">Abhi koi purchase record nahi hai.</div>';
+                return;
+            }
+            const purchaseItemsById = new Map();
+            sheetData.PurchaseItems.forEach(item => {
+                const purchaseId = item[1];
+                if (!purchaseItemsById.has(purchaseId)) purchaseItemsById.set(purchaseId, []);
+                purchaseItemsById.get(purchaseId).push(item);
+            });
+            container.innerHTML = [...sheetData.Purchases].reverse().map(purchase => {
+                const items = purchaseItemsById.get(purchase[0]) || [];
+                const itemLines = items.map(item => `<div>${item[3] || 'Item'} — ₹${item[4] || 0}</div>`).join('');
+                return `<div class="card">
+                    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">
+                        <strong>${purchase[0] || 'Purchase'}</strong>
+                        <span style="color:#666;font-size:13px">${formatDateTimeForDisplay(purchase[1])}</span>
+                    </div>
+                    ${itemLines || '<div>Item detail available nahi hai.</div>'}
+                    <div style="margin-top:8px"><strong>Total: ₹${purchase[2] || 0}</strong></div>
+                </div>`;
+            }).join('');
         }
 
         // --- MANAGE SOCIETY/TOWER ---
