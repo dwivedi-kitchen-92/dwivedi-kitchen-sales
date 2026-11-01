@@ -278,7 +278,7 @@
                 document.getElementById('login-msg').innerText = 'Google sign-in load nahi hua. Page refresh karke dobara try karein.';
                 return;
             }
-            tokenClient.requestAccessToken({prompt: 'consent'});
+            tokenClient.requestAccessToken();
         }
 
         function showMessage(msg, isError = false) {
