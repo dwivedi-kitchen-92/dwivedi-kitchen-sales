@@ -14,9 +14,6 @@
         .btn-secondary { background: #4a4a4a; }
         .btn-small { width: auto; padding: 5px 10px; font-size: 14px; }
         input, select, textarea { width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
-        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); z-index: 100; }
-        .nav-btn { background: none; border: none; font-size: 14px; color: #666; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
-        .nav-btn.active { color: var(--primary); font-weight: bold; }
         .hidden { display: none !important; }
         .view { display: none; }
         .view.active { display: block; }
@@ -28,9 +25,18 @@
         .msg-success { background: #d4edda; color: #155724; display: block; }
         .msg-error { background: #f8d7da; color: #721c24; display: block; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-box { background: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .stat-box h3 { margin: 0; font-size: 14px; color: #666; }
-        .stat-box p { margin: 5px 0 0; font-size: 20px; font-weight: bold; color: var(--primary); }
+        .stat-box { background: var(--metric-bg, white); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(25,35,55,0.08); border: 1px solid rgba(25,35,55,0.05); border-left: 4px solid var(--metric-color, #9aa3b2); }
+        .stat-box h3 { margin: 0; font-size: 14px; line-height: 1.3; color: #566070; }
+        .stat-box p { margin: 7px 0 0; font-size: 20px; line-height: 1.2; font-weight: 750; color: var(--metric-color, #526071); }
+        .metric-orders { --metric-color: #4763c7; --metric-bg: #f1f4ff; }
+        .metric-sales { --metric-color: #16845b; --metric-bg: #eefaf4; }
+        .metric-purchases { --metric-color: #c47716; --metric-bg: #fff7e9; }
+        .metric-net { --metric-color: #16845b; --metric-bg: #eefaf4; }
+        .metric-net.loss { --metric-color: #c34343; --metric-bg: #fff1f1; }
+        .nav { position: fixed; right: 0; bottom: 0; left: 0; min-height: 72px; background: rgba(255,255,255,.97); display: flex; justify-content: space-around; align-items: center; padding: 7px 8px max(8px, env(safe-area-inset-bottom)); box-shadow: 0 -5px 22px rgba(28,38,58,.12); border-top: 1px solid #edf0f5; z-index: 100; }
+        .nav-btn { flex: 1; max-width: 104px; min-height: 56px; padding: 6px 3px; border: 0; border-radius: 14px; background: transparent; color: #687386; cursor: pointer; display: flex; flex-direction: column; gap: 3px; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; transition: background .15s ease,color .15s ease; }
+        .nav-btn .nav-icon { font-size: 21px; line-height: 1; }
+        .nav-btn.active { background: #fff0f0; color: #d94f59; font-weight: 750; }
         label { display: block; font-weight: 600; margin-top: 7px; }
         .btn-small { display: inline-block; margin: 6px 8px 10px 0; min-height: 38px; }
         .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -41,15 +47,16 @@
             .container { padding: 12px; }
             .card { padding: 13px; }
             .grid-2 { gap: 8px; }
-            .stat-box { padding: 12px 7px; }
+            .stat-box { padding: 12px 8px; border-radius: 11px; }
             .stat-box h3 { font-size: 12px; line-height: 1.25; }
-            .stat-box p { font-size: 17px; line-height: 1.2; overflow-wrap: anywhere; }
+            .stat-box p { font-size: 16px; line-height: 1.2; overflow-wrap: anywhere; }
+            .nav { min-height: 70px; }
+            .nav-btn { min-height: 54px; font-size: 12px; }
+            .nav-btn .nav-icon { font-size: 22px; }
             .flex-row { gap: 8px; }
             .flex-row > * { min-width: 0; }
             .item-row { gap: 6px; padding: 7px; }
             .item-row select, .item-row input { min-width: 0; }
-            .nav { padding-top: 8px; }
-            .nav-btn { font-size: 12px; }
         }
     </style>
 </head>
@@ -73,35 +80,35 @@
             <div id="home" class="view active">
                 <h2>Dashboard</h2>
                 <div class="grid-2" style="margin-bottom: 15px;">
-                    <div class="stat-box">
+                    <div class="stat-box metric-orders">
                         <h3>Aaj ke Orders</h3>
                         <p id="today-orders">0</p>
                     </div>
-                    <div class="stat-box">
+                    <div class="stat-box metric-sales">
                         <h3>Aaj ki Sales</h3>
                         <p id="today-sales">₹0</p>
                     </div>
-                    <div class="stat-box">
+                    <div class="stat-box metric-orders">
                         <h3>Is Mahine ke Orders</h3>
                         <p id="month-orders">0</p>
                     </div>
-                    <div class="stat-box">
+                    <div class="stat-box metric-sales">
                         <h3>Is Mahine ki Sales</h3>
                         <p id="month-sales">₹0</p>
                     </div>
-                    <div class="stat-box">
+                    <div class="stat-box metric-purchases">
                         <h3>Aaj ki Purchases</h3>
                         <p id="today-purchases">₹0</p>
                     </div>
-                    <div class="stat-box">
+                    <div class="stat-box metric-net">
                         <h3>Aaj ka Net (Sales − Purchases)</h3>
                         <p id="today-net">₹0</p>
                     </div>
-                    <div class="stat-box">
+                    <div class="stat-box metric-purchases">
                         <h3>Is Mahine ki Purchases</h3>
                         <p id="month-purchases">₹0</p>
                     </div>
-                    <div class="stat-box">
+                    <div class="stat-box metric-net">
                         <h3>Is Mahine ka Net (Sales − Purchases)</h3>
                         <p id="month-net">₹0</p>
                     </div>
@@ -249,12 +256,12 @@
         </div>
 
         <!-- Navigation -->
-        <div class="nav">
-            <button class="nav-btn active" onclick="switchTab('home')">Home</button>
-            <button class="nav-btn" onclick="switchTab('orders')">Orders</button>
-            <button class="nav-btn" onclick="switchTab('menu')">Menu</button>
-            <button class="nav-btn" onclick="switchTab('more')">More</button>
-        </div>
+        <nav class="nav" aria-label="Main navigation">
+            <button class="nav-btn active" data-tab="home" onclick="switchTab('home')"><span class="nav-icon">⌂</span><span>Home</span></button>
+            <button class="nav-btn" data-tab="orders" onclick="switchTab('orders')"><span class="nav-icon">▤</span><span>Orders</span></button>
+            <button class="nav-btn" data-tab="menu" onclick="switchTab('menu')"><span class="nav-icon">♨</span><span>Menu</span></button>
+            <button class="nav-btn" data-tab="more" onclick="switchTab('more')"><span class="nav-icon">⋯</span><span>More</span></button>
+        </nav>
     </div>
 
     <script>
@@ -430,24 +437,18 @@
             const todayNet = todaySales - todayPurchases;
             const monthNet = monthSales - monthPurchases;
             document.getElementById('today-net').innerText = `${todayNet < 0 ? '−' : '+'}${money(Math.abs(todayNet))} ${todayNet < 0 ? '(Loss)' : '(Surplus)'}`;
+            document.getElementById('today-net').parentElement.classList.toggle('loss', todayNet < 0);
             document.getElementById('month-net').innerText = `${monthNet < 0 ? '−' : '+'}${money(Math.abs(monthNet))} ${monthNet < 0 ? '(Loss)' : '(Surplus)'}`;
+            document.getElementById('month-net').parentElement.classList.toggle('loss', monthNet < 0);
         }
 
                 // --- NAVIGATION ---
         function switchTab(tabId) {
             document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            
-            const navBtns = document.querySelectorAll('.nav-btn');
-            // Highlight appropriate nav button (Not perfect for sub-menus but functional)
-            if(tabId === 'home' || tabId === 'orders' || tabId === 'menu' || tabId === 'more') {
-                navBtns.forEach(btn => {
-                    if(btn.innerText.toLowerCase() === tabId) btn.classList.add('active');
-                });
-            } else {
-                navBtns[0].classList.add('active'); // Default to Home highlight
-            }
+            document.querySelectorAll('.nav-btn').forEach(button => {
+                button.classList.toggle('active', button.dataset.tab === tabId || (button.dataset.tab === 'home' && !['orders', 'menu', 'more'].includes(tabId)));
+            });
         }
 
         // --- POPULATE DROPDOWNS ---
