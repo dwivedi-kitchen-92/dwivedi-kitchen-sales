@@ -83,10 +83,10 @@
                 <h2>Naya Order</h2>
                 <div class="card">
                     <label>Society</label>
-                    <select id="order-society"></select>
+                    <select id="order-society" onchange="populateTowers()"></select>
 
                     <label>Tower</label>
-                    <input type="text" id="order-tower" placeholder="Tower number/code, jaise A, 2 ya Block-C">
+                    <select id="order-tower"></select>
 
                     <div class="flex-row">
                         <div>
@@ -409,6 +409,22 @@
             });
         }
 
+        function populateTowers() {
+            const societyId = document.getElementById('order-society').value;
+            const towerSelect = document.getElementById('order-tower');
+            towerSelect.innerHTML = '<option value="">Select Tower</option>';
+            if (!societyId) return;
+            sheetData.Towers.forEach(tower => {
+                const active = !tower[3] || ['TRUE', 'Active', 'active'].includes(String(tower[3]));
+                if (tower[1] === societyId && active) {
+                    const option = document.createElement('option');
+                    option.value = tower[0];
+                    option.textContent = tower[2];
+                    towerSelect.appendChild(option);
+                }
+            });
+        }
+
         function autoCalcFloor() {
             const flat = document.getElementById('order-flat').value;
             if (!flat) return;
@@ -452,14 +468,14 @@
 
         async function saveOrder() {
             const socId = document.getElementById('order-society').value;
-            const towerName = document.getElementById('order-tower').value.trim();
+            const towerId = document.getElementById('order-tower').value;
             const flat = document.getElementById('order-flat').value;
             const floor = document.getElementById('order-floor').value;
             const address = document.getElementById('order-address').value;
             const name = document.getElementById('order-name').value;
             const contact = document.getElementById('order-contact').value;
             
-            if (!socId || !towerName || !flat) {
+            if (!socId || !towerId || !flat) {
                 showMessage('Please fill Society, Tower, and Flat Number.', true);
                 return;
             }
@@ -489,6 +505,7 @@
             const orderId = 'ORD-' + Date.now();
 
             const socName = document.getElementById('order-society').options[document.getElementById('order-society').selectedIndex].text;
+            const towerName = document.getElementById('order-tower').options[document.getElementById('order-tower').selectedIndex].text;
 
             try {
                 // 1. Save to Orders
@@ -536,7 +553,7 @@
                             <strong>${order[0]}</strong>
                             <span style="color:gray; font-size:12px;">${formatDateTimeForDisplay(order[1])}</span>
                         </div>
-                        <div><strong>Location:</strong> ${order[2]}, ${order[3]} - Flat ${order[4]} (Floor ${order[5]})</div>
+                        <div><strong>Location:</strong> ${order[2]}, Tower ${order[3]} - Flat ${order[4]} (Floor ${order[5]})</div>
                         <div><strong>Customer:</strong> ${order[7] || 'N/A'} (${order[8] || 'N/A'})</div>
                         <div style="margin-top: 10px; background:#f5f5f5; padding:10px; border-radius:5px;">
                             <strong>Items:</strong> ${order[9]}<br>
