@@ -6,114 +6,790 @@
     <title>Dwivedi Kitchen Sales</title>
     <script src="https://accounts.google.com/gsi/client" defer onload="onGoogleIdentityLoaded()"></script>
     <style>
-        :root { --primary: #ff6b6b; --bg: #f8f9fa; --text: #333; --card: #fff; }
-        body { font-family: system-ui, -apple-system, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 60px; }
-        .container { max-width: 800px; margin: 0 auto; padding: 15px; }
-        .card { background: var(--card); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        .btn { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight:650; min-height:44px; width: 100%; margin-top: 10px; transition:filter .15s ease,transform .15s ease,box-shadow .15s ease; }
-        .btn:hover { filter:brightness(.97); }
-        .btn:active { transform:translateY(1px); }
-        .btn:disabled { opacity:.65; cursor:wait; }
-        .btn-secondary { background: linear-gradient(135deg,#46536a,#303b50); }
-        .btn-small { width: auto; padding: 5px 10px; font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 11px 13px; margin: 5px 0 15px; border: 1px solid #d9dee7; border-radius: 10px; box-sizing: border-box; font-size: 16px; background-color:#fff; color:var(--text); }
-        input:focus, select:focus, textarea:focus { outline:none; border-color:#8296ca; box-shadow:0 0 0 3px rgba(92,119,190,.15); }
+        :root {
+            --cream: #f9f2e5;
+            --cream-deep: #efe2c4;
+            --ivory: #fffdf8;
+            --forest: #0d5b3f;
+            --forest-dark: #0a402d;
+            --forest-soft: #e7f4eb;
+            --brown: #412416;
+            --brown-soft: #6d4833;
+            --yellow: #f1c75a;
+            --yellow-deep: #d7a733;
+            --tomato: #d95a43;
+            --tomato-soft: #ffe0dc;
+            --muted: #6a5a4c;
+            --line: rgba(65, 36, 22, 0.13);
+            --glass: rgba(255, 255, 255, 0.56);
+            --glass-strong: rgba(255, 255, 255, 0.72);
+            --shadow: 0 15px 30px rgba(44, 33, 24, 0.10);
+            --shadow-soft: 0 8px 18px rgba(44, 33, 24, 0.08);
+            --primary: var(--forest);
+            --bg: var(--cream);
+            --text: var(--brown);
+            --card: var(--glass);
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(255,255,255,0.65), transparent 32%),
+                radial-gradient(circle at bottom right, rgba(211,214,177,0.22), transparent 24%),
+                linear-gradient(180deg, #f6f0e4 0%, #f2e6cf 100%);
+            color: var(--text);
+            padding-bottom: 82px;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.08), rgba(255,255,255,0.08)),
+                radial-gradient(circle at 10% 15%, rgba(13,91,63,0.07) 0, transparent 18%),
+                radial-gradient(circle at 70% 30%, rgba(241,199,90,0.18) 0, transparent 15%);
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 18px 14px 0;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(65, 36, 22, 0.10);
+            box-shadow: var(--shadow-soft);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        h1, h2, h3, h4, p { margin-top: 0; }
+        h2 {
+            margin: 0 0 14px;
+            font-size: clamp(1.35rem, 3vw, 1.9rem);
+            letter-spacing: -0.03em;
+            color: var(--brown);
+        }
+        h3 {
+            margin: 0 0 12px;
+            color: var(--brown);
+            font-size: 1.05rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--forest) 0%, var(--forest-dark) 100%);
+            color: #fff;
+            border: none;
+            border-radius: 16px;
+            min-height: 48px;
+            width: 100%;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            box-shadow: 0 8px 18px rgba(13, 91, 63, 0.18);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+        }
+        .btn:hover { filter: brightness(0.98); }
+        .btn:active { transform: translateY(1px); }
+        .btn:disabled { opacity: .65; cursor: wait; }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #7b6157 0%, #563d2d 100%);
+            box-shadow: 0 8px 18px rgba(88, 63, 50, 0.18);
+        }
+        .btn-small {
+            width: auto;
+            min-height: 38px;
+            padding: 7px 13px;
+            border-radius: 12px;
+            font-size: 0.86rem;
+            margin: 6px 8px 10px 0;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f8d86d 0%, #efc14b 100%);
+            color: var(--brown);
+            box-shadow: 0 10px 22px rgba(241, 199, 90, 0.30);
+        }
+        .btn-purchase {
+            background: linear-gradient(135deg, #1d4d3d 0%, #173d30 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e96d5b 0%, #cc4a3d 100%);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            min-height: 46px;
+            padding: 11px 14px;
+            margin: 5px 0 14px;
+            border: 1px solid rgba(67, 48, 38, 0.12);
+            border-radius: 14px;
+            background: rgba(255,255,255,0.72);
+            color: var(--brown);
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: rgba(13, 91, 63, 0.42);
+            box-shadow: 0 0 0 4px rgba(13, 91, 63, 0.10);
+            background: #fff;
+        }
+        textarea { min-height: 92px; resize: vertical; }
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23412416' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            padding-right: 42px;
+        }
+        select option { color: var(--brown); }
+
+        label {
+            display: block;
+            font-size: 0.82rem;
+            line-height: 1.2;
+            font-weight: 700;
+            margin-top: 8px;
+            color: var(--brown-soft);
+            letter-spacing: 0.01em;
+        }
+
         .hidden { display: none !important; }
         .view { display: none; }
         .view.active { display: block; }
-        .flex-row { display: flex; gap: 10px; }
-        .flex-row > * { flex: 1; }
-        .item-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; background: #eee; padding: 10px; border-radius: 5px;}
-        .order-item-row { display:grid; grid-template-columns:minmax(100px,1fr) 82px 66px 42px; gap:8px; align-items:end; margin:8px 0; padding:10px; border:1px solid #e5e9f0; border-radius:12px; background:#f8f9fc; }
-        .order-item-row > div { min-width:0; }
-        .order-item-row label { margin:0 0 4px; font-size:12px; line-height:1.15; white-space:nowrap; color:#667085; }
-        .order-item-row select, .order-item-row input { min-width:0; width:100%; height:42px; margin:0; padding:8px 30px 8px 9px; font-size:14px; }
-        .order-item-row input { padding-right:8px; }
-        .order-row-price-value { height:42px; display:flex; align-items:center; justify-content:center; overflow:hidden; white-space:nowrap; border:1px solid #e5e9f0; border-radius:10px; background:#fff; color:#16845b; font-weight:750; font-size:14px; }
-        .order-item-row .icon-btn { width:42px; height:42px; }
-        h2 { margin-top: 0; font-size: 20px; }
-        .message { padding: 10px; border-radius: 5px; margin-bottom: 15px; display: none; }
-        .msg-success { background: #d4edda; color: #155724; display: block; }
-        .msg-error { background: #f8d7da; color: #721c24; display: block; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .stat-box { background: var(--metric-bg, white); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(25,35,55,0.08); border: 1px solid rgba(25,35,55,0.05); border-left: 4px solid var(--metric-color, #9aa3b2); }
-        .stat-box h3 { margin: 0; font-size: 14px; line-height: 1.3; color: #566070; }
-        .stat-box p { margin: 7px 0 0; font-size: 20px; line-height: 1.2; font-weight: 750; color: var(--metric-color, #526071); }
-        .metric-orders { --metric-color: #4763c7; --metric-bg: #f1f4ff; }
-        .metric-sales { --metric-color: #16845b; --metric-bg: #eefaf4; }
-        .metric-purchases { --metric-color: #c47716; --metric-bg: #fff7e9; }
-        .metric-net { --metric-color: #16845b; --metric-bg: #eefaf4; }
-        .metric-net.loss { --metric-color: #c34343; --metric-bg: #fff1f1; }
-        .nav { position: fixed; right: 0; bottom: 0; left: 0; height: 72px; box-sizing: content-box; background: #fff; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: center; padding: 6px 10px max(8px, env(safe-area-inset-bottom)); box-shadow: 0 -4px 18px rgba(28,38,58,.09); border-top: 1px solid #edf0f5; z-index: 100; }
-        .nav-btn { width: 100%; min-width: 0; min-height: 56px; padding: 6px 3px; border: 0; border-radius: 14px; background: transparent; box-shadow: none !important; outline: none; color: #687386; cursor: pointer; display: flex; flex-direction: column; gap: 3px; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; transition: background .15s ease,color .15s ease; -webkit-tap-highlight-color: transparent; }
-        .nav-btn .nav-icon { font-size: 21px; line-height: 1; }
-        .nav-btn.active { background: #fff0f0; color: #d94f59; font-weight: 750; }
-        .nav-btn:focus, .nav-btn:focus-visible { outline:none; box-shadow:none !important; }
-        label { display: block; font-weight: 600; margin-top: 7px; }
-        .btn-small { display: inline-block; margin: 6px 8px 10px 0; min-height: 38px; }
-        .select-with-action { display: flex; align-items: flex-start; gap: 8px; }
+
+        .flex-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .flex-row > * { flex: 1; min-width: 0; }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.45);
+            border: 1px solid rgba(65, 36, 22, 0.08);
+        }
+
+        .order-item-row {
+            display: grid;
+            grid-template-columns: minmax(100px, 1.4fr) 82px 72px 42px;
+            gap: 8px;
+            align-items: end;
+            margin: 9px 0;
+            padding: 10px 9px;
+            border: 1px solid rgba(65, 36, 22, 0.09);
+            border-radius: 15px;
+            background: rgba(255,255,255,0.36);
+        }
+        .order-item-row > div { min-width: 0; }
+        .order-item-row label {
+            margin: 0 0 4px;
+            font-size: 0.7rem;
+            line-height: 1.15;
+            white-space: nowrap;
+            color: var(--brown-soft);
+        }
+        .order-item-row select, .order-item-row input {
+            min-width: 0;
+            width: 100%;
+            height: 42px;
+            margin: 0;
+            padding: 8px 10px;
+            font-size: 0.9rem;
+        }
+        .order-item-row select {
+            padding-right: 32px;
+            background-size: 14px;
+        }
+        .order-item-row input { padding-right: 8px; }
+        .order-row-price-value {
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            white-space: nowrap;
+            border: 1px solid rgba(65, 36, 22, 0.09);
+            border-radius: 12px;
+            background: rgba(241, 199, 90, 0.15);
+            color: var(--forest);
+            font-size: 0.82rem;
+            font-weight: 800;
+        }
+        .order-item-row .icon-btn { width: 42px; height: 42px; }
+
+        .message {
+            display: none;
+            padding: 12px 14px;
+            border-radius: 14px;
+            margin: 0 0 14px;
+            font-weight: 600;
+            border: 1px solid transparent;
+        }
+        .msg-success {
+            display: block;
+            background: rgba(219, 242, 227, 0.85);
+            color: var(--forest-dark);
+            border-color: rgba(13, 91, 63, 0.15);
+        }
+        .msg-error {
+            display: block;
+            background: rgba(255, 228, 224, 0.9);
+            color: #8d2f26;
+            border-color: rgba(201, 77, 62, 0.18);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .stat-box {
+            --metric-color: var(--forest);
+            --metric-bg: rgba(255,255,255,0.55);
+            background: linear-gradient(180deg, rgba(255,255,255,0.40), rgba(255,255,255,0.20));
+            border: 1px solid rgba(65, 36, 22, 0.08);
+            padding: 14px 12px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: var(--shadow-soft);
+            min-width: 0;
+        }
+        .stat-box h3 {
+            margin: 0;
+            font-size: 0.75rem;
+            line-height: 1.25;
+            color: var(--brown-soft);
+            letter-spacing: 0.01em;
+        }
+        .stat-box p {
+            margin: 7px 0 0;
+            font-size: clamp(1.1rem, 3.3vw, 1.5rem);
+            font-weight: 800;
+            line-height: 1.2;
+            color: var(--metric-color);
+            overflow-wrap: anywhere;
+        }
+        .metric-orders { --metric-color: #3159ae; }
+        .metric-sales { --metric-color: var(--forest); }
+        .metric-purchases { --metric-color: #b1681a; }
+        .metric-net { --metric-color: var(--forest); }
+        .metric-net.loss { --metric-color: #b53a2d; }
+
+        .quick-action-grid, .more-shortcuts {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .quick-action-grid .btn, .more-shortcuts .btn {
+            min-height: 58px;
+            margin: 0;
+            border-radius: 16px;
+            font-weight: 800;
+            box-shadow: 0 12px 26px rgba(24, 40, 30, 0.12);
+        }
+
+        .nav {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 110;
+            height: 72px;
+            background: rgba(255,255,255,0.84);
+            backdrop-filter: blur(14px);
+            border-top: 1px solid rgba(65, 36, 22, 0.09);
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            align-items: center;
+            box-shadow: 0 -8px 24px rgba(43, 26, 16, 0.10);
+            padding: 6px 10px max(10px, env(safe-area-inset-bottom));
+        }
+        .nav-btn {
+            width: 100%;
+            min-width: 0;
+            min-height: 56px;
+            padding: 4px 4px 2px;
+            border: 0;
+            background: transparent;
+            color: rgba(65, 36, 22, 0.72);
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-size: 0.73rem;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 0.01em;
+            transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+            box-shadow: none !important;
+            outline: none;
+        }
+        .nav-btn .nav-icon {
+            font-size: 1.35rem;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nav-btn.active {
+            background: rgba(13, 91, 63, 0.10);
+            color: var(--forest-dark);
+            box-shadow: none;
+        }
+        .nav-btn:focus, .nav-btn:focus-visible { outline: none; box-shadow: none !important; }
+
+        .select-with-action {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
         .select-with-action select { flex: 1; min-width: 0; }
-        .select-with-action .btn-small { flex: 0 0 auto; white-space: nowrap; margin-top: 5px; }
-        .record-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 10px; }
-        .icon-btn { width: 42px; height: 40px; padding: 0; border: 1px solid #e1e5eb; border-radius: 12px; background: #fff; font-size: 18px; box-shadow:0 2px 5px rgba(28,38,58,.06); cursor:pointer; }
-        .icon-btn.delete { color: #c34343; }
-        .purchase-line, .order-line { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:7px 0; border-bottom:1px solid #eee; }
+        .select-with-action .btn-small {
+            flex: 0 0 auto;
+            white-space: nowrap;
+            margin-top: 5px;
+        }
+
+        .record-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .icon-btn {
+            width: 42px;
+            height: 40px;
+            padding: 0;
+            border: 1px solid rgba(65, 36, 22, 0.10);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.66);
+            box-shadow: 0 4px 10px rgba(44, 33, 24, 0.06);
+            color: var(--brown);
+            font-size: 1.05rem;
+            cursor: pointer;
+        }
+        .icon-btn.delete { color: var(--tomato); }
+        .icon-btn:focus-visible, .btn:focus-visible, .select-with-action button:focus-visible { outline: 3px solid rgba(241, 199, 90, 0.65); outline-offset: 2px; }
+
+        .purchase-line, .order-line { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:7px 0; border-bottom:1px solid rgba(65,36,22,0.08); }
         .purchase-line:last-child, .order-line:last-child { border-bottom:0; }
-        select { appearance:none; -webkit-appearance:none; padding-right:42px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23687486' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; background-size:14px; }
-        button { font-family:inherit; -webkit-tap-highlight-color:transparent; }
-        .quick-action-grid, .more-shortcuts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
-        .quick-action-grid .btn, .more-shortcuts .btn { min-height:58px; margin:0; border-radius:14px; font-weight:700; box-shadow:0 5px 12px rgba(38,48,65,.12); transition:transform .15s ease,box-shadow .15s ease; }
-        .quick-action-grid .btn:active, .more-shortcuts .btn:active { transform:translateY(1px); box-shadow:0 2px 6px rgba(38,48,65,.12); }
-        .quick-action-grid .btn-primary { background:linear-gradient(135deg,#ff7379,#ed5964); }
-        .quick-action-grid .btn-purchase { background:linear-gradient(135deg,#394b68,#27364e); }
-        .more-shortcuts .btn { background:#f2f5fa; color:#34445f; border:1px solid #e0e6ef; }
-        .edit-overlay { position:fixed; inset:0; z-index:300; display:none; align-items:center; justify-content:center; padding:16px; background:rgba(20,28,40,.54); backdrop-filter:blur(3px); }
-        .edit-overlay.open { display:flex; }
-        .edit-dialog { width:min(100%,720px); height:min(90dvh,900px); max-height:min(90dvh,900px); display:flex; flex-direction:column; overflow:hidden; background:#fff; border-radius:20px; box-shadow:0 24px 80px rgba(10,20,35,.28); }
-        .edit-dialog form { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
-        .edit-head, .edit-foot { flex:none; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; background:#fff; }
-        .edit-head { border-bottom:1px solid #edf0f5; }
-        .edit-head h2 { margin:0; font-size:20px; }
-        .edit-body { flex:1; min-height:0; padding:18px 20px; overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
-        .edit-foot { border-top:1px solid #edf0f5; justify-content:flex-end; }
-        .edit-error { display:none; margin:0 20px 12px; padding:10px 12px; border-radius:10px; color:#a93232; background:#fff0f0; }
-        .edit-error.show { display:block; }
-        .edit-foot .btn { width:auto; min-width:120px; margin:0; }
-        .edit-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 12px; }
-        .edit-grid .wide { grid-column:1/-1; }
-        .edit-items { border:1px solid #e6ebf2; border-radius:14px; padding:12px; margin:12px 0; background:#fafbfd; }
-        .edit-item-row { display:grid; grid-template-columns:minmax(0,2fr) minmax(70px,.75fr) minmax(90px,1fr) 42px; align-items:center; gap:8px; margin:8px 0; }
-        .edit-item-row.purchase { grid-template-columns:minmax(0,2fr) minmax(110px,1fr) 42px; }
-        .edit-item-head { display:grid; grid-template-columns:minmax(0,2fr) minmax(70px,.75fr) minmax(90px,1fr) 42px; gap:8px; margin:12px 0 4px; color:#667085; font-size:12px; font-weight:700; }
-        .edit-item-head.purchase { grid-template-columns:minmax(0,2fr) minmax(110px,1fr) 42px; }
-        .edit-item-head span { white-space:nowrap; }
+
+        .order-total-bar {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:12px;
+            margin-top:16px;
+            padding:12px 14px;
+            border-radius:12px;
+            background: rgba(241,199,90,0.18);
+            border: 1px solid rgba(241,199,90,0.35);
+            font-size: 0.95rem;
+            color: var(--brown);
+            font-weight: 700;
+        }
+        .order-total-bar > span:last-child { text-align:right; }
+
+        .edit-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 300;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            background: rgba(37, 26, 14, 0.38);
+            backdrop-filter: blur(4px);
+        }
+        .edit-overlay.open { display: flex; }
+
+        .edit-dialog {
+            width: min(100%, 720px);
+            height: min(90dvh, 900px);
+            max-height: min(90dvh, 900px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: rgba(255,255,255,0.94);
+            border: 1px solid rgba(65,36,22,0.08);
+            border-radius: 22px;
+            box-shadow: 0 30px 80px rgba(28,18,12,0.18);
+        }
+        .edit-dialog form {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .edit-head, .edit-foot {
+            flex: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px 20px;
+            background: rgba(255,255,255,0.90);
+        }
+        .edit-head { border-bottom: 1px solid rgba(65,36,22,0.08); }
+        .edit-head h2 { margin: 0; font-size: 1.25rem; }
+        .edit-body {
+            flex: 1;
+            min-height: 0;
+            padding: 18px 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+        .edit-foot {
+            border-top: 1px solid rgba(65,36,22,0.08);
+            justify-content: flex-end;
+        }
+        .edit-error {
+            display: none;
+            margin: 0 20px 12px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            color: #8d2f26;
+            background: rgba(255, 228, 224, 0.8);
+        }
+        .edit-error.show { display: block; }
+        .edit-foot .btn { width: auto; min-width: 128px; margin: 0; }
+        .edit-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0 12px;
+        }
+        .edit-grid .wide { grid-column: 1 / -1; }
+        .edit-items {
+            border: 1px solid rgba(65,36,22,0.08);
+            border-radius: 16px;
+            padding: 12px;
+            margin: 12px 0;
+            background: rgba(249,242,229,0.52);
+        }
+        .edit-item-row {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(70px, .75fr) minmax(90px, 1fr) 42px;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 0;
+        }
+        .edit-item-row.purchase { grid-template-columns: minmax(0, 2fr) minmax(110px, 1fr) 42px; }
+        .edit-item-head {
+            display: grid;
+            grid-template-columns: minmax(0,2fr) minmax(70px,.75fr) minmax(90px,1fr) 42px;
+            gap: 8px;
+            margin: 12px 0 4px;
+            color: var(--brown-soft);
+            font-size: 0.72rem;
+            font-weight: 800;
+        }
+        .edit-item-head.purchase { grid-template-columns: minmax(0,2fr) minmax(110px,1fr) 42px; }
+        .edit-item-head span { white-space: nowrap; }
         .edit-item-head span:last-child { text-align:center; }
-        .edit-item-row input { margin:0; min-width:0; }
-        .edit-live-total { display:flex; justify-content:space-between; gap:12px; padding:11px 12px; background:#fff3e3; border-radius:10px; font-weight:700; }
+        .edit-item-row input { margin: 0; min-width: 0; }
+        .edit-live-total {
+            display:flex;
+            justify-content:space-between;
+            gap:12px;
+            padding:11px 12px;
+            background: rgba(241,199,90,0.18);
+            border: 1px solid rgba(241,199,90,0.28);
+            border-radius:10px;
+            font-weight:800;
+        }
         .edit-tower-row { display:flex; gap:8px; align-items:center; }
         .edit-tower-row input { flex:1; }
-        .media-card-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-        .media-card-head h3 { margin:0; }
+
+        .media-card-head {
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:12px;
+        }
+        .media-card-head h3 { margin: 0; }
         .media-actions { display:flex; align-items:center; gap:8px; }
-        .media-upload-trigger { width:auto; min-height:40px; margin:0; padding:8px 13px; border-radius:12px; }
-        .media-image { display:block; margin:12px auto 4px; max-width:100%; max-height:420px; object-fit:contain; border-radius:12px; }
-        .icon-btn:focus-visible, .btn:focus-visible, .select-with-action button:focus-visible { outline:3px solid #ffc66d; outline-offset:2px; }
-        .order-total-bar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:16px; padding:12px 14px; border-radius:10px; background:#fff4e5; font-size:16px; }
-        .order-total-bar > span:last-child { text-align:right; }
-        .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .stat-box { min-width: 0; }
-        .nav { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
-        @media (max-width: 480px) {
+        .media-upload-trigger {
+            width:auto;
+            min-height:42px;
+            margin:0;
+            padding:8px 13px;
+            border-radius:12px;
+        }
+        .media-image {
+            display:block;
+            margin:12px auto 4px;
+            max-width:100%;
+            max-height:420px;
+            object-fit:contain;
+            border-radius:14px;
+            border: 1px solid rgba(65,36,22,0.08);
+            background: rgba(255,255,255,0.55);
+        }
+
+        .login-shell {
+            min-height: calc(100vh - 30px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        .login-box {
+            width: min(100%, 760px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 18px 14px 0;
+        }
+
+        .brand-badge {
+            position: relative;
+            width: min(92vw, 700px);
+            aspect-ratio: 1.08;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #f2e5c7 0%, #f0d9a1 100%);
+            border: 10px solid var(--brown);
+            box-shadow: 0 32px 48px rgba(45, 26, 12, 0.18), inset 0 0 0 12px rgba(255,255,255,0.20);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .badge-inner {
+            position: relative;
+            width: 92%;
+            height: 92%;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.5), rgba(255,255,255,0.02) 55%, transparent 58%);
+            border: 3px solid rgba(65,36,22,0.65);
+            overflow: hidden;
+        }
+        .badge-inner::before,
+        .badge-inner::after {
+            content: "";
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 18%;
+            background: linear-gradient(180deg, transparent, rgba(76,49,26,0.18));
+        }
+        .chef-hat {
+            position: absolute;
+            top: 14%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 210px;
+            height: 130px;
+            z-index: 2;
+        }
+        .chef-hat .hat-top {
+            position: absolute;
+            left: 50%;
+            top: 8px;
+            width: 118px;
+            height: 58px;
+            transform: translateX(-50%);
+            background: #fff7ea;
+            border: 6px solid var(--brown);
+            border-bottom: none;
+            border-radius: 75px 75px 0 0;
+        }
+        .chef-hat .hat-band {
+            position: absolute;
+            left: 50%;
+            top: 54px;
+            width: 146px;
+            height: 22px;
+            transform: translateX(-50%);
+            background: #fff7ea;
+            border: 6px solid var(--brown);
+            border-radius: 999px;
+        }
+        .chef-hat .hat-bib {
+            position: absolute;
+            left: 50%;
+            top: 62px;
+            width: 170px;
+            height: 50px;
+            transform: translateX(-50%);
+            background: linear-gradient(180deg, #f8f4eb, #f0e2b3);
+            border: 6px solid var(--brown);
+            border-top: none;
+            border-radius: 0 0 22px 22px;
+        }
+        .chef-hat .hat-pill {
+            position: absolute;
+            left: 50%;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--brown);
+            top: 78px;
+            margin-left: -7px;
+        }
+        .brand-wordmark {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 78px;
+            color: var(--forest-dark);
+            text-transform: none;
+        }
+        .brand-wordmark .line {
+            display: flex;
+            align-items: flex-end;
+            font-weight: 900;
+            font-size: clamp(2.7rem, 7vw, 6.6rem);
+            letter-spacing: -0.07em;
+            line-height: 0.85;
+            font-family: "Arial Black", "Segoe UI", sans-serif;
+            transform: skewX(-8deg);
+        }
+        .brand-wordmark .line .dwivedi {
+            color: var(--forest);
+            text-shadow: 0 1px 0 rgba(65,36,22,0.08);
+        }
+        .brand-wordmark .line .kitchen {
+            color: var(--brown);
+            margin-left: 0.12em;
+        }
+        .brand-wordmark .tag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 8px;
+            background: linear-gradient(180deg, #f0c959 0%, #e7b33d 100%);
+            color: var(--brown);
+            font-size: clamp(1.1rem, 2.7vw, 2.1rem);
+            font-weight: 900;
+            border-radius: 999px;
+            padding: 8px 28px 10px;
+            border: 4px solid rgba(65,36,22,0.7);
+            box-shadow: 0 6px 0 rgba(65,36,22,0.08);
+            letter-spacing: -0.03em;
+            white-space: nowrap;
+        }
+        .brand-side-icons {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+        .brand-side-icons .item {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--brown);
+            font-weight: 800;
+            font-size: clamp(0.7rem, 1.4vw, 1.05rem);
+            text-shadow: 0 1px 0 rgba(255,255,255,0.30);
+        }
+        .brand-side-icons .item .icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 1.1rem;
+            background: rgba(255,255,255,0.28);
+            border: 2px solid rgba(65,36,22,0.2);
+        }
+        .brand-side-icons .item:nth-child(1) { top: 24%; right: 10%; }
+        .brand-side-icons .item:nth-child(2) { top: 37%; right: 9%; }
+        .brand-side-icons .item:nth-child(3) { top: 51%; right: 12%; }
+        .brand-side-icons .item:nth-child(4) { top: 64%; right: 9%; }
+        .brand-side-icons .item:nth-child(5) { top: 76%; right: 11%; }
+
+        .brand-leaf {
+            position: absolute;
+            display: block;
+            width: 16px;
+            height: 16px;
+            border-radius: 60% 0 60% 0;
+            background: linear-gradient(135deg, var(--forest-dark), var(--forest));
+            transform: rotate(-25deg);
+            box-shadow: inset -2px -2px 0 rgba(255,255,255,0.12);
+        }
+        .brand-leaf.one { left: 12%; top: 18%; }
+        .brand-leaf.two { left: 18%; bottom: 12%; }
+        .brand-leaf.three { right: 15%; top: 24%; }
+        .brand-leaf.four { right: 20%; bottom: 20%; }
+
+        .login-cta {
+            margin-top: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        #login-msg {
+            color: var(--tomato);
+            font-weight: 700;
+            min-height: 22px;
+            margin: 0;
+        }
+
+        .login-copy {
+            margin: 10px 0 0;
+            font-size: 1rem;
+            color: var(--brown-soft);
+            max-width: 520px;
+        }
+
+        .app-locked {
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 520px) {
             body { padding-bottom: 78px; }
             .container { padding: 12px; }
-            .card { padding: 13px; }
+            .card { padding: 13px; border-radius: 18px; }
             .grid-2 { gap: 8px; }
-            .stat-box { padding: 12px 8px; border-radius: 11px; }
-            .stat-box h3 { font-size: clamp(9px, 2.8vw, 12px); line-height: 1.15; white-space: nowrap; letter-spacing: -.2px; }
-            .stat-box p { font-size: 16px; line-height: 1.2; overflow-wrap: anywhere; }
-            .nav { height:68px; padding-left:8px; padding-right:8px; }
-            .nav-btn { min-height: 54px; font-size: 12px; }
-            .nav-btn .nav-icon { font-size: 22px; }
+            .stat-box { padding: 12px 8px; border-radius: 14px; }
+            .stat-box h3 { font-size: 11px; }
+            .stat-box p { font-size: 1.08rem; }
+            .nav { height: 68px; }
+            .nav-btn { font-size: 11px; }
+            .nav-btn .nav-icon { font-size: 1.35rem; }
             .flex-row { gap: 8px; }
             .select-with-action { gap: 6px; }
             .select-with-action .btn-small { font-size: 12px; padding: 7px 9px; }
@@ -121,16 +797,14 @@
             .flex-row > * { min-width: 0; }
             .item-row { gap: 6px; padding: 7px; }
             .item-row select, .item-row input { min-width: 0; }
-            .order-item-row { grid-template-columns:minmax(88px,1fr) 62px 48px 42px; gap:4px; padding:7px; }
+            .order-item-row { grid-template-columns:minmax(88px,1fr) 62px 54px 42px; gap:4px; padding:7px; }
             .order-item-row select, .order-item-row input, .order-row-price-value, .order-item-row .icon-btn { height:40px; }
             .order-item-row select { padding:7px 23px 7px 7px; background-position:right 7px center; font-size:13px; }
             .order-item-row input { padding:7px 5px; font-size:14px; }
             .order-row-price-value { font-size:13px; }
             .order-item-row .icon-btn { width:42px; min-height:40px; }
-            .edit-item-head { grid-template-columns:minmax(0,1fr) 54px 70px 42px; gap:5px; font-size:11px; }
-            .edit-item-head.purchase { grid-template-columns:minmax(0,1fr) 80px 42px; gap:5px; }
-            label { font-size:13px; line-height:1.2; }
-            .order-total-bar { font-size:14px; padding:11px 12px; white-space:nowrap; }
+            label { font-size: 13px; line-height: 1.2; }
+            .order-total-bar { font-size: 14px; padding: 11px 12px; white-space: nowrap; }
             .quick-action-grid, .more-shortcuts { gap:9px; }
             .quick-action-grid .btn, .more-shortcuts .btn { min-height:54px; padding:10px 7px; font-size:14px; }
             .edit-overlay { padding:8px; align-items:flex-end; }
@@ -140,22 +814,60 @@
             .edit-item-row { grid-template-columns:minmax(0,1fr) 54px 70px 42px; gap:5px; }
             .edit-item-row.purchase { grid-template-columns:minmax(0,1fr) 80px 42px; gap:5px; }
             .edit-item-row input { padding:9px 7px; font-size:14px; }
+            .brand-badge { width: min(92vw, 620px); }
+            .brand-side-icons .item { font-size: 0.72rem; }
+            .brand-side-icons .item .icon { width: 28px; height: 28px; }
         }
-        @media (max-width:360px) { .edit-grid { grid-template-columns:1fr; } .edit-grid .wide { grid-column:auto; } .nav-btn { font-size:11px; } }
+
+        @media (max-width: 360px) {
+            .edit-grid { grid-template-columns:1fr; }
+            .edit-grid .wide { grid-column:auto; }
+            .nav-btn { font-size:11px; }
+            .brand-wordmark .line { font-size: 2.7rem; }
+            .brand-wordmark .tag { padding: 7px 16px 8px; }
+        }
     </style>
 </head>
 <body>
 
     <!-- Login Screen -->
-    <div id="login-view" class="container" style="text-align: center; margin-top: 50px;">
-        <h1>Dwivedi Kitchen</h1>
-        <p>Please sign in with your authorized Google account to manage sales.</p>
-        <p id="login-msg" style="color: red; margin-top: 20px;"></p>
-        <button id="auth-btn" class="btn" onclick="initAuth()" style="margin-top: 20px;">Sign in with Google</button>
+    <div id="login-view" class="container login-shell" style="display:flex;">
+        <div class="login-box">
+            <div class="brand-badge" aria-label="Dwivedi Kitchen logo">
+                <div class="badge-inner">
+                    <span class="brand-leaf one"></span>
+                    <span class="brand-leaf two"></span>
+                    <span class="brand-leaf three"></span>
+                    <span class="brand-leaf four"></span>
+                    <div class="brand-side-icons" aria-hidden="true">
+                        <div class="item"><span class="icon">🏠</span><span>Homemade</span></div>
+                        <div class="item"><span class="icon">✅</span><span>Fresh</span></div>
+                        <div class="item"><span class="icon">🧼</span><span>Hygienic</span></div>
+                        <div class="item"><span class="icon">🚚</span><span>Tiffin &amp; Delivery</span></div>
+                        <div class="item"><span class="icon">🥬</span><span>Pure &amp; Healthy</span></div>
+                    </div>
+                    <div class="chef-hat" aria-hidden="true">
+                        <div class="hat-top"></div>
+                        <div class="hat-band"></div>
+                        <div class="hat-bib"></div>
+                        <div class="hat-pill"></div>
+                    </div>
+                    <div class="brand-wordmark">
+                        <div class="line"><span class="dwivedi">Dwivedi</span><span class="kitchen">Kitchen</span></div>
+                        <div class="tag">Ghar Jaisa Swad, Har Roz</div>
+                    </div>
+                </div>
+            </div>
+            <div class="login-cta">
+                <p class="login-copy">Please sign in with your authorized Google account to manage sales.</p>
+                <p id="login-msg"></p>
+                <button id="auth-btn" class="btn" onclick="initAuth()">Sign in with Google</button>
+            </div>
+        </div>
     </div>
 
     <!-- Main App -->
-    <div id="app-view" class="hidden">
+    <div id="app-view" class="hidden app-locked">
         <div class="container">
             <!-- Global Messages -->
             <div id="global-msg" class="message"></div>
@@ -189,7 +901,7 @@
                         <p id="month-net">₹0</p>
                     </div>
                 </div>
-                <p style="font-size:11px;color:#666;margin:-5px 2px 15px;white-space:nowrap">Net = recorded Sales − Purchases</p>
+                <p style="font-size:11px;color:var(--muted);margin:-5px 2px 15px;white-space:nowrap">Net = recorded Sales − Purchases</p>
                 <div class="card">
                     <h3>Quick Actions</h3>
                     <div class="quick-action-grid">
@@ -242,12 +954,12 @@
                         </div>
                     </div>
 
-                    <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
+                    <hr style="border: 0; border-top: 1px solid rgba(65,36,22,.1); margin: 20px 0;">
 
                     <h3>Items</h3>
                     <div id="order-items-container"></div>
                     <button class="btn btn-secondary btn-small" onclick="addOrderItemRow()">+ Add Item</button>
-                    
+
                     <div class="order-total-bar"><span>Total Qty: <strong id="order-total-qty">0</strong></span><span>Final Total: <strong>₹<span id="order-total-amount">0</span></strong></span></div>
                     <button class="btn" onclick="saveOrder()" style="margin-top: 15px;">Save Order</button>
                 </div>
@@ -265,7 +977,7 @@
                 <div class="card">
                     <div id="purchase-items-container"></div>
                     <button class="btn btn-secondary btn-small" onclick="addPurchaseItemRow()">+ Add Purchase Item</button>
-                    <div style="margin-top: 20px; text-align: right; font-size: 18px;">
+                    <div style="margin-top: 20px; text-align: right; font-size: 18px; ">
                         <strong>Total Purchase: ₹<span id="purchase-total-amount">0</span></strong>
                     </div>
                     <button class="btn" onclick="savePurchase()" style="margin-top: 15px;">Save Purchase</button>
@@ -319,12 +1031,12 @@
                 <h2>More Settings</h2>
                 <div class="card">
                     <div class="more-shortcuts">
-                        <button type="button" class="btn" onclick="switchTab('menu')">🍽️ Menu Items</button>
-                        <button type="button" class="btn" onclick="switchTab('manage')">🏢 Society / Tower</button>
+                        <button type="button" class="btn btn-secondary" onclick="switchTab('menu')">🍽️ Menu Items</button>
+                        <button type="button" class="btn btn-secondary" onclick="switchTab('manage')">🏢 Society / Tower</button>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="media-card-head"><h3>Payment QR Code</h3><div class="media-actions"><button id="qr-upload-first" type="button" class="btn btn-secondary media-upload-trigger" onclick="document.getElementById('qr-upload').click()">＋ Upload</button><button id="qr-edit" type="button" class="icon-btn hidden" aria-label="QR image edit" title="QR image change karein" onclick="document.getElementById('qr-upload').click()">✏️</button></div></div>
+                    <div class="media-card-head"><h3>Payment QR Code</h3><div class="media-actions"><button id="qr-upload-first" type="button" class="btn btn-secondary media-upload-trigger" onclick="document.getElementById('qr-upload').click()">Upload</button><button id="qr-edit" type="button" class="icon-btn hidden" aria-label="QR image edit" title="QR image change" onclick="document.getElementById('qr-upload').click()">✏️</button></div></div>
                     <div id="qr-display" style="text-align:center"></div>
                     <input type="file" id="qr-upload" class="hidden" accept="image/*" onchange="uploadImage(event, 'qr')">
                 </div>
@@ -372,7 +1084,6 @@
         };
         let menuItemsData = [];
 
-        // Store all app timestamps in the same readable India format as the existing sheet rows.
         function formatDateTimeForSheet(date = new Date()) {
             const parts = new Intl.DateTimeFormat('en-GB', {
                 timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric',
@@ -403,7 +1114,6 @@
             return Number.isNaN(date.getTime()) ? null : date;
         }
 
-        // --- AUTHENTICATION ---
         function onGoogleIdentityLoaded() {
             if (!window.google?.accounts?.oauth2) return;
             tokenClient = google.accounts.oauth2.initTokenClient({
@@ -438,7 +1148,6 @@
             setTimeout(() => { el.className = 'message'; }, 4000);
         }
 
-        // --- API CALLS ---
         async function fetchSheetData(tabName) {
             const range = encodeURIComponent(`'${tabName}'!A:Z`);
             const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}`, {
@@ -453,7 +1162,7 @@
             const range = encodeURIComponent(`'${tabName}'!A:Z`);
             const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}:append?valueInputOption=USER_ENTERED`, {
                 method: 'POST',
-                headers: { 
+                headers: {
                     Authorization: `Bearer ${accessToken}`,
                     'Content-Type': 'application/json'
                 },
@@ -508,14 +1217,14 @@
 
         let recordEditorState = null;
         function escapeHtml(value) {
-            return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+            return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[char]));
         }
         function editField(label, key, value, type = 'text', wide = false) {
             return `<div class="${wide ? 'wide' : ''}"><label>${label}</label><input data-edit-field="${key}" type="${type}" value="${escapeHtml(value)}"></div>`;
         }
         function renderEditorItemRow(type, item = {}) {
-            if (type === 'purchase') return `<div class="edit-item-row purchase"><input data-item-name value="${escapeHtml(item.name)}" aria-label="Item name" placeholder="Purchase item"><input data-item-price type="number" min="0" step="0.01" value="${escapeHtml(item.price ?? '')}" aria-label="Price" placeholder="Price ₹"><button type="button" class="icon-btn delete" onclick="removeEditorItem(this)" aria-label="Remove item">×</button></div>`;
-            return `<div class="edit-item-row"><input data-item-name value="${escapeHtml(item.name)}" aria-label="Menu item" placeholder="Menu item"><input data-item-qty type="number" min="1" step="1" value="${escapeHtml(item.qty ?? 1)}" aria-label="Quantity" placeholder="Qty"><input data-item-price type="number" min="0" step="0.01" value="${escapeHtml(item.price ?? '')}" aria-label="Unit price" placeholder="Price ₹"><button type="button" class="icon-btn delete" onclick="removeEditorItem(this)" aria-label="Remove item">×</button></div>`;
+            if (type === 'purchase') return `<div class="edit-item-row purchase"><input data-item-name value="${escapeHtml(item.name)}" aria-label="Item name" placeholder="Purchase item"><input data-item-price type="number" min="0" step="0.01" value="${escapeHtml(item.price ?? '')}" aria-label="Purchase amount" placeholder="Price"><button type="button" class="icon-btn delete" onclick="removeEditorItem(this)" aria-label="Remove item">×</button></div>`;
+            return `<div class="edit-item-row"><input data-item-name value="${escapeHtml(item.name)}" aria-label="Menu item" placeholder="Menu item"><input data-item-qty type="number" min="1" step="1" value="${escapeHtml(item.qty ?? 1)}" aria-label="Quantity" placeholder="Qty"><input data-item-price type="number" min="0" step="0.01" value="${escapeHtml(item.price ?? '')}" aria-label="Unit price" placeholder="Price"><button type="button" class="icon-btn delete" onclick="removeEditorItem(this)" aria-label="Remove item">×</button></div>`;
         }
         function openRecordEditor(type, id) {
             const groups = {order:'Orders', purchase:'Purchases', menu:'Menu', society:'Societies'};
@@ -531,15 +1240,14 @@
             recordEditorState = {type,id,index,row};
             let body = '';
             if (type === 'order') {
-                body = `<div class="edit-grid">${editField('Date & time','dateTime',row[1],'text',true)}${editField('Society','society',row[2])}${editField('Tower','tower',row[3])}${editField('Flat number','flat',row[4])}${editField('Floor','floor',row[5])}${editField('Extra address','address',row[6],'text',true)}${editField('Customer name','customer',row[7])}${editField('Contact number','contact',row[8])}</div>
-                    <div class="edit-items"><strong>Order items</strong><div class="edit-item-head"><span>Item</span><span>Qty</span><span>Price ₹</span><span></span></div><div id="editor-item-list">${items.map(item => renderEditorItemRow('order',item)).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorItem('order')">＋ Add item</button><div class="edit-live-total"><span>Total Qty: <b id="editor-qty">0</b></span><span>Final Total: <b id="editor-total">₹0</b></span></div></div>`;
+                body = `<div class="edit-grid">${editField('Date & time','dateTime',row[1],'text',true)}${editField('Society','society',row[2])}${editField('Tower','tower',row[3])}${editField('Flat number','flat',row[4])}${editField('Floor','floor',row[5])}${editField('Extra address','address',row[6],'text',true)}${editField('Customer name','customer',row[7])}${editField('Contact no.','contact',row[8])}</div><div class="edit-items"><strong>Order items</strong><div class="edit-item-head"><span>Item</span><span>Qty</span><span>Price ₹</span><span></span></div><div id="editor-item-list">${items.map(item => renderEditorItemRow('order', item)).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorItem('order')">+ Add item</button><div class="edit-live-total"><span>Total Qty: <b id="editor-qty">0</b></span><span>Total: <b id="editor-total">₹0</b></span></div></div>`;
             } else if (type === 'purchase') {
-                body = `${editField('Date & time','dateTime',row[1],'text',true)}<div class="edit-items"><strong>Purchase items</strong><div class="edit-item-head purchase"><span>Item</span><span>Amount ₹</span><span></span></div><div id="editor-item-list">${items.map(item => renderEditorItemRow('purchase',item)).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorItem('purchase')">＋ Add item</button><div class="edit-live-total"><span>Total items: <b id="editor-qty">0</b></span><span>Total purchase: <b id="editor-total">₹0</b></span></div></div>`;
+                body = `${editField('Date & time','dateTime',row[1],'text',true)}<div class="edit-items"><strong>Purchase items</strong><div class="edit-item-head purchase"><span>Item</span><span>Amount ₹</span><span></span></div><div id="editor-item-list">${items.map(item => renderEditorItemRow('purchase', item)).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorItem('purchase')">+ Add item</button><div class="edit-live-total"><span>Item count: <b id="editor-qty">0</b></span><span>Total: <b id="editor-total">₹0</b></span></div></div>`;
             } else if (type === 'menu') {
-                body = `<div class="edit-grid">${editField('Item name','name',row[1],'text',true)}<div class="wide"><label>Full details / contents</label><textarea data-edit-field="details" rows="3">${escapeHtml(row[2])}</textarea></div>${editField('Price (₹)','price',row[3],'number')}<div><label>Active</label><select data-edit-field="active"><option value="TRUE" ${String(row[4]).toUpperCase() !== 'FALSE' ? 'selected' : ''}>Active</option><option value="FALSE" ${String(row[4]).toUpperCase() === 'FALSE' ? 'selected' : ''}>Inactive</option></select></div></div>`;
+                body = `<div class="edit-grid">${editField('Item name','name',row[1],'text',true)}<div class="wide"><label>Full details / contents</label><textarea data-edit-field="details" rows="3">${escapeHtml(row[2])}</textarea></div>${editField('Price (₹)','price',row[3],'number')}${editField('Status','active',row[4])}</div>`;
             } else {
                 const towers = sheetData.Towers.filter(tower => tower[1] === id);
-                body = `${editField('Society name','name',row[1],'text',true)}<div class="edit-items"><strong>Towers</strong><div id="editor-tower-list">${towers.map(tower => `<div class="edit-tower-row"><input data-tower-name value="${escapeHtml(tower[2])}" aria-label="Tower name"><button type="button" class="icon-btn delete" onclick="this.parentElement.remove()" aria-label="Remove tower">×</button></div>`).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorTower()">＋ Add tower</button></div>`;
+                body = `${editField('Society name','name',row[1],'text',true)}<div class="edit-items"><strong>Towers</strong><div id="editor-tower-list">${towers.map(tower => `<div class="edit-tower-row"><input data-tower-name value="${escapeHtml(tower[2])}" aria-label="Tower name" placeholder="Tower A"><button type="button" class="icon-btn delete" onclick="this.parentElement.remove()" aria-label="Remove tower">×</button></div>`).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorTower()">+ Add tower</button></div>`;
             }
             document.getElementById('edit-body').innerHTML = body;
             document.getElementById('edit-error').classList.remove('show');
@@ -567,16 +1275,16 @@
         function updateEditorTotals() {
             if (!recordEditorState || !['order','purchase'].includes(recordEditorState.type)) return;
             const rows = [...document.querySelectorAll('#editor-item-list .edit-item-row')];
-            const qty = rows.reduce((sum,item) => sum + (recordEditorState.type === 'order' ? (Number(item.querySelector('[data-item-qty]').value)||0) : 1),0);
-            const total = rows.reduce((sum,item) => sum + (Number(item.querySelector('[data-item-price]').value)||0) * (recordEditorState.type === 'order' ? (Number(item.querySelector('[data-item-qty]').value)||0) : 1),0);
+            const qty = rows.reduce((sum,item) => sum + (recordEditorState.type === 'order' ? (Number(item.querySelector('[data-item-qty]')?.value) || 0) : 1),0);
+            const total = rows.reduce((sum,item) => sum + (Number(item.querySelector('[data-item-price]')?.value) || 0) * (recordEditorState.type === 'order' ? (Number(item.querySelector('[data-item-qty]')?.value) || 0) : 1),0);
             document.getElementById('editor-qty').textContent = qty;
             document.getElementById('editor-total').textContent = '₹' + total.toLocaleString('en-IN',{maximumFractionDigits:2});
         }
         function getEditorItems(type) {
             return [...document.querySelectorAll('#editor-item-list .edit-item-row')].map(item => ({
-                name:item.querySelector('[data-item-name]').value.trim(),
-                qty:type === 'order' ? Number(item.querySelector('[data-item-qty]').value) : 1,
-                price:item.querySelector('[data-item-price]').value === '' ? NaN : Number(item.querySelector('[data-item-price]').value)
+                name: item.querySelector('[data-item-name]')?.value.trim() || '',
+                qty: type === 'order' ? Number(item.querySelector('[data-item-qty]')?.value) : 1,
+                price: item.querySelector('[data-item-price]')?.value === '' ? NaN : Number(item.querySelector('[data-item-price]')?.value)
             })).filter(item => item.name);
         }
         async function saveRecordEditor(event) {
@@ -588,53 +1296,70 @@
                 const {type,id,index,row} = recordEditorState;
                 if (type === 'order') {
                     const items = getEditorItems(type);
-                    if (!items.length || items.some(item => !Number.isInteger(item.qty) || item.qty < 1 || !Number.isFinite(item.price) || item.price < 0)) throw new Error('Har item ka naam, valid quantity aur unit price bharein.');
-                    row[1]=document.querySelector('[data-edit-field="dateTime"]').value.trim();
-                    row[2]=document.querySelector('[data-edit-field="society"]').value.trim(); row[3]=document.querySelector('[data-edit-field="tower"]').value.trim();
-                    row[4]=document.querySelector('[data-edit-field="flat"]').value.trim(); row[5]=document.querySelector('[data-edit-field="floor"]').value.trim();
-                    row[6]=document.querySelector('[data-edit-field="address"]').value.trim(); row[7]=document.querySelector('[data-edit-field="customer"]').value.trim(); row[8]=document.querySelector('[data-edit-field="contact"]').value.trim();
-                    row[9]=items.map(item=>`${item.name} (x${item.qty})`).join(', '); row[10]=items.reduce((sum,item)=>sum+item.qty,0); row[11]=items.reduce((sum,item)=>sum+item.qty*item.price,0);
-                    const oldRows=sheetData.OrderItems.map((item,i)=>item[1]===id?i+2:null).filter(Boolean); await deleteDataRows('OrderItems',oldRows);
-                    for (const [i,item] of items.entries()) await appendSheetData('OrderItems',['ITM-'+Date.now()+'-'+i,id,item.name,item.qty,item.price,item.qty*item.price]);
-                    await updateDataRow('Orders',index+2,row);
+                    if (!items.length || items.some(item => !Number.isInteger(item.qty) || item.qty < 1 || !Number.isFinite(item.price) || item.price < 0)) throw new Error('Har item ka naam, valid quantity aur price bharna zaroori hai.');
+                    row[1] = document.querySelector('[data-edit-field="dateTime"]').value.trim();
+                    row[2] = document.querySelector('[data-edit-field="society"]').value.trim();
+                    row[3] = document.querySelector('[data-edit-field="tower"]').value.trim();
+                    row[4] = document.querySelector('[data-edit-field="flat"]').value.trim();
+                    row[5] = document.querySelector('[data-edit-field="floor"]').value.trim();
+                    row[6] = document.querySelector('[data-edit-field="address"]').value.trim();
+                    row[7] = document.querySelector('[data-edit-field="customer"]').value.trim();
+                    row[8] = document.querySelector('[data-edit-field="contact"]').value.trim();
+                    row[9] = items.map(item => `${item.name} (x${item.qty})`).join(', ');
+                    row[10] = items.reduce((sum,item) => sum + item.qty, 0);
+                    row[11] = items.reduce((sum,item) => sum + item.qty * item.price, 0);
+                    const oldRows = sheetData.OrderItems.map((item,i) => item[1] === id ? i + 2 : null).filter(Boolean);
+                    await deleteDataRows('OrderItems', oldRows);
+                    for (const [i,item] of items.entries()) await appendSheetData('OrderItems', ['ITM-' + Date.now() + '-' + i, id, item.name, item.qty, item.price, item.qty * item.price]);
+                    await updateDataRow('Orders', index + 2, row);
                 } else if (type === 'purchase') {
-                    const items=getEditorItems(type); if (!items.length || items.some(item=>!Number.isFinite(item.price)||item.price<0)) throw new Error('Har purchase item ka naam aur valid price bharein.');
-                    row[1]=document.querySelector('[data-edit-field="dateTime"]').value.trim(); row[2]=items.reduce((sum,item)=>sum+item.price,0);
-                    const oldRows=sheetData.PurchaseItems.map((item,i)=>item[1]===id?i+2:null).filter(Boolean); await deleteDataRows('PurchaseItems',oldRows);
-                    for (const [i,item] of items.entries()) await appendSheetData('PurchaseItems',['PITM-'+Date.now()+'-'+i,id,row[1],item.name,item.price]);
-                    await updateDataRow('Purchases',index+2,row);
+                    const items = getEditorItems(type);
+                    if (!items.length || items.some(item => !Number.isFinite(item.price) || item.price < 0)) throw new Error('Har purchase item ka naam aur valid price bharna zaroori hai.');
+                    row[1] = document.querySelector('[data-edit-field="dateTime"]').value.trim();
+                    row[2] = items.reduce((sum,item) => sum + item.price, 0);
+                    const oldRows = sheetData.PurchaseItems.map((item,i) => item[1] === id ? i + 2 : null).filter(Boolean);
+                    await deleteDataRows('PurchaseItems', oldRows);
+                    for (const [i,item] of items.entries()) await appendSheetData('PurchaseItems', ['PITM-' + Date.now() + '-' + i, id, row[1], item.name, item.price]);
+                    await updateDataRow('Purchases', index + 2, row);
                 } else if (type === 'menu') {
-                    const name=document.querySelector('[data-edit-field="name"]').value.trim(), details=document.querySelector('[data-edit-field="details"]').value.trim();
-                    const priceText=document.querySelector('[data-edit-field="price"]').value;
-                    const price=Number(priceText), active=document.querySelector('[data-edit-field="active"]').value;
-                    if (!name || priceText === '' || !Number.isFinite(price) || price<0) throw new Error('Naam aur valid price bharein.');
-                    row[1]=name; row[2]=details; row[3]=price; row[4]=active; await updateDataRow('Menu',index+2,row);
+                    const name = document.querySelector('[data-edit-field="name"]').value.trim();
+                    const details = document.querySelector('[data-edit-field="details"]').value.trim();
+                    const priceText = document.querySelector('[data-edit-field="price"]').value;
+                    const price = Number(priceText);
+                    const active = document.querySelector('[data-edit-field="active"]').value;
+                    if (!name || priceText === '' || !Number.isFinite(price) || price < 0) throw new Error('Naam aur valid price bharein.');
+                    row[1] = name; row[2] = details; row[3] = price; row[4] = active; await updateDataRow('Menu', index + 2, row);
                 } else if (type === 'society') {
-                    const name=document.querySelector('[data-edit-field="name"]').value.trim();
-                    const names=[...document.querySelectorAll('[data-tower-name]')].map(input=>input.value.trim()).filter(Boolean);
+                    const name = document.querySelector('[data-edit-field="name"]').value.trim();
+                    const names = [...document.querySelectorAll('[data-tower-name]')].map(input => input.value.trim()).filter(Boolean);
                     if (!name) throw new Error('Society ka naam bharein.');
-                    row[1]=name; await updateDataRow('Societies',index+2,row);
-                    const oldRows=sheetData.Towers.map((tower,i)=>tower[1]===id?i+2:null).filter(Boolean); await deleteDataRows('Towers',oldRows);
-                    for (const [i,towerName] of names.entries()) await appendSheetData('Towers',['TWR-'+Date.now()+'-'+i,id,towerName,'TRUE',formatDateTimeForSheet()]);
+                    row[1] = name; await updateDataRow('Societies', index + 2, row);
+                    const oldRows = sheetData.Towers.map((tower,i) => tower[1] === id ? i + 2 : null).filter(Boolean);
+                    await deleteDataRows('Towers', oldRows);
+                    for (const [i,towerName] of names.entries()) await appendSheetData('Towers', ['TWR-' + Date.now() + '-' + i, id, towerName, 'TRUE', formatDateTimeForSheet()]);
                 }
-                closeRecordEditor(); await loadAllData(); showMessage('Changes save ho gaye.');
+                closeRecordEditor();
+                await loadAllData();
+                showMessage('Changes save ho gaye.');
             } catch(err) {
-                const feedback=document.getElementById('edit-error');
-                feedback.textContent=err.message; feedback.classList.add('show');
-            } finally { saveButton.disabled=false; saveButton.textContent='Save changes'; }
+                const feedback = document.getElementById('edit-error');
+                feedback.textContent = err.message;
+                feedback.classList.add('show');
+            } finally {
+                saveButton.disabled = false;
+                saveButton.textContent = 'Save changes';
+            }
         }
 
-        // --- DATA LOADING ---
         async function loadAllData() {
             try {
                 const tabs = Object.keys(sheetData);
                 const promises = tabs.map(tab => fetchSheetData(tab));
                 const results = await Promise.all(promises);
-                
+
                 tabs.forEach((tab, index) => {
-                    // Skip header row if present
                     let data = results[index];
-                    if (data.length > 0 && (data[0][0] === 'Society ID' || data[0][0] === 'Order ID' || data[0][0] === 'Item ID' || data[0][0] === 'Purchase ID' || data[0][0] === 'Tower ID' || data[0][0] === 'Order Item ID' || data[0][0] === 'Purchase Item ID')) {
+                    if (data.length > 0 && (data[0][0] === 'Society ID' || data[0][0] === 'Order ID' || data[0][0] === 'Item ID' || data[0][0] === 'Purchase ID' || data[0][0] === 'Tower ID' || data[0][0] === 'Menu ID')) {
                         data = data.slice(1);
                     }
                     sheetData[tab] = data;
@@ -653,7 +1378,6 @@
             }
         }
 
-        // --- HOME DASHBOARD ---
         function renderDashboard() {
             const now = new Date();
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -682,7 +1406,6 @@
             document.getElementById('month-net').parentElement.classList.toggle('loss', monthNet < 0);
         }
 
-                // --- NAVIGATION ---
         function switchTab(tabId) {
             document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
@@ -692,7 +1415,6 @@
             });
         }
 
-        // --- POPULATE DROPDOWNS ---
         function populateDropdowns() {
             const socSelect = document.getElementById('order-society');
             const manSocSelect = document.getElementById('manage-society');
@@ -737,12 +1459,10 @@
             const floorInput = document.getElementById('order-floor');
             if (!flatDigits) { floorInput.value = ''; return; }
             if (flatDigits.length >= 3) {
-                // Remove the last two digits: 101 -> floor 1, 303 -> 3, 1101 -> 11.
                 floorInput.value = String(Number(flatDigits.slice(0, -2)));
             }
         }
 
-        // --- NEW ORDER ---
         function addOrderItemRow() {
             const container = document.getElementById('order-items-container');
             const row = document.createElement('div');
@@ -789,7 +1509,7 @@
             const address = document.getElementById('order-address').value;
             const name = document.getElementById('order-name').value;
             const contact = document.getElementById('order-contact').value;
-            
+
             if (!socId || !towerId || !flat) {
                 showMessage('Please fill Society, Tower, and Flat Number.', true);
                 return;
@@ -818,40 +1538,32 @@
             const totalAmount = document.getElementById('order-total-amount').innerText;
             const dateTime = formatDateTimeForSheet();
             const orderId = 'ORD-' + Date.now();
-
             const socName = document.getElementById('order-society').options[document.getElementById('order-society').selectedIndex].text;
             const towerName = document.getElementById('order-tower').options[document.getElementById('order-tower').selectedIndex].text;
 
             try {
-                // 1. Save to Orders
                 const orderRow = [orderId, dateTime, socName, towerName, flat, floor, address, name, contact, items.map(i => i.name + ' (x' + i.qty + ')').join(', '), totalQty, totalAmount];
                 await appendSheetData('Orders', orderRow);
-
-                // 2. Save to OrderItems
                 for (const [index, item] of items.entries()) {
                     const itemId = 'ITM-' + Date.now() + '-' + index;
                     const itemTotal = item.price * item.qty;
                     await appendSheetData('OrderItems', [itemId, orderId, item.name, item.qty, item.price, itemTotal]);
                 }
-
                 showMessage('Order saved successfully!');
-                
-                // Reset Form
                 document.getElementById('order-items-container').innerHTML = '';
                 document.getElementById('order-flat').value = '';
                 document.getElementById('order-tower').value = '';
                 document.getElementById('order-floor').value = '';
                 document.getElementById('order-name').value = '';
                 document.getElementById('order-contact').value = '';
+                document.getElementById('order-address').value = '';
                 calculateOrderTotals();
-                loadAllData(); // Reload to reflect changes
-
+                loadAllData();
             } catch (err) {
                 showMessage('Error saving order: ' + err.message, true);
             }
         }
 
-        // --- ORDERS LIST ---
         function renderOrders() {
             const container = document.getElementById('orders-list');
             container.innerHTML = '';
@@ -869,7 +1581,7 @@
                     </div>
                     <div><strong>Location:</strong> ${order[2]}, Tower ${order[3]} - Flat ${order[4]} (Floor ${order[5]})</div>
                     <div><strong>Customer:</strong> ${order[7] || ''}${contact}</div>
-                    <div style="margin-top:10px;background:#f5f5f5;padding:10px;border-radius:5px">
+                    <div style="margin-top:10px;background:rgba(255,255,255,0.4);padding:10px;border-radius:12px;border:1px solid rgba(65,36,22,.06)">
                         <strong>Items:</strong> ${lineHtml}<br>
                         <strong>Qty:</strong> ${order[10]} | <strong>Total:</strong> ₹${order[11]}
                     </div>
@@ -877,9 +1589,7 @@
             });
         }
 
-        async function editOrder(orderId) {
-            openRecordEditor('order', orderId);
-        }
+        async function editOrder(orderId) { openRecordEditor('order', orderId); }
 
         async function deleteOrder(orderId) {
             if (!confirm(`Order ${orderId} aur uske saare item records delete kar dein?`)) return;
@@ -892,21 +1602,18 @@
             } catch (err) { showMessage(err.message, true); }
         }
 
-        // --- MENU ---
         function renderMenu() {
             const container = document.getElementById('menu-list');
             container.innerHTML = '';
             sheetData.Menu.forEach((item, index) => {
-                container.innerHTML += `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #eee">
-                    <div><strong>${item[1]}</strong><div style="font-size:12px;color:#666">${item[2] || ''}</div><strong>₹${item[3]}</strong><div style="font-size:12px;color:#777">${String(item[4]).toUpperCase() === 'FALSE' || String(item[4]).toUpperCase() === 'INACTIVE' ? 'Inactive' : 'Active'}</div></div>
+                container.innerHTML += `<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:10px 0;border-bottom:1px solid rgba(65,36,22,.08)">
+                    <div><strong>${item[1]}</strong><div style="font-size:12px;color:var(--muted)">${item[2] || ''}</div><strong>₹${item[3]}</strong><div style="font-size:12px;color:var(--muted)">${String(item[4]).toUpperCase() === 'FALSE' ? 'Inactive' : 'Active'}</div></div>
                     ${actionButtons('editMenuItem','deleteMenuItem',item[0])}
                 </div>`;
             });
         }
 
-        async function editMenuItem(itemId) {
-            openRecordEditor('menu', itemId);
-        }
+        async function editMenuItem(itemId) { openRecordEditor('menu', itemId); }
 
         async function deleteMenuItem(itemId) {
             const index = sheetData.Menu.findIndex(row => row[0] === itemId);
@@ -937,7 +1644,6 @@
             }
         }
 
-        // --- PURCHASE ---
         function addPurchaseItemRow() {
             const container = document.getElementById('purchase-items-container');
             const row = document.createElement('div');
@@ -950,7 +1656,7 @@
                     <option value="">Choose saved item</option>${savedOptions}<option value="__NEW_PURCHASE_ITEM__">＋ New item name</option>
                 </select>
                 <input type="text" class="purchase-item-name hidden" placeholder="Type new item" aria-label="New purchase item name" style="flex:2; min-width:0; margin:0;">
-                <input type="number" class="purchase-item-price" placeholder="Price ₹" aria-label="Purchase price" min="0" step="0.01" style="flex:1; margin:0; width:80px;" oninput="calculatePurchaseTotals()">
+                <input type="number" class="purchase-item-price" placeholder="Price ₹" aria-label="Purchase price" min="0" step="0.01" style="flex:1; margin:0; width:80px;" oninput="calculatePurchaseTotals();">
                 <button type="button" class="btn btn-secondary btn-small" aria-label="Remove item" onclick="this.parentElement.remove(); calculatePurchaseTotals();" style="margin:0;">×</button>
             `;
             container.appendChild(row);
@@ -998,24 +1704,19 @@
             }
 
             const totalAmount = document.getElementById('purchase-total-amount').innerText;
-            const dateTime = formatDateTimeForSheet();
             const purchaseId = 'PUR-' + Date.now();
+            const dateTime = formatDateTimeForSheet();
 
             try {
-                // 1. Save to Purchases
                 await appendSheetData('Purchases', [purchaseId, dateTime, totalAmount]);
-
-                // 2. Save to PurchaseItems
                 for (const [index, item] of items.entries()) {
                     const itemId = 'PITM-' + Date.now() + '-' + index;
                     await appendSheetData('PurchaseItems', [itemId, purchaseId, dateTime, item.name, item.price]);
                 }
-
                 showMessage('Purchase saved successfully!');
                 document.getElementById('purchase-items-container').innerHTML = '';
-                calculatePurchaseTotals();
+                document.getElementById('purchase-total-amount').innerText = '0';
                 loadAllData();
-
             } catch (err) {
                 showMessage('Error saving purchase: ' + err.message, true);
             }
@@ -1023,247 +1724,186 @@
 
         function renderPurchases() {
             const container = document.getElementById('purchase-history-list');
-            if (!container) return;
-            if (!sheetData.Purchases.length) { container.innerHTML = '<div class="card">Abhi koi purchase record nahi hai.</div>'; return; }
-            const rows = [...sheetData.Purchases].map((purchase, index) => ({purchase, rowNumber: index + 2})).reverse();
-            container.innerHTML = rows.map(({purchase}) => {
+            container.innerHTML = '';
+            const sortedPurchases = sheetData.Purchases.map((purchase, index) => ({purchase, rowNumber: index + 2})).reverse();
+            sortedPurchases.forEach(({purchase, rowNumber}) => {
                 const purchaseId = purchase[0];
-                const items = sheetData.PurchaseItems.filter(item => item[1] === purchaseId);
-                const itemLines = items.length ? items.map(item => `${item[3] || 'Item'} — ₹${item[4] || 0}`).join(', ') : 'Is purchase ke item rows Sheet mein nahi mile.';
-                return `<div class="card">
+                const lines = sheetData.PurchaseItems.filter(item => item[1] === purchaseId);
+                const lineHtml = lines.length ? lines.map(item => `${item[3]} — ₹${item[4]}`).join(', ') : 'No items';
+                const total = purchase[2] || 0;
+                container.innerHTML += `<div class="card">
                     <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
-                        <div><strong>${purchaseId || 'Purchase'}</strong><div style="color:#666;font-size:13px;margin-top:4px">${formatDateTimeForDisplay(purchase[1])}</div></div>
-                        ${actionButtons('editPurchase','deletePurchase',purchaseId)}
+                        <div><strong>${purchaseId}</strong><div style="color:gray;font-size:12px;margin-top:4px">${formatDateTimeForDisplay(purchase[1])}</div></div>
+                        ${actionButtons('editPurchase', 'deletePurchase', purchaseId)}
                     </div>
-                    <div style="margin-top:8px"><strong>Items:</strong> ${itemLines}</div>
-                    <div style="margin-top:8px"><strong>Total: ₹${purchase[2] || 0}</strong></div>
+                    <div style="margin-top:10px;background:rgba(255,255,255,0.4);padding:10px;border-radius:12px;border:1px solid rgba(65,36,22,.06)">
+                        <strong>Items:</strong> ${lineHtml}<br>
+                        <strong>Total:</strong> ₹${total}
+                    </div>
                 </div>`;
-            }).join('');
+            });
         }
 
-        async function editPurchase(purchaseId) {
-            openRecordEditor('purchase', purchaseId);
-        }
+        async function editPurchase(purchaseId) { openRecordEditor('purchase', purchaseId); }
 
         async function deletePurchase(purchaseId) {
             if (!confirm(`Purchase ${purchaseId} aur uske saare item records delete kar dein?`)) return;
             try {
                 const itemRows = sheetData.PurchaseItems.map((row, i) => row[1] === purchaseId ? i + 2 : null).filter(Boolean);
-                const index = sheetData.Purchases.findIndex(row => row[0] === purchaseId);
+                const purchaseIndex = sheetData.Purchases.findIndex(row => row[0] === purchaseId);
                 await deleteDataRows('PurchaseItems', itemRows);
-                if (index >= 0) await deleteDataRows('Purchases', [index + 2]);
-                await loadAllData(); showMessage('Purchase delete ho gayi.');
+                if (purchaseIndex >= 0) await deleteDataRows('Purchases', [purchaseIndex + 2]);
+                await loadAllData(); showMessage('Purchase delete ho gaya.');
             } catch (err) { showMessage(err.message, true); }
         }
 
         function renderSocietyTowerList() {
             const container = document.getElementById('society-tower-list');
-            if (!container) return;
-            container.replaceChildren();
-            if (!sheetData.Societies.length) { container.textContent = 'Koi society row nahi mili. Data load error ho to upar ka message dekhein.'; return; }
-            sheetData.Societies.forEach(society => {
-                const towers = sheetData.Towers.filter(tower => tower[1] === society[0]).map(tower => tower[2]).filter(Boolean);
-                const row = document.createElement('div');
-                row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #eee';
-                const details = document.createElement('div');
-                const title = document.createElement('strong'); title.textContent = society[1] || '(Naam missing)';
-                const towerNames = document.createElement('div'); towerNames.style.cssText = 'margin-top:4px;color:#666';
-                towerNames.textContent = towers.length ? 'Towers: ' + towers.join(', ') : 'Abhi koi tower add nahi hai';
-                details.append(title, towerNames); row.appendChild(details);
-                row.insertAdjacentHTML('beforeend', actionButtons('editSociety','deleteSociety',society[0]));
-                container.appendChild(row);
+            container.innerHTML = '';
+            sheetData.Societies.forEach(soc => {
+                const towers = sheetData.Towers.filter(tower => tower[1] === soc[0] && (!tower[3] || ['TRUE', 'ACTIVE'].includes(String(tower[3]).trim().toUpperCase())));
+                container.innerHTML += `<div class="card" style="margin:0 0 10px;padding:12px;">
+                    <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
+                        <strong>${soc[1]}</strong>
+                        ${actionButtons('editSociety', 'deleteSociety', soc[0])}
+                    </div>
+                    <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;">
+                        ${towers.length ? towers.map(t => `<span style="padding:6px 9px;border-radius:999px;background:rgba(13,91,63,0.08);color:var(--forest-dark);font-size:12px;font-weight:700;">${t[2]}</span>`).join('') : '<span style="color:var(--muted)">No towers</span>'}
+                    </div>
+                </div>`;
             });
         }
 
-        async function editSociety(id) {
-            openRecordEditor('society', id);
-        }
+        async function editSociety(societyId) { openRecordEditor('society', societyId); }
 
-        async function deleteSociety(id) {
-            const index = sheetData.Societies.findIndex(row => row[0] === id); if (index < 0) return;
-            if (!confirm('Society aur uske towers delete kar dein? Purane orders ka saved address bana rahega.')) return;
+        async function deleteSociety(societyId) {
+            if (!confirm('Society aur uske towers delete kar dein?')) return;
             try {
-                const towerRows = sheetData.Towers.map((row, i) => row[1] === id ? i + 2 : null).filter(Boolean);
+                const towerRows = sheetData.Towers.map((row, i) => row[1] === societyId ? i + 2 : null).filter(Boolean);
+                const societyIndex = sheetData.Societies.findIndex(row => row[0] === societyId);
                 await deleteDataRows('Towers', towerRows);
-                await deleteDataRows('Societies', [index + 2]);
-                await loadAllData(); showMessage('Society aur linked towers delete ho gaye.');
+                if (societyIndex >= 0) await deleteDataRows('Societies', [societyIndex + 2]);
+                await loadAllData(); showMessage('Society delete ho gaya.');
             } catch (err) { showMessage(err.message, true); }
         }
 
         function toggleOrderAddForm(type) {
-            if (type === 'tower' && !document.getElementById('order-society').value) {
-                showMessage('Pehle Society select karein.', true);
-                return;
-            }
-            document.getElementById(`order-add-${type}-form`).classList.toggle('hidden');
+            const formId = type === 'society' ? 'order-add-society-form' : 'order-add-tower-form';
+            document.getElementById(formId).classList.toggle('hidden');
         }
 
         async function addSocietyFromOrder() {
             const name = document.getElementById('order-new-society-name').value.trim();
-            if (!name) { showMessage('Society name bharein.', true); return; }
-            const id = 'SOC-' + Date.now();
+            if (!name) { showMessage('Society naam bharna zaroori hai.', true); return; }
             try {
-                await appendSheetData('Societies', [id, name, 'TRUE', formatDateTimeForSheet()]);
-                await loadAllData();
-                document.getElementById('order-society').value = id;
-                populateTowers();
+                const societyId = 'SOC-' + Date.now();
+                await appendSheetData('Societies', [societyId, name, 'TRUE', formatDateTimeForSheet()]);
                 document.getElementById('order-new-society-name').value = '';
                 document.getElementById('order-add-society-form').classList.add('hidden');
-                showMessage('Society add ho gayi. Ab Tower add kar sakte hain.');
-            } catch (err) { showMessage('Society add nahi hui: ' + err.message, true); }
+                await loadAllData();
+                showMessage('Society add ho gaya.');
+            } catch (err) { showMessage('Society save nahi hua: ' + err.message, true); }
         }
 
         async function addTowerFromOrder() {
             const societyId = document.getElementById('order-society').value;
             const name = document.getElementById('order-new-tower-name').value.trim();
-            if (!societyId || !name) { showMessage('Society select karein aur Tower name bharein.', true); return; }
-            const id = 'TWR-' + Date.now();
+            if (!societyId || !name) { showMessage('Society aur Tower naam bharna zaroori hai.', true); return; }
             try {
-                await appendSheetData('Towers', [id, societyId, name, 'TRUE', formatDateTimeForSheet()]);
-                await loadAllData();
-                document.getElementById('order-society').value = societyId;
-                populateTowers();
-                document.getElementById('order-tower').value = id;
+                const towerId = 'TWR-' + Date.now();
+                await appendSheetData('Towers', [towerId, societyId, name, 'TRUE', formatDateTimeForSheet()]);
                 document.getElementById('order-new-tower-name').value = '';
                 document.getElementById('order-add-tower-form').classList.add('hidden');
-                showMessage('Tower add ho gaya aur select bhi ho gaya.');
-            } catch (err) { showMessage('Tower add nahi hua: ' + err.message, true); }
+                await loadAllData();
+                showMessage('Tower add ho gaya.');
+            } catch (err) { showMessage('Tower save nahi hua: ' + err.message, true); }
         }
 
-        // --- MANAGE SOCIETY/TOWER ---
         async function addSociety() {
             const name = document.getElementById('new-society-name').value.trim();
-            if (!name) return;
-            
-            const socId = 'SOC-' + Date.now();
-            const createdAt = formatDateTimeForSheet();
+            if (!name) { showMessage('Society naam bharna zaroori hai.', true); return; }
             try {
-                await appendSheetData('Societies', [socId, name, 'TRUE', createdAt]);
-                showMessage('Society added!');
+                const societyId = 'SOC-' + Date.now();
+                await appendSheetData('Societies', [societyId, name, 'TRUE', formatDateTimeForSheet()]);
                 document.getElementById('new-society-name').value = '';
-                loadAllData();
-            } catch (err) {
-                showMessage('Error adding society: ' + err.message, true);
-            }
+                await loadAllData();
+                showMessage('Society add ho gaya.');
+            } catch (err) { showMessage('Society save nahi hua: ' + err.message, true); }
         }
 
         async function addTower() {
-            const socId = document.getElementById('manage-society').value;
+            const societyId = document.getElementById('manage-society').value;
             const name = document.getElementById('new-tower-name').value.trim();
-            if (!socId || !name) {
-                showMessage('Please select society and enter tower name.', true);
-                return;
-            }
-
-            const towerId = 'TWR-' + Date.now();
-            const createdAt = formatDateTimeForSheet();
+            if (!societyId || !name) { showMessage('Society aur Tower naam bharna zaroori hai.', true); return; }
             try {
-                await appendSheetData('Towers', [towerId, socId, name, 'TRUE', createdAt]);
-                showMessage('Tower added!');
+                const towerId = 'TWR-' + Date.now();
+                await appendSheetData('Towers', [towerId, societyId, name, 'TRUE', formatDateTimeForSheet()]);
                 document.getElementById('new-tower-name').value = '';
-                loadAllData();
-            } catch (err) {
-                showMessage('Error adding tower: ' + err.message, true);
-            }
-        }
-
-        // --- DRIVE IMAGES: load latest uploaded QR/WhatsApp image on every visit ---
-        async function listSavedImages(type) {
-            const q = encodeURIComponent(`trashed = false and name contains '${type}_'`);
-            const fields = encodeURIComponent('files(id,name,mimeType,createdTime)');
-            const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=${fields}&pageSize=100&orderBy=createdTime%20desc`, {
-                headers: {Authorization: `Bearer ${accessToken}`}
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error?.message || 'Drive images load nahi hui');
-            return data.files || [];
-        }
-
-        const savedImageObjectUrls = {};
-        function setImageControls(type, hasImage) {
-            document.getElementById(`${type}-upload-first`).classList.toggle('hidden', hasImage);
-            document.getElementById(`${type}-edit`).classList.toggle('hidden', !hasImage);
-        }
-        async function showDriveImage(type, file) {
-            const display = document.getElementById(type === 'qr' ? 'qr-display' : 'wa-display');
-            display.replaceChildren();
-            if (savedImageObjectUrls[type]) { URL.revokeObjectURL(savedImageObjectUrls[type]); delete savedImageObjectUrls[type]; }
-            if (!file) { display.textContent = 'Abhi image upload nahi hai.'; setImageControls(type,false); return; }
-            setImageControls(type,true);
-            const img = document.createElement('img');
-            img.alt = type === 'qr' ? 'Payment QR code' : 'WhatsApp group image';
-            img.className = 'media-image';
-            display.textContent = 'Image load ho rahi hai…';
-            try {
-                const res = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?alt=media`, {
-                    headers: {Authorization: `Bearer ${accessToken}`}
-                });
-                if (!res.ok) { const error = await res.json(); throw new Error(error.error?.message || 'Image download nahi hui'); }
-                savedImageObjectUrls[type] = URL.createObjectURL(await res.blob());
-                img.src = savedImageObjectUrls[type];
-                display.replaceChildren(img);
-            } catch (err) {
-                // Public thumbnail fallback lets the image render even if Drive media API blocks this browser.
-                img.referrerPolicy = 'no-referrer';
-                img.src = `https://drive.google.com/thumbnail?id=${encodeURIComponent(file.id)}&sz=w1200`;
-                img.onerror = () => { display.textContent = 'Image load nahi hui. Drive mein image sharing “Anyone with the link” par check karein.'; };
-                display.replaceChildren(img);
-                console.warn(type + ' image download failed:', err.message);
-            }
-        }
-
-        async function loadSavedImages() {
-            for (const type of ['qr']) {
-                try { const files = await listSavedImages(type); await showDriveImage(type, files[0] || null); }
-                catch (err) { console.warn(type + ' image load failed:', err.message); }
-            }
+                await loadAllData();
+                showMessage('Tower add ho gaya.');
+            } catch (err) { showMessage('Tower save nahi hua: ' + err.message, true); }
         }
 
         async function uploadImage(event, type) {
-            const file = event.target.files?.[0]; if (!file) return;
-            showMessage('Image upload ho rahi hai…');
-            const previousFiles = await listSavedImages(type).catch(() => []);
-            const metadata = {name: `${type}_${Date.now()}_${file.name}`, mimeType: file.type};
-            const form = new FormData();
-            form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
-            form.append('file', file);
-            try {
-                const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name', {
-                    method: 'POST', headers: {Authorization: `Bearer ${accessToken}`}, body: form
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error?.message || 'Drive upload fail hua');
-                const permissionRes = await fetch(`https://www.googleapis.com/drive/v3/files/${data.id}/permissions`, {
-                    method: 'POST', headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
-                    body: JSON.stringify({role: 'reader', type: 'anyone'})
-                });
-                if (!permissionRes.ok) {
-                    const permissionError = await permissionRes.json();
-                    throw new Error(permissionError.error?.message || 'Image permission set nahi hui');
+            const file = event.target.files[0];
+            if (!file) return;
+            const fileReader = new FileReader();
+            fileReader.onload = async function() {
+                try {
+                    const imgData = fileReader.result;
+                    const key = `${type}-${Date.now()}`;
+                    localStorage.setItem(key, imgData);
+                    const img = document.createElement('img');
+                    img.src = imgData;
+                    img.className = 'media-image';
+                    const display = document.getElementById('qr-display');
+                    display.innerHTML = '';
+                    display.appendChild(img);
+                    document.getElementById('qr-edit').classList.remove('hidden');
+                } catch (err) {
+                    showMessage('Image upload failed: ' + err.message, true);
                 }
-                for (const oldFile of previousFiles) {
-                    try { await fetch(`https://www.googleapis.com/drive/v3/files/${oldFile.id}`, {method:'DELETE',headers:{Authorization:`Bearer ${accessToken}`}}); }
-                    catch (cleanupError) { console.warn('Old image cleanup skipped:', cleanupError.message); }
-                }
-                await loadSavedImages();
-                showMessage('Image upload ho gayi aur display mein load kar di.');
-            } catch (err) { showMessage('Upload error: ' + err.message, true); }
-            finally { event.target.value = ''; }
+            };
+            fileReader.readAsDataURL(file);
         }
 
-        async function deleteSavedImage(type) {
-            if (!confirm(`${type === 'qr' ? 'QR' : 'WhatsApp'} ki saved image delete kar dein?`)) return;
-            try {
-                const files = await listSavedImages(type);
-                for (const file of files) {
-                    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}`, {method: 'DELETE', headers: {Authorization: `Bearer ${accessToken}`}});
-                    if (!res.ok) { const data = await res.json(); throw new Error(data.error?.message || 'Image delete nahi hui'); }
-                }
-                await showDriveImage(type, null);
-                showMessage('Image delete ho gayi.');
-            } catch (err) { showMessage(err.message, true); }
+        function loadSavedImages() {
+            const qrData = localStorage.getItem('qr-landing');
+            if (qrData) {
+                const img = document.createElement('img');
+                img.src = qrData;
+                img.className = 'media-image';
+                document.getElementById('qr-display').appendChild(img);
+                document.getElementById('qr-edit').classList.remove('hidden');
+            }
         }
 
+        document.addEventListener('DOMContentLoaded', () => {
+            const qrInput = document.getElementById('qr-upload');
+            if (qrInput) {
+                qrInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        const data = reader.result;
+                        localStorage.setItem('qr-landing', data);
+                        const img = document.createElement('img');
+                        img.src = data;
+                        img.className = 'media-image';
+                        const display = document.getElementById('qr-display');
+                        display.innerHTML = '';
+                        display.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const hasInitialRows = document.querySelectorAll('#order-items-container .order-item-row').length > 0;
+            if (!hasInitialRows) addOrderItemRow();
+        });
     </script>
 </body>
 </html>
