@@ -69,7 +69,24 @@
                         <h3>Is Mahine ki Sales</h3>
                         <p id="month-sales">₹0</p>
                     </div>
+                    <div class="stat-box">
+                        <h3>Aaj ki Purchases</h3>
+                        <p id="today-purchases">₹0</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Aaj ka Net (Sales − Purchases)</h3>
+                        <p id="today-net">₹0</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Is Mahine ki Purchases</h3>
+                        <p id="month-purchases">₹0</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Is Mahine ka Net (Sales − Purchases)</h3>
+                        <p id="month-net">₹0</p>
+                    </div>
                 </div>
+                <p style="font-size:12px;color:#666;margin:-5px 2px 15px">Net sirf recorded sales minus recorded purchases hai; baaki kharche aur bacha hua stock ismein shamil nahi hain.</p>
                 <div class="card">
                     <h3>Quick Actions</h3>
                     <button class="btn" onclick="switchTab('new-order')">Naya Order</button>
@@ -84,9 +101,19 @@
                 <div class="card">
                     <label>Society</label>
                     <select id="order-society" onchange="populateTowers()"></select>
+                    <button type="button" class="btn btn-secondary btn-small" onclick="toggleOrderAddForm('society')">+ Nayi Society</button>
+                    <div id="order-add-society-form" class="hidden" style="margin:8px 0 14px">
+                        <input type="text" id="order-new-society-name" placeholder="Nayi society ka naam">
+                        <button type="button" class="btn btn-small" onclick="addSocietyFromOrder()">Society Save Karein</button>
+                    </div>
 
                     <label>Tower</label>
                     <select id="order-tower"></select>
+                    <button type="button" class="btn btn-secondary btn-small" onclick="toggleOrderAddForm('tower')">+ Naya Tower</button>
+                    <div id="order-add-tower-form" class="hidden" style="margin:8px 0 14px">
+                        <input type="text" id="order-new-tower-name" placeholder="Tower jaise A, B, 1">
+                        <button type="button" class="btn btn-small" onclick="addTowerFromOrder()">Tower Save Karein</button>
+                    </div>
 
                     <div class="flex-row">
                         <div>
@@ -294,15 +321,18 @@
 
         // --- API CALLS ---
         async function fetchSheetData(tabName) {
-            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${tabName}`, {
+            const range = encodeURIComponent(`'${tabName}'!A:Z`);
+            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}`, {
                 headers: { Authorization: `Bearer ${accessToken}` }
             });
             const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || `Could not read ${tabName}`);
             return data.values || [];
         }
 
         async function appendSheetData(tabName, values) {
-            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${tabName}:append?valueInputOption=USER_ENTERED`, {
+            const range = encodeURIComponent(`'${tabName}'!A:Z`);
+            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}:append?valueInputOption=USER_ENTERED`, {
                 method: 'POST',
                 headers: { 
                     Authorization: `Bearer ${accessToken}`,
@@ -310,8 +340,9 @@
                 },
                 body: JSON.stringify({ values: [values] })
             });
-            if (!res.ok) throw new Error(`Failed to save to ${tabName}`);
-            return await res.json();
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || `Failed to save to ${tabName}`);
+            return data;
         }
 
         // --- DATA LOADING ---
@@ -345,36 +376,42 @@
 
         // --- HOME DASHBOARD ---
         function renderDashboard() {
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-
+            const now = new Date();
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
             let todayOrders = 0, todaySales = 0, monthOrders = 0, monthSales = 0;
+            let todayPurchases = 0, monthPurchases = 0;
 
             sheetData.Orders.forEach(order => {
-                // order[1] is Date & Time, order[11] is Final Total
                 if (order.length < 12) return;
-                const orderDate = parseSheetDate(order[1]);
-                if (isNaN(orderDate)) return;
-                const total = parseFloat(order[11]) || 0;
-
-                if (orderDate >= today) {
-                    todayOrders++;
-                    todaySales += total;
-                }
-                if (orderDate >= startOfMonth) {
-                    monthOrders++;
-                    monthSales += total;
-                }
+                const date = parseSheetDate(order[1]);
+                if (!date) return;
+                const total = Number(order[11]) || 0;
+                if (date >= todayStart) { todayOrders++; todaySales += total; }
+                if (date >= monthStart) { monthOrders++; monthSales += total; }
+            });
+            sheetData.Purchases.forEach(purchase => {
+                const date = parseSheetDate(purchase[1]);
+                if (!date) return;
+                const total = Number(purchase[2]) || 0;
+                if (date >= todayStart) todayPurchases += total;
+                if (date >= monthStart) monthPurchases += total;
             });
 
+            const money = value => '₹' + value.toLocaleString('en-IN', {maximumFractionDigits: 2});
             document.getElementById('today-orders').innerText = todayOrders;
-            document.getElementById('today-sales').innerText = '₹' + todaySales;
+            document.getElementById('today-sales').innerText = money(todaySales);
             document.getElementById('month-orders').innerText = monthOrders;
-            document.getElementById('month-sales').innerText = '₹' + monthSales;
+            document.getElementById('month-sales').innerText = money(monthSales);
+            document.getElementById('today-purchases').innerText = money(todayPurchases);
+            document.getElementById('month-purchases').innerText = money(monthPurchases);
+            const todayNet = todaySales - todayPurchases;
+            const monthNet = monthSales - monthPurchases;
+            document.getElementById('today-net').innerText = `${todayNet < 0 ? '−' : '+'}${money(Math.abs(todayNet))} ${todayNet < 0 ? '(Loss)' : '(Surplus)'}`;
+            document.getElementById('month-net').innerText = `${monthNet < 0 ? '−' : '+'}${money(Math.abs(monthNet))} ${monthNet < 0 ? '(Loss)' : '(Surplus)'}`;
         }
 
-        // --- NAVIGATION ---
+                // --- NAVIGATION ---
         function switchTab(tabId) {
             document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
@@ -395,7 +432,7 @@
         function populateDropdowns() {
             const socSelect = document.getElementById('order-society');
             const manSocSelect = document.getElementById('manage-society');
-            socSelect.innerHTML = '<option value="">Select Society</option>';
+            socSelect.innerHTML = `<option value="">${sheetData.Societies.length ? 'Select Society' : 'No societies loaded'}</option>`;
             manSocSelect.innerHTML = '<option value="">Select Society</option>';
 
             sheetData.Societies.forEach(soc => {
@@ -740,6 +777,46 @@
                 row.append(title, detail);
                 container.appendChild(row);
             });
+        }
+
+        function toggleOrderAddForm(type) {
+            if (type === 'tower' && !document.getElementById('order-society').value) {
+                showMessage('Pehle Society select karein.', true);
+                return;
+            }
+            document.getElementById(`order-add-${type}-form`).classList.toggle('hidden');
+        }
+
+        async function addSocietyFromOrder() {
+            const name = document.getElementById('order-new-society-name').value.trim();
+            if (!name) { showMessage('Society name bharein.', true); return; }
+            const id = 'SOC-' + Date.now();
+            try {
+                await appendSheetData('Societies', [id, name, 'TRUE', formatDateTimeForSheet()]);
+                await loadAllData();
+                document.getElementById('order-society').value = id;
+                populateTowers();
+                document.getElementById('order-new-society-name').value = '';
+                document.getElementById('order-add-society-form').classList.add('hidden');
+                showMessage('Society add ho gayi. Ab Tower add kar sakte hain.');
+            } catch (err) { showMessage('Society add nahi hui: ' + err.message, true); }
+        }
+
+        async function addTowerFromOrder() {
+            const societyId = document.getElementById('order-society').value;
+            const name = document.getElementById('order-new-tower-name').value.trim();
+            if (!societyId || !name) { showMessage('Society select karein aur Tower name bharein.', true); return; }
+            const id = 'TWR-' + Date.now();
+            try {
+                await appendSheetData('Towers', [id, societyId, name, 'TRUE', formatDateTimeForSheet()]);
+                await loadAllData();
+                document.getElementById('order-society').value = societyId;
+                populateTowers();
+                document.getElementById('order-tower').value = id;
+                document.getElementById('order-new-tower-name').value = '';
+                document.getElementById('order-add-tower-form').classList.add('hidden');
+                showMessage('Tower add ho gaya aur select bhi ho gaya.');
+            } catch (err) { showMessage('Tower add nahi hua: ' + err.message, true); }
         }
 
         // --- MANAGE SOCIETY/TOWER ---
