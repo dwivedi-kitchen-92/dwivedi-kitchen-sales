@@ -128,7 +128,6 @@
         .btn-purchase {
             background: linear-gradient(135deg, #1d4d3d 0%, #173d30 100%);
         }
-
         .btn-danger {
             background: linear-gradient(135deg, #e96d5b 0%, #cc4a3d 100%);
         }
@@ -869,10 +868,8 @@
     <!-- Main App -->
     <div id="app-view" class="hidden app-locked">
         <div class="container">
-            <!-- Global Messages -->
             <div id="global-msg" class="message"></div>
 
-            <!-- HOME -->
             <div id="home" class="view active">
                 <h2>Dashboard</h2>
                 <div class="grid-2" style="margin-bottom: 15px;">
@@ -911,19 +908,24 @@
                 </div>
             </div>
 
-            <!-- NEW ORDER -->
             <div id="new-order" class="view">
                 <h2>Naya Order</h2>
                 <div class="card">
                     <label>Society</label>
-                    <div class="select-with-action"><select id="order-society" onchange="populateTowers()"></select><button type="button" class="btn btn-secondary btn-small" onclick="toggleOrderAddForm('society')">+ Society</button></div>
+                    <div class="select-with-action">
+                        <select id="order-society" onchange="populateTowers()"></select>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleOrderAddForm('society')">+ Society</button>
+                    </div>
                     <div id="order-add-society-form" class="hidden" style="margin:8px 0 14px">
                         <input type="text" id="order-new-society-name" placeholder="Nayi society ka naam">
                         <button type="button" class="btn btn-small" onclick="addSocietyFromOrder()">Society Save Karein</button>
                     </div>
 
                     <label>Tower</label>
-                    <div class="select-with-action"><select id="order-tower"></select><button type="button" class="btn btn-secondary btn-small" onclick="toggleOrderAddForm('tower')">+ Tower</button></div>
+                    <div class="select-with-action">
+                        <select id="order-tower"></select>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleOrderAddForm('tower')">+ Tower</button>
+                    </div>
                     <div id="order-add-tower-form" class="hidden" style="margin:8px 0 14px">
                         <input type="text" id="order-new-tower-name" placeholder="Tower jaise A, B, 1">
                         <button type="button" class="btn btn-small" onclick="addTowerFromOrder()">Tower Save Karein</button>
@@ -960,37 +962,36 @@
                     <div id="order-items-container"></div>
                     <button class="btn btn-secondary btn-small" onclick="addOrderItemRow()">+ Add Item</button>
 
-                    <div class="order-total-bar"><span>Total Qty: <strong id="order-total-qty">0</strong></span><span>Final Total: <strong>₹<span id="order-total-amount">0</span></strong></span></div>
+                    <div class="order-total-bar">
+                        <span>Total Qty: <strong id="order-total-qty">0</strong></span>
+                        <span>Final Total: <strong>₹<span id="order-total-amount">0</span></strong></span>
+                    </div>
                     <button class="btn" onclick="saveOrder()" style="margin-top: 15px;">Save Order</button>
                 </div>
             </div>
 
-            <!-- ORDERS LIST -->
             <div id="orders" class="view">
                 <h2>Orders History</h2>
                 <div id="orders-list"></div>
             </div>
 
-            <!-- PURCHASE -->
             <div id="purchase" class="view">
                 <h2>New Purchase</h2>
                 <div class="card">
                     <div id="purchase-items-container"></div>
                     <button class="btn btn-secondary btn-small" onclick="addPurchaseItemRow()">+ Add Purchase Item</button>
-                    <div style="margin-top: 20px; text-align: right; font-size: 18px; ">
+                    <div style="margin-top: 20px; text-align: right; font-size: 18px;">
                         <strong>Total Purchase: ₹<span id="purchase-total-amount">0</span></strong>
                     </div>
                     <button class="btn" onclick="savePurchase()" style="margin-top: 15px;">Save Purchase</button>
                 </div>
             </div>
 
-            <!-- PURCHASE HISTORY -->
             <div id="purchases" class="view">
                 <h2>Purchase History</h2>
                 <div id="purchase-history-list"></div>
             </div>
 
-            <!-- MENU (accessible from More) -->
             <div id="menu" class="view">
                 <h2>Menu Items</h2>
                 <div id="menu-list" class="card"></div>
@@ -1006,7 +1007,6 @@
                 </div>
             </div>
 
-            <!-- MANAGE SOCIETY/TOWER -->
             <div id="manage" class="view">
                 <h2>Society / Tower Setup</h2>
                 <div class="card">
@@ -1026,7 +1026,6 @@
                 </div>
             </div>
 
-            <!-- MORE (Images) -->
             <div id="more" class="view">
                 <h2>More Settings</h2>
                 <div class="card">
@@ -1036,27 +1035,36 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="media-card-head"><h3>Payment QR Code</h3><div class="media-actions"><button id="qr-upload-first" type="button" class="btn btn-secondary media-upload-trigger" onclick="document.getElementById('qr-upload').click()">Upload</button><button id="qr-edit" type="button" class="icon-btn hidden" aria-label="QR image edit" title="QR image change" onclick="document.getElementById('qr-upload').click()">✏️</button></div></div>
+                    <div class="media-card-head">
+                        <h3>Payment QR Code</h3>
+                        <div class="media-actions">
+                            <button id="qr-upload-first" type="button" class="btn btn-secondary media-upload-trigger" onclick="document.getElementById('qr-upload').click()">Upload</button>
+                            <button id="qr-edit" type="button" class="icon-btn hidden" aria-label="QR image edit" title="QR image change" onclick="document.getElementById('qr-upload').click()">✏️</button>
+                        </div>
+                    </div>
                     <div id="qr-display" style="text-align:center"></div>
                     <input type="file" id="qr-upload" class="hidden" accept="image/*" onchange="uploadImage(event, 'qr')">
                 </div>
             </div>
-
         </div>
 
-        <!-- Full-page edit form: opens as one sheet, updates preview fields/totals live. -->
         <div id="edit-overlay" class="edit-overlay" onclick="if(event.target===this)closeRecordEditor()">
             <section class="edit-dialog" role="dialog" aria-modal="true" aria-labelledby="edit-title">
-                <div class="edit-head"><h2 id="edit-title">Edit record</h2><button type="button" class="icon-btn" aria-label="Close" onclick="closeRecordEditor()">✕</button></div>
+                <div class="edit-head">
+                    <h2 id="edit-title">Edit record</h2>
+                    <button type="button" class="icon-btn" aria-label="Close" onclick="closeRecordEditor()">✕</button>
+                </div>
                 <form id="edit-form" onsubmit="saveRecordEditor(event)">
                     <div id="edit-body" class="edit-body"></div>
                     <div id="edit-error" class="edit-error" role="alert"></div>
-                    <div class="edit-foot"><button type="button" class="btn btn-secondary" onclick="closeRecordEditor()">Cancel</button><button id="edit-save-btn" type="submit" class="btn">Save changes</button></div>
+                    <div class="edit-foot">
+                        <button type="button" class="btn btn-secondary" onclick="closeRecordEditor()">Cancel</button>
+                        <button id="edit-save-btn" type="submit" class="btn">Save changes</button>
+                    </div>
                 </form>
             </section>
         </div>
 
-        <!-- Navigation -->
         <nav class="nav" aria-label="Main navigation">
             <button class="nav-btn active" data-tab="home" onclick="switchTab('home')"><span class="nav-icon">⌂</span><span>Home</span></button>
             <button class="nav-btn" data-tab="orders" onclick="switchTab('orders')"><span class="nav-icon">▤</span><span>Orders</span></button>
@@ -1066,7 +1074,6 @@
     </div>
 
     <script>
-        // CONFIGURATION
         const CLIENT_ID = '91521766084-r2ekts6unmvvnh0ho640qh7vjvbem10v.apps.googleusercontent.com';
         const SPREADSHEET_ID = '1kRoEzjDq2r9HCA58ehasg_6lFYeDJzo-ze4qlXrEggc';
         const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
@@ -1083,12 +1090,19 @@
             PurchaseItems: []
         };
         let menuItemsData = [];
+        let recordEditorState = null;
 
         function formatDateTimeForSheet(date = new Date()) {
             const parts = new Intl.DateTimeFormat('en-GB', {
-                timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric',
-                hour: 'numeric', minute: '2-digit', hour12: true
+                timeZone: 'Asia/Kolkata',
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
             }).formatToParts(date);
+
             const p = Object.fromEntries(parts.map(part => [part.type, part.value]));
             const month = p.month.charAt(0).toUpperCase() + p.month.slice(1).toLowerCase();
             return `${p.day}-${month}-${p.year} ${p.hour}:${p.minute} ${p.dayPeriod.toUpperCase()}`;
@@ -1190,7 +1204,8 @@
             const lastColumn = String.fromCharCode(64 + values.length);
             const range = encodeURIComponent(`'${tabName}'!A${rowNumber}:${lastColumn}${rowNumber}`);
             const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}?valueInputOption=USER_ENTERED`, {
-                method: 'PUT', headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
+                method: 'PUT',
+                headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
                 body: JSON.stringify({values: [values]})
             });
             const data = await res.json();
@@ -1204,51 +1219,166 @@
             const sheetId = await sheetIdFor(tabName);
             const requests = uniqueRows.map(rowNumber => ({deleteDimension: {range: {sheetId, dimension: 'ROWS', startIndex: rowNumber - 1, endIndex: rowNumber}}}));
             const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`, {
-                method: 'POST', headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
+                method: 'POST',
+                headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
                 body: JSON.stringify({requests})
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error?.message || `Delete ${tabName} mein nahi hua`);
+            return data;
         }
 
         function actionButtons(editHandler, deleteHandler, id) {
-            return `<div class="record-actions"><button type="button" class="icon-btn" aria-label="Edit" title="Edit" onclick="${editHandler}('${id}')">✏️</button><button type="button" class="icon-btn delete" aria-label="Delete" title="Delete" onclick="${deleteHandler}('${id}')">🗑️</button></div>`;
+            return `<div class="record-actions">
+                <button type="button" class="icon-btn" aria-label="Edit" title="Edit" onclick="${editHandler}('${id}')">✏️</button>
+                <button type="button" class="icon-btn delete" aria-label="Delete" title="Delete" onclick="${deleteHandler}('${id}')">🗑️</button>
+            </div>`;
         }
 
-        let recordEditorState = null;
         function escapeHtml(value) {
-            return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[char]));
+            return String(value ?? '').replace(/[&<>\"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[char]));
         }
+
         function editField(label, key, value, type = 'text', wide = false) {
-            return `<div class="${wide ? 'wide' : ''}"><label>${label}</label><input data-edit-field="${key}" type="${type}" value="${escapeHtml(value)}"></div>`;
+            return `<div class="${wide ? 'wide' : ''}">
+                <label>${label}</label>
+                <input data-edit-field="${key}" type="${type}" value="${escapeHtml(value)}">
+            </div>`;
         }
+
         function renderEditorItemRow(type, item = {}) {
-            if (type === 'purchase') return `<div class="edit-item-row purchase"><input data-item-name value="${escapeHtml(item.name)}" aria-label="Item name" placeholder="Purchase item"><input data-item-price type="number" min="0" step="0.01" value="${escapeHtml(item.price ?? '')}" aria-label="Purchase amount" placeholder="Price"><button type="button" class="icon-btn delete" onclick="removeEditorItem(this)" aria-label="Remove item">×</button></div>`;
-            return `<div class="edit-item-row"><input data-item-name value="${escapeHtml(item.name)}" aria-label="Menu item" placeholder="Menu item"><input data-item-qty type="number" min="1" step="1" value="${escapeHtml(item.qty ?? 1)}" aria-label="Quantity" placeholder="Qty"><input data-item-price type="number" min="0" step="0.01" value="${escapeHtml(item.price ?? '')}" aria-label="Unit price" placeholder="Price"><button type="button" class="icon-btn delete" onclick="removeEditorItem(this)" aria-label="Remove item">×</button></div>`;
+            if (type === 'purchase') {
+                return `<div class="edit-item-row purchase">
+                    <input data-item-name value="${escapeHtml(item.name)}" aria-label="Item name" placeholder="Purchase item">
+                    <input data-item-price type="number" min="0" step="0.01" value="${escapeHtml(item.price ?? '')}" aria-label="Purchase amount" placeholder="Price">
+                    <button type="button" class="icon-btn delete" onclick="removeEditorItem(this)" aria-label="Remove item">×</button>
+                </div>`;
+            }
+            return `<div class="edit-item-row">
+                <input data-item-name value="${escapeHtml(item.name)}" aria-label="Menu item" placeholder="Menu item">
+                <input data-item-qty type="number" min="1" step="1" value="${escapeHtml(item.qty ?? 1)}" aria-label="Quantity" placeholder="Qty">
+                <input data-item-price type="number" min="0" step="0.01" value="${escapeHtml(item.price ?? '')}" aria-label="Unit price" placeholder="Price">
+                <button type="button" class="icon-btn delete" onclick="removeEditorItem(this)" aria-label="Remove item">×</button>
+            </div>`;
         }
+
         function openRecordEditor(type, id) {
             const groups = {order:'Orders', purchase:'Purchases', menu:'Menu', society:'Societies'};
             const rows = sheetData[groups[type]] || [];
             const index = rows.findIndex(row => row[0] === id);
             if (index < 0) return;
+
             const row = [...rows[index]];
             let items = [];
-            if (type === 'order') items = sheetData.OrderItems.filter(item => item[1] === id).map(item => ({name:item[2],qty:item[3],price:item[4]}));
-            if (type === 'purchase') items = sheetData.PurchaseItems.filter(item => item[1] === id).map(item => ({name:item[3],price:item[4]}));
-            const titles = {order:'Edit order',purchase:'Edit purchase',menu:'Edit menu item',society:'Edit society & towers'};
-            document.getElementById('edit-title').textContent = titles[type];
-            recordEditorState = {type,id,index,row};
-            let body = '';
+
             if (type === 'order') {
-                body = `<div class="edit-grid">${editField('Date & time','dateTime',row[1],'text',true)}${editField('Society','society',row[2])}${editField('Tower','tower',row[3])}${editField('Flat number','flat',row[4])}${editField('Floor','floor',row[5])}${editField('Extra address','address',row[6],'text',true)}${editField('Customer name','customer',row[7])}${editField('Contact no.','contact',row[8])}</div><div class="edit-items"><strong>Order items</strong><div class="edit-item-head"><span>Item</span><span>Qty</span><span>Price ₹</span><span></span></div><div id="editor-item-list">${items.map(item => renderEditorItemRow('order', item)).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorItem('order')">+ Add item</button><div class="edit-live-total"><span>Total Qty: <b id="editor-qty">0</b></span><span>Total: <b id="editor-total">₹0</b></span></div></div>`;
+                items = sheetData.OrderItems.filter(item => item[1] === id).map(item => ({
+                    name: item[2],
+                    qty: item[3],
+                    price: item[4]
+                }));
+            }
+
+            if (type === 'purchase') {
+                items = sheetData.PurchaseItems.filter(item => item[1] === id).map(item => ({
+                    name: item[3],
+                    price: item[4]
+                }));
+            }
+
+            const titles = {
+                order: 'Edit order',
+                purchase: 'Edit purchase',
+                menu: 'Edit menu item',
+                society: 'Edit society & towers'
+            };
+
+            document.getElementById('edit-title').textContent = titles[type];
+            recordEditorState = {type, id, index, row};
+
+            let body = '';
+
+            if (type === 'order') {
+                body = `
+                    <div class="edit-grid">
+                        ${editField('Date & time', 'dateTime', row[1], 'text', true)}
+                        ${editField('Society', 'society', row[2])}
+                        ${editField('Tower', 'tower', row[3])}
+                        ${editField('Flat number', 'flat', row[4])}
+                        ${editField('Floor', 'floor', row[5])}
+                        ${editField('Extra address', 'address', row[6], 'text', true)}
+                        ${editField('Customer name', 'customer', row[7])}
+                        ${editField('Contact no.', 'contact', row[8])}
+                    </div>
+                    <div class="edit-items">
+                        <strong>Order items</strong>
+                        <div class="edit-item-head">
+                            <span>Item</span>
+                            <span>Qty</span>
+                            <span>Price ₹</span>
+                            <span></span>
+                        </div>
+                        <div id="editor-item-list">
+                            ${items.map(item => renderEditorItemRow('order', item)).join('')}
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="addEditorItem('order')">+ Add item</button>
+                        <div class="edit-live-total">
+                            <span>Total Qty: <b id="editor-qty">0</b></span>
+                            <span>Total: <b id="editor-total">₹0</b></span>
+                        </div>
+                    </div>
+                `;
             } else if (type === 'purchase') {
-                body = `${editField('Date & time','dateTime',row[1],'text',true)}<div class="edit-items"><strong>Purchase items</strong><div class="edit-item-head purchase"><span>Item</span><span>Amount ₹</span><span></span></div><div id="editor-item-list">${items.map(item => renderEditorItemRow('purchase', item)).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorItem('purchase')">+ Add item</button><div class="edit-live-total"><span>Item count: <b id="editor-qty">0</b></span><span>Total: <b id="editor-total">₹0</b></span></div></div>`;
+                body = `
+                    ${editField('Date & time', 'dateTime', row[1], 'text', true)}
+                    <div class="edit-items">
+                        <strong>Purchase items</strong>
+                        <div class="edit-item-head purchase">
+                            <span>Item</span>
+                            <span>Amount ₹</span>
+                            <span></span>
+                        </div>
+                        <div id="editor-item-list">
+                            ${items.map(item => renderEditorItemRow('purchase', item)).join('')}
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="addEditorItem('purchase')">+ Add item</button>
+                        <div class="edit-live-total">
+                            <span>Item count: <b id="editor-qty">0</b></span>
+                            <span>Total: <b id="editor-total">₹0</b></span>
+                        </div>
+                    </div>
+                `;
             } else if (type === 'menu') {
-                body = `<div class="edit-grid">${editField('Item name','name',row[1],'text',true)}<div class="wide"><label>Full details / contents</label><textarea data-edit-field="details" rows="3">${escapeHtml(row[2])}</textarea></div>${editField('Price (₹)','price',row[3],'number')}${editField('Status','active',row[4])}</div>`;
+                body = `
+                    <div class="edit-grid">
+                        ${editField('Item name', 'name', row[1], 'text', true)}
+                        <div class="wide">
+                            <label>Full details / contents</label>
+                            <textarea data-edit-field="details" rows="3">${escapeHtml(row[2])}</textarea>
+                        </div>
+                        ${editField('Price (₹)', 'price', row[3], 'number')}
+                        ${editField('Status', 'active', row[4])}
+                    </div>
+                `;
             } else {
                 const towers = sheetData.Towers.filter(tower => tower[1] === id);
-                body = `${editField('Society name','name',row[1],'text',true)}<div class="edit-items"><strong>Towers</strong><div id="editor-tower-list">${towers.map(tower => `<div class="edit-tower-row"><input data-tower-name value="${escapeHtml(tower[2])}" aria-label="Tower name" placeholder="Tower A"><button type="button" class="icon-btn delete" onclick="this.parentElement.remove()" aria-label="Remove tower">×</button></div>`).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorTower()">+ Add tower</button></div>`;
+                body = `
+                    ${editField('Society name', 'name', row[1], 'text', true)}
+                    <div class="edit-items">
+                        <strong>Towers</strong>
+                        <div id="editor-tower-list">
+                            ${towers.map(tower => `
+                                <div class="edit-tower-row">
+                                    <input data-tower-name value="${escapeHtml(tower[2])}" aria-label="Tower name" placeholder="Tower A">
+                                    <button type="button" class="icon-btn delete" onclick="this.parentElement.remove()" aria-label="Remove tower">×</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="addEditorTower()">+ Add tower</button>
+                    </div>
+                `;
             }
+
             document.getElementById('edit-body').innerHTML = body;
             document.getElementById('edit-error').classList.remove('show');
             document.getElementById('edit-overlay').classList.add('open');
@@ -1256,30 +1386,54 @@
             document.getElementById('edit-body').oninput = updateEditorTotals;
             updateEditorTotals();
         }
+
         function closeRecordEditor() {
             document.getElementById('edit-overlay').classList.remove('open');
             document.body.style.overflow = '';
             recordEditorState = null;
         }
+
         document.addEventListener('keydown', event => {
             if (event.key === 'Escape' && document.getElementById('edit-overlay').classList.contains('open')) closeRecordEditor();
         });
+
         function addEditorItem(type) {
-            document.getElementById('editor-item-list').insertAdjacentHTML('beforeend', renderEditorItemRow(type));
+            const container = document.getElementById('editor-item-list');
+            if (!container) return;
+            container.insertAdjacentHTML('beforeend', renderEditorItemRow(type));
             updateEditorTotals();
         }
-        function removeEditorItem(button) { button.closest('.edit-item-row').remove(); updateEditorTotals(); }
+
+        function removeEditorItem(button) {
+            button.closest('.edit-item-row').remove();
+            updateEditorTotals();
+        }
+
         function addEditorTower() {
-            document.getElementById('editor-tower-list').insertAdjacentHTML('beforeend', `<div class="edit-tower-row"><input data-tower-name aria-label="Tower name" placeholder="Tower A"><button type="button" class="icon-btn delete" onclick="this.parentElement.remove()" aria-label="Remove tower">×</button></div>`);
+            document.getElementById('editor-tower-list').insertAdjacentHTML('beforeend', `
+                <div class="edit-tower-row">
+                    <input data-tower-name aria-label="Tower name" placeholder="Tower A">
+                    <button type="button" class="icon-btn delete" onclick="this.parentElement.remove()" aria-label="Remove tower">×</button>
+                </div>
+            `);
         }
+
         function updateEditorTotals() {
-            if (!recordEditorState || !['order','purchase'].includes(recordEditorState.type)) return;
+            if (!recordEditorState || !['order', 'purchase'].includes(recordEditorState.type)) return;
             const rows = [...document.querySelectorAll('#editor-item-list .edit-item-row')];
-            const qty = rows.reduce((sum,item) => sum + (recordEditorState.type === 'order' ? (Number(item.querySelector('[data-item-qty]')?.value) || 0) : 1),0);
-            const total = rows.reduce((sum,item) => sum + (Number(item.querySelector('[data-item-price]')?.value) || 0) * (recordEditorState.type === 'order' ? (Number(item.querySelector('[data-item-qty]')?.value) || 0) : 1),0);
-            document.getElementById('editor-qty').textContent = qty;
-            document.getElementById('editor-total').textContent = '₹' + total.toLocaleString('en-IN',{maximumFractionDigits:2});
+            const qty = rows.reduce((sum, item) => sum + (recordEditorState.type === 'order' ? (Number(item.querySelector('[data-item-qty]')?.value) || 0) : 1), 0);
+            const total = rows.reduce((sum, item) => {
+                const price = Number(item.querySelector('[data-item-price]')?.value) || 0;
+                const quantity = (recordEditorState.type === 'order') ? (Number(item.querySelector('[data-item-qty]')?.value) || 0) : 1;
+                return sum + (price * quantity);
+            }, 0);
+
+            const qtyEl = document.getElementById('editor-qty');
+            const totalEl = document.getElementById('editor-total');
+            if (qtyEl) qtyEl.textContent = qty;
+            if (totalEl) totalEl.textContent = '₹' + total.toLocaleString('en-IN', {maximumFractionDigits: 2});
         }
+
         function getEditorItems(type) {
             return [...document.querySelectorAll('#editor-item-list .edit-item-row')].map(item => ({
                 name: item.querySelector('[data-item-name]')?.value.trim() || '',
@@ -1287,16 +1441,24 @@
                 price: item.querySelector('[data-item-price]')?.value === '' ? NaN : Number(item.querySelector('[data-item-price]')?.value)
             })).filter(item => item.name);
         }
+
         async function saveRecordEditor(event) {
             event.preventDefault();
             if (!recordEditorState) return;
+
             const saveButton = document.getElementById('edit-save-btn');
-            saveButton.disabled = true; saveButton.textContent = 'Saving…';
+            saveButton.disabled = true;
+            saveButton.textContent = 'Saving…';
+
             try {
-                const {type,id,index,row} = recordEditorState;
+                const {type, id, index, row} = recordEditorState;
+
                 if (type === 'order') {
                     const items = getEditorItems(type);
-                    if (!items.length || items.some(item => !Number.isInteger(item.qty) || item.qty < 1 || !Number.isFinite(item.price) || item.price < 0)) throw new Error('Har item ka naam, valid quantity aur price bharna zaroori hai.');
+                    if (!items.length || items.some(item => !Number.isInteger(item.qty) || item.qty < 1 || !Number.isFinite(item.price) || item.price < 0)) {
+                        throw new Error('Har item ka naam, valid quantity aur price bharna zaroori hai.');
+                    }
+
                     row[1] = document.querySelector('[data-edit-field="dateTime"]').value.trim();
                     row[2] = document.querySelector('[data-edit-field="society"]').value.trim();
                     row[3] = document.querySelector('[data-edit-field="tower"]').value.trim();
@@ -1306,20 +1468,33 @@
                     row[7] = document.querySelector('[data-edit-field="customer"]').value.trim();
                     row[8] = document.querySelector('[data-edit-field="contact"]').value.trim();
                     row[9] = items.map(item => `${item.name} (x${item.qty})`).join(', ');
-                    row[10] = items.reduce((sum,item) => sum + item.qty, 0);
-                    row[11] = items.reduce((sum,item) => sum + item.qty * item.price, 0);
-                    const oldRows = sheetData.OrderItems.map((item,i) => item[1] === id ? i + 2 : null).filter(Boolean);
+                    row[10] = items.reduce((sum, item) => sum + item.qty, 0);
+                    row[11] = items.reduce((sum, item) => sum + item.qty * item.price, 0);
+
+                    const oldRows = sheetData.OrderItems.map((item, i) => item[1] === id ? i + 2 : null).filter(Boolean);
                     await deleteDataRows('OrderItems', oldRows);
-                    for (const [i,item] of items.entries()) await appendSheetData('OrderItems', ['ITM-' + Date.now() + '-' + i, id, item.name, item.qty, item.price, item.qty * item.price]);
+
+                    for (const [i, item] of items.entries()) {
+                        await appendSheetData('OrderItems', ['ITM-' + Date.now() + '-' + i, id, item.name, item.qty, item.price, item.qty * item.price]);
+                    }
+
                     await updateDataRow('Orders', index + 2, row);
                 } else if (type === 'purchase') {
                     const items = getEditorItems(type);
-                    if (!items.length || items.some(item => !Number.isFinite(item.price) || item.price < 0)) throw new Error('Har purchase item ka naam aur valid price bharna zaroori hai.');
+                    if (!items.length || items.some(item => !Number.isFinite(item.price) || item.price < 0)) {
+                        throw new Error('Har purchase item ka naam aur valid price bharna zaroori hai.');
+                    }
+
                     row[1] = document.querySelector('[data-edit-field="dateTime"]').value.trim();
-                    row[2] = items.reduce((sum,item) => sum + item.price, 0);
-                    const oldRows = sheetData.PurchaseItems.map((item,i) => item[1] === id ? i + 2 : null).filter(Boolean);
+                    row[2] = items.reduce((sum, item) => sum + item.price, 0);
+
+                    const oldRows = sheetData.PurchaseItems.map((item, i) => item[1] === id ? i + 2 : null).filter(Boolean);
                     await deleteDataRows('PurchaseItems', oldRows);
-                    for (const [i,item] of items.entries()) await appendSheetData('PurchaseItems', ['PITM-' + Date.now() + '-' + i, id, row[1], item.name, item.price]);
+
+                    for (const [i, item] of items.entries()) {
+                        await appendSheetData('PurchaseItems', ['PITM-' + Date.now() + '-' + i, id, row[1], item.name, item.price]);
+                    }
+
                     await updateDataRow('Purchases', index + 2, row);
                 } else if (type === 'menu') {
                     const name = document.querySelector('[data-edit-field="name"]').value.trim();
@@ -1327,21 +1502,37 @@
                     const priceText = document.querySelector('[data-edit-field="price"]').value;
                     const price = Number(priceText);
                     const active = document.querySelector('[data-edit-field="active"]').value;
-                    if (!name || priceText === '' || !Number.isFinite(price) || price < 0) throw new Error('Naam aur valid price bharein.');
-                    row[1] = name; row[2] = details; row[3] = price; row[4] = active; await updateDataRow('Menu', index + 2, row);
+
+                    if (!name || priceText === '' || !Number.isFinite(price) || price < 0) {
+                        throw new Error('Naam aur valid price bharein.');
+                    }
+
+                    row[1] = name;
+                    row[2] = details;
+                    row[3] = price;
+                    row[4] = active;
+                    await updateDataRow('Menu', index + 2, row);
                 } else if (type === 'society') {
                     const name = document.querySelector('[data-edit-field="name"]').value.trim();
-                    const names = [...document.querySelectorAll('[data-tower-name]')].map(input => input.value.trim()).filter(Boolean);
+                    const towerInputs = [...document.querySelectorAll('[data-tower-name]')].map(input => input.value.trim()).filter(Boolean);
+
                     if (!name) throw new Error('Society ka naam bharein.');
-                    row[1] = name; await updateDataRow('Societies', index + 2, row);
-                    const oldRows = sheetData.Towers.map((tower,i) => tower[1] === id ? i + 2 : null).filter(Boolean);
+
+                    row[1] = name;
+                    await updateDataRow('Societies', index + 2, row);
+
+                    const oldRows = sheetData.Towers.map((tower, i) => tower[1] === id ? i + 2 : null).filter(Boolean);
                     await deleteDataRows('Towers', oldRows);
-                    for (const [i,towerName] of names.entries()) await appendSheetData('Towers', ['TWR-' + Date.now() + '-' + i, id, towerName, 'TRUE', formatDateTimeForSheet()]);
+
+                    for (const [i, towerName] of towerInputs.entries()) {
+                        await appendSheetData('Towers', ['TWR-' + Date.now() + '-' + i, id, towerName, 'TRUE', formatDateTimeForSheet()]);
+                    }
                 }
+
                 closeRecordEditor();
                 await loadAllData();
                 showMessage('Changes save ho gaye.');
-            } catch(err) {
+            } catch (err) {
                 const feedback = document.getElementById('edit-error');
                 feedback.textContent = err.message;
                 feedback.classList.add('show');
@@ -1359,7 +1550,7 @@
 
                 tabs.forEach((tab, index) => {
                     let data = results[index];
-                    if (data.length > 0 && (data[0][0] === 'Society ID' || data[0][0] === 'Order ID' || data[0][0] === 'Item ID' || data[0][0] === 'Purchase ID' || data[0][0] === 'Tower ID' || data[0][0] === 'Menu ID')) {
+                    if (data.length > 0 && ['Society ID', 'Order ID', 'Item ID', 'Purchase ID', 'Tower ID', 'Menu ID'].includes(data[0][0])) {
                         data = data.slice(1);
                     }
                     sheetData[tab] = data;
@@ -1382,34 +1573,55 @@
             const now = new Date();
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-            let todayOrders = 0, todaySales = 0, monthOrders = 0, monthSales = 0, monthPurchases = 0;
+
+            let todayOrders = 0;
+            let todaySales = 0;
+            let monthOrders = 0;
+            let monthSales = 0;
+            let monthPurchases = 0;
+
             sheetData.Orders.forEach(order => {
                 if (order.length < 12) return;
                 const date = parseSheetDate(order[1]);
                 if (!date) return;
+
                 const amount = Number(order[11]) || 0;
-                if (date >= todayStart) { todayOrders++; todaySales += amount; }
-                if (date >= monthStart) { monthOrders++; monthSales += amount; }
+                if (date >= todayStart) {
+                    todayOrders++;
+                    todaySales += amount;
+                }
+                if (date >= monthStart) {
+                    monthOrders++;
+                    monthSales += amount;
+                }
             });
+
             sheetData.Purchases.forEach(purchase => {
                 const date = parseSheetDate(purchase[1]);
-                if (date && date >= monthStart) monthPurchases += Number(purchase[2]) || 0;
+                if (date && date >= monthStart) {
+                    monthPurchases += Number(purchase[2]) || 0;
+                }
             });
-            const money = value => '₹' + value.toLocaleString('en-IN', {maximumFractionDigits: 2});
+
+            const money = value => '₹' + value.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+
             document.getElementById('today-orders').innerText = todayOrders;
             document.getElementById('today-sales').innerText = money(todaySales);
             document.getElementById('month-orders').innerText = monthOrders;
             document.getElementById('month-sales').innerText = money(monthSales);
             document.getElementById('month-purchases').innerText = money(monthPurchases);
+
             const monthNet = monthSales - monthPurchases;
-            document.getElementById('month-net').innerText = `${monthNet < 0 ? '−' : '+'}${money(Math.abs(monthNet))}`;
-            document.getElementById('month-net').parentElement.classList.toggle('loss', monthNet < 0);
+            const monthNetValue = document.getElementById('month-net');
+            monthNetValue.innerText = `${monthNet < 0 ? '−' : '₹'}${money(Math.abs(monthNet)).replace('₹', '')}`;
+            monthNetValue.parentElement.classList.toggle('loss', monthNet < 0);
         }
 
         function switchTab(tabId) {
             document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            const activeNavTab = ({purchase: 'purchases', menu: 'more', manage: 'more', 'new-order': 'home'})[tabId] || tabId;
+
+            const activeNavTab = ({ purchase: 'purchases', menu: 'more', manage: 'more', 'new-order': 'home' })[tabId] || tabId;
             document.querySelectorAll('.nav-btn').forEach(button => {
                 button.classList.toggle('active', button.dataset.tab === activeNavTab);
             });
@@ -1431,9 +1643,9 @@
 
             const itemSelectHTML = `<option value="">Choose item</option>` + sheetData.Menu.map(m => `<option value="${m[0]}" data-price="${m[3]}">${m[1]} — ₹${m[3]}</option>`).join('');
             document.querySelectorAll('.order-item-select').forEach(sel => {
-                const val = sel.value;
+                const value = sel.value;
                 sel.innerHTML = itemSelectHTML;
-                sel.value = val;
+                sel.value = value;
                 updateOrderRowPrice(sel);
             });
         }
@@ -1443,6 +1655,7 @@
             const towerSelect = document.getElementById('order-tower');
             towerSelect.innerHTML = '<option value="">Select Tower</option>';
             if (!societyId) return;
+
             sheetData.Towers.forEach(tower => {
                 const active = !tower[3] || ['TRUE', 'ACTIVE'].includes(String(tower[3]).trim().toUpperCase());
                 if (tower[1] === societyId && active) {
@@ -1468,11 +1681,21 @@
             const row = document.createElement('div');
             row.className = 'order-item-row';
             row.innerHTML = `
-                <div><label>Menu item</label><select class="order-item-select" onchange="updateOrderRowPrice(this)">
-                    ${`<option value="">Choose item</option>` + sheetData.Menu.map(m => `<option value="${m[0]}" data-price="${m[3]}">${m[1]} — ₹${m[3]}</option>`).join('')}
-                </select></div>
-                <div><label>Price</label><div class="order-row-price-value">₹—</div></div>
-                <div><label>Qty</label><input type="number" class="order-item-qty" min="1" value="1" oninput="calculateOrderTotals()"></div>
+                <div>
+                    <label>Menu item</label>
+                    <select class="order-item-select" onchange="updateOrderRowPrice(this)">
+                        <option value="">Choose item</option>
+                        ${sheetData.Menu.map(m => `<option value="${m[0]}" data-price="${m[3]}">${m[1]} — ₹${m[3]}</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label>Price</label>
+                    <div class="order-row-price-value">₹—</div>
+                </div>
+                <div>
+                    <label>Qty</label>
+                    <input type="number" class="order-item-qty" min="1" value="1" oninput="calculateOrderTotals()">
+                </div>
                 <button type="button" class="icon-btn delete" aria-label="Remove item" title="Remove item" onclick="this.parentElement.remove(); calculateOrderTotals();">×</button>
             `;
             container.appendChild(row);
@@ -1481,13 +1704,15 @@
         function updateOrderRowPrice(select) {
             const option = select.options[select.selectedIndex];
             const price = select.value ? Number(option.getAttribute('data-price')) : NaN;
-            select.closest('.order-item-row').querySelector('.order-row-price-value').textContent = Number.isFinite(price) ? '₹' + price.toLocaleString('en-IN',{maximumFractionDigits:2}) : '₹—';
+            const valueEl = select.closest('.order-item-row').querySelector('.order-row-price-value');
+            valueEl.textContent = Number.isFinite(price) ? '₹' + price.toLocaleString('en-IN', {maximumFractionDigits: 2}) : '₹—';
             calculateOrderTotals();
         }
 
         function calculateOrderTotals() {
             let totalQty = 0;
             let totalAmount = 0;
+
             document.querySelectorAll('#order-items-container .order-item-row').forEach(row => {
                 const select = row.querySelector('.order-item-select');
                 const qty = parseInt(row.querySelector('.order-item-qty').value) || 0;
@@ -1497,6 +1722,7 @@
                     totalAmount += (price * qty);
                 }
             });
+
             document.getElementById('order-total-qty').innerText = totalQty;
             document.getElementById('order-total-amount').innerText = totalAmount;
         }
@@ -1544,11 +1770,13 @@
             try {
                 const orderRow = [orderId, dateTime, socName, towerName, flat, floor, address, name, contact, items.map(i => i.name + ' (x' + i.qty + ')').join(', '), totalQty, totalAmount];
                 await appendSheetData('Orders', orderRow);
+
                 for (const [index, item] of items.entries()) {
                     const itemId = 'ITM-' + Date.now() + '-' + index;
                     const itemTotal = item.price * item.qty;
                     await appendSheetData('OrderItems', [itemId, orderId, item.name, item.qty, item.price, itemTotal]);
                 }
+
                 showMessage('Order saved successfully!');
                 document.getElementById('order-items-container').innerHTML = '';
                 document.getElementById('order-flat').value = '';
@@ -1568,12 +1796,14 @@
             const container = document.getElementById('orders-list');
             container.innerHTML = '';
             const sortedOrders = sheetData.Orders.map((order, index) => ({order, rowNumber: index + 2})).reverse();
-            sortedOrders.forEach(({order, rowNumber}) => {
+
+            sortedOrders.forEach(({order}) => {
                 if (order.length < 12) return;
                 const orderId = order[0];
                 const lines = sheetData.OrderItems.filter(item => item[1] === orderId);
                 const lineHtml = lines.length ? lines.map(item => `${item[2]} × ${item[3]} — ₹${item[5]}`).join(', ') : (order[9] || 'Item details nahi hain');
                 const contact = order[8] ? ` (${order[8]})` : '';
+
                 container.innerHTML += `<div class="card">
                     <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
                         <div><strong>${orderId}</strong><div style="color:gray;font-size:12px;margin-top:4px">${formatDateTimeForDisplay(order[1])}</div></div>
@@ -1598,16 +1828,23 @@
                 const orderIndex = sheetData.Orders.findIndex(row => row[0] === orderId);
                 await deleteDataRows('OrderItems', itemRows);
                 if (orderIndex >= 0) await deleteDataRows('Orders', [orderIndex + 2]);
-                await loadAllData(); showMessage('Order delete ho gaya.');
+                await loadAllData();
+                showMessage('Order delete ho gaya.');
             } catch (err) { showMessage(err.message, true); }
         }
 
         function renderMenu() {
             const container = document.getElementById('menu-list');
             container.innerHTML = '';
-            sheetData.Menu.forEach((item, index) => {
+
+            sheetData.Menu.forEach(item => {
                 container.innerHTML += `<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:10px 0;border-bottom:1px solid rgba(65,36,22,.08)">
-                    <div><strong>${item[1]}</strong><div style="font-size:12px;color:var(--muted)">${item[2] || ''}</div><strong>₹${item[3]}</strong><div style="font-size:12px;color:var(--muted)">${String(item[4]).toUpperCase() === 'FALSE' ? 'Inactive' : 'Active'}</div></div>
+                    <div>
+                        <strong>${item[1]}</strong>
+                        <div style="font-size:12px;color:var(--muted)">${item[2] || ''}</div>
+                        <strong>₹${item[3]}</strong>
+                        <div style="font-size:12px;color:var(--muted)">${String(item[4]).toUpperCase() === 'FALSE' ? 'Inactive' : 'Active'}</div>
+                    </div>
                     ${actionButtons('editMenuItem','deleteMenuItem',item[0])}
                 </div>`;
             });
@@ -1618,8 +1855,11 @@
         async function deleteMenuItem(itemId) {
             const index = sheetData.Menu.findIndex(row => row[0] === itemId);
             if (index < 0 || !confirm('Menu item delete kar dein? Purane orders ka record bana rahega.')) return;
-            try { await deleteDataRows('Menu', [index + 2]); await loadAllData(); showMessage('Menu item delete ho gaya.'); }
-            catch (err) { showMessage(err.message, true); }
+            try {
+                await deleteDataRows('Menu', [index + 2]);
+                await loadAllData();
+                showMessage('Menu item delete ho gaya.');
+            } catch (err) { showMessage(err.message, true); }
         }
 
         async function addMenuItem() {
@@ -1627,10 +1867,12 @@
             const details = document.getElementById('new-menu-details').value.trim();
             const priceText = document.getElementById('new-menu-price').value;
             const price = Number(priceText);
+
             if (!name || priceText === '' || !Number.isFinite(price) || price < 0) {
                 showMessage('Item ka naam aur valid price bharein.', true);
                 return;
             }
+
             const itemId = 'MENU-' + Date.now();
             try {
                 await appendSheetData('Menu', [itemId, name, details, price, 'TRUE', formatDateTimeForSheet()]);
@@ -1651,9 +1893,12 @@
             const latestItems = new Map();
             sheetData.PurchaseItems.forEach(item => { if (item[3]) latestItems.set(item[3], item[4]); });
             const savedOptions = [...latestItems.entries()].map(([name, price]) => `<option value="${escapeHtml(name)}" data-price="${escapeHtml(price)}">${escapeHtml(name)}</option>`).join('');
+
             row.innerHTML = `
                 <select class="purchase-item-select" aria-label="Purchase item" onchange="togglePurchaseItemName(this)" style="flex:2; min-width:0; margin:0;">
-                    <option value="">Choose saved item</option>${savedOptions}<option value="__NEW_PURCHASE_ITEM__">＋ New item name</option>
+                    <option value="">Choose saved item</option>
+                    ${savedOptions}
+                    <option value="__NEW_PURCHASE_ITEM__">＋ New item name</option>
                 </select>
                 <input type="text" class="purchase-item-name hidden" placeholder="Type new item" aria-label="New purchase item name" style="flex:2; min-width:0; margin:0;">
                 <input type="number" class="purchase-item-price" placeholder="Price ₹" aria-label="Purchase price" min="0" step="0.01" style="flex:1; margin:0; width:80px;" oninput="calculatePurchaseTotals();">
@@ -1667,16 +1912,25 @@
             const customName = row.querySelector('.purchase-item-name');
             const priceInput = row.querySelector('.purchase-item-price');
             const isNew = select.value === '__NEW_PURCHASE_ITEM__';
+
             customName.classList.toggle('hidden', !isNew);
             select.classList.toggle('hidden', isNew);
-            if (isNew) { customName.value = ''; priceInput.value = ''; customName.focus(); }
-            else { priceInput.value = select.value ? (select.selectedOptions[0].dataset.price || '') : ''; }
+
+            if (isNew) {
+                customName.value = '';
+                priceInput.value = '';
+                customName.focus();
+            } else {
+                priceInput.value = select.value ? (select.selectedOptions[0].dataset.price || '') : '';
+            }
             calculatePurchaseTotals();
         }
 
         function getPurchaseItemName(row) {
             const select = row.querySelector('.purchase-item-select');
-            return select.value === '__NEW_PURCHASE_ITEM__' ? row.querySelector('.purchase-item-name').value.trim() : select.value.trim();
+            return select.value === '__NEW_PURCHASE_ITEM__'
+                ? row.querySelector('.purchase-item-name').value.trim()
+                : select.value.trim();
         }
 
         function calculatePurchaseTotals() {
@@ -1709,10 +1963,12 @@
 
             try {
                 await appendSheetData('Purchases', [purchaseId, dateTime, totalAmount]);
+
                 for (const [index, item] of items.entries()) {
                     const itemId = 'PITM-' + Date.now() + '-' + index;
                     await appendSheetData('PurchaseItems', [itemId, purchaseId, dateTime, item.name, item.price]);
                 }
+
                 showMessage('Purchase saved successfully!');
                 document.getElementById('purchase-items-container').innerHTML = '';
                 document.getElementById('purchase-total-amount').innerText = '0';
@@ -1726,11 +1982,13 @@
             const container = document.getElementById('purchase-history-list');
             container.innerHTML = '';
             const sortedPurchases = sheetData.Purchases.map((purchase, index) => ({purchase, rowNumber: index + 2})).reverse();
-            sortedPurchases.forEach(({purchase, rowNumber}) => {
+
+            sortedPurchases.forEach(({purchase}) => {
                 const purchaseId = purchase[0];
                 const lines = sheetData.PurchaseItems.filter(item => item[1] === purchaseId);
                 const lineHtml = lines.length ? lines.map(item => `${item[3]} — ₹${item[4]}`).join(', ') : 'No items';
                 const total = purchase[2] || 0;
+
                 container.innerHTML += `<div class="card">
                     <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
                         <div><strong>${purchaseId}</strong><div style="color:gray;font-size:12px;margin-top:4px">${formatDateTimeForDisplay(purchase[1])}</div></div>
@@ -1753,13 +2011,15 @@
                 const purchaseIndex = sheetData.Purchases.findIndex(row => row[0] === purchaseId);
                 await deleteDataRows('PurchaseItems', itemRows);
                 if (purchaseIndex >= 0) await deleteDataRows('Purchases', [purchaseIndex + 2]);
-                await loadAllData(); showMessage('Purchase delete ho gaya.');
+                await loadAllData();
+                showMessage('Purchase delete ho gaya.');
             } catch (err) { showMessage(err.message, true); }
         }
 
         function renderSocietyTowerList() {
             const container = document.getElementById('society-tower-list');
             container.innerHTML = '';
+
             sheetData.Societies.forEach(soc => {
                 const towers = sheetData.Towers.filter(tower => tower[1] === soc[0] && (!tower[3] || ['TRUE', 'ACTIVE'].includes(String(tower[3]).trim().toUpperCase())));
                 container.innerHTML += `<div class="card" style="margin:0 0 10px;padding:12px;">
@@ -1783,7 +2043,8 @@
                 const societyIndex = sheetData.Societies.findIndex(row => row[0] === societyId);
                 await deleteDataRows('Towers', towerRows);
                 if (societyIndex >= 0) await deleteDataRows('Societies', [societyIndex + 2]);
-                await loadAllData(); showMessage('Society delete ho gaya.');
+                await loadAllData();
+                showMessage('Society delete ho gaya.');
             } catch (err) { showMessage(err.message, true); }
         }
 
@@ -1794,7 +2055,10 @@
 
         async function addSocietyFromOrder() {
             const name = document.getElementById('order-new-society-name').value.trim();
-            if (!name) { showMessage('Society naam bharna zaroori hai.', true); return; }
+            if (!name) {
+                showMessage('Society naam bharna zaroori hai.', true);
+                return;
+            }
             try {
                 const societyId = 'SOC-' + Date.now();
                 await appendSheetData('Societies', [societyId, name, 'TRUE', formatDateTimeForSheet()]);
@@ -1802,13 +2066,18 @@
                 document.getElementById('order-add-society-form').classList.add('hidden');
                 await loadAllData();
                 showMessage('Society add ho gaya.');
-            } catch (err) { showMessage('Society save nahi hua: ' + err.message, true); }
+            } catch (err) {
+                showMessage('Society save nahi hua: ' + err.message, true);
+            }
         }
 
         async function addTowerFromOrder() {
             const societyId = document.getElementById('order-society').value;
             const name = document.getElementById('order-new-tower-name').value.trim();
-            if (!societyId || !name) { showMessage('Society aur Tower naam bharna zaroori hai.', true); return; }
+            if (!societyId || !name) {
+                showMessage('Society aur Tower naam bharna zaroori hai.', true);
+                return;
+            }
             try {
                 const towerId = 'TWR-' + Date.now();
                 await appendSheetData('Towers', [towerId, societyId, name, 'TRUE', formatDateTimeForSheet()]);
@@ -1816,45 +2085,57 @@
                 document.getElementById('order-add-tower-form').classList.add('hidden');
                 await loadAllData();
                 showMessage('Tower add ho gaya.');
-            } catch (err) { showMessage('Tower save nahi hua: ' + err.message, true); }
+            } catch (err) {
+                showMessage('Tower save nahi hua: ' + err.message, true);
+            }
         }
 
         async function addSociety() {
             const name = document.getElementById('new-society-name').value.trim();
-            if (!name) { showMessage('Society naam bharna zaroori hai.', true); return; }
+            if (!name) {
+                showMessage('Society naam bharna zaroori hai.', true);
+                return;
+            }
             try {
                 const societyId = 'SOC-' + Date.now();
                 await appendSheetData('Societies', [societyId, name, 'TRUE', formatDateTimeForSheet()]);
                 document.getElementById('new-society-name').value = '';
                 await loadAllData();
                 showMessage('Society add ho gaya.');
-            } catch (err) { showMessage('Society save nahi hua: ' + err.message, true); }
+            } catch (err) {
+                showMessage('Society save nahi hua: ' + err.message, true);
+            }
         }
 
         async function addTower() {
             const societyId = document.getElementById('manage-society').value;
             const name = document.getElementById('new-tower-name').value.trim();
-            if (!societyId || !name) { showMessage('Society aur Tower naam bharna zaroori hai.', true); return; }
+            if (!societyId || !name) {
+                showMessage('Society aur Tower naam bharna zaroori hai.', true);
+                return;
+            }
             try {
                 const towerId = 'TWR-' + Date.now();
                 await appendSheetData('Towers', [towerId, societyId, name, 'TRUE', formatDateTimeForSheet()]);
                 document.getElementById('new-tower-name').value = '';
                 await loadAllData();
                 showMessage('Tower add ho gaya.');
-            } catch (err) { showMessage('Tower save nahi hua: ' + err.message, true); }
+            } catch (err) {
+                showMessage('Tower save nahi hua: ' + err.message, true);
+            }
         }
 
         async function uploadImage(event, type) {
             const file = event.target.files[0];
             if (!file) return;
-            const fileReader = new FileReader();
-            fileReader.onload = async function() {
+
+            const reader = new FileReader();
+            reader.onload = async function() {
                 try {
-                    const imgData = fileReader.result;
-                    const key = `${type}-${Date.now()}`;
-                    localStorage.setItem(key, imgData);
+                    const data = reader.result;
+                    localStorage.setItem(type === 'qr' ? 'qr-landing' : `${type}-image`, data);
                     const img = document.createElement('img');
-                    img.src = imgData;
+                    img.src = data;
                     img.className = 'media-image';
                     const display = document.getElementById('qr-display');
                     display.innerHTML = '';
@@ -1864,7 +2145,7 @@
                     showMessage('Image upload failed: ' + err.message, true);
                 }
             };
-            fileReader.readAsDataURL(file);
+            reader.readAsDataURL(file);
         }
 
         function loadSavedImages() {
@@ -1873,12 +2154,20 @@
                 const img = document.createElement('img');
                 img.src = qrData;
                 img.className = 'media-image';
-                document.getElementById('qr-display').appendChild(img);
+                const display = document.getElementById('qr-display');
+                display.innerHTML = '';
+                display.appendChild(img);
                 document.getElementById('qr-edit').classList.remove('hidden');
             }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
+            if (document.getElementById('order-items-container')) {
+                if (!document.querySelectorAll('#order-items-container .order-item-row').length) {
+                    addOrderItemRow();
+                }
+            }
+
             const qrInput = document.getElementById('qr-upload');
             if (qrInput) {
                 qrInput.addEventListener('change', (event) => {
@@ -1898,11 +2187,6 @@
                     reader.readAsDataURL(file);
                 });
             }
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const hasInitialRows = document.querySelectorAll('#order-items-container .order-item-row').length > 0;
-            if (!hasInitialRows) addOrderItemRow();
         });
     </script>
 </body>
