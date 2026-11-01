@@ -39,6 +39,14 @@
         .nav-btn.active { background: #fff0f0; color: #d94f59; font-weight: 750; }
         label { display: block; font-weight: 600; margin-top: 7px; }
         .btn-small { display: inline-block; margin: 6px 8px 10px 0; min-height: 38px; }
+        .select-with-action { display: flex; align-items: flex-start; gap: 8px; }
+        .select-with-action select { flex: 1; min-width: 0; }
+        .select-with-action .btn-small { flex: 0 0 auto; white-space: nowrap; margin-top: 5px; }
+        .record-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 10px; }
+        .icon-btn { width: 40px; height: 38px; padding: 0; border: 1px solid #e1e5eb; border-radius: 10px; background: #fff; font-size: 18px; }
+        .icon-btn.delete { color: #c34343; }
+        .purchase-line, .order-line { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:7px 0; border-bottom:1px solid #eee; }
+        .purchase-line:last-child, .order-line:last-child { border-bottom:0; }
         .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .stat-box { min-width: 0; }
         .nav { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
@@ -54,6 +62,9 @@
             .nav-btn { min-height: 54px; font-size: 12px; }
             .nav-btn .nav-icon { font-size: 22px; }
             .flex-row { gap: 8px; }
+            .select-with-action { gap: 6px; }
+            .select-with-action .btn-small { font-size: 12px; padding: 7px 9px; }
+            .icon-btn { width: 42px; min-height: 42px; }
             .flex-row > * { min-width: 0; }
             .item-row { gap: 6px; padding: 7px; }
             .item-row select, .item-row input { min-width: 0; }
@@ -97,14 +108,6 @@
                         <p id="month-sales">₹0</p>
                     </div>
                     <div class="stat-box metric-purchases">
-                        <h3>Aaj ki Purchases</h3>
-                        <p id="today-purchases">₹0</p>
-                    </div>
-                    <div class="stat-box metric-net">
-                        <h3>Aaj ka Net (Sales − Purchases)</h3>
-                        <p id="today-net">₹0</p>
-                    </div>
-                    <div class="stat-box metric-purchases">
                         <h3>Is Mahine ki Purchases</h3>
                         <p id="month-purchases">₹0</p>
                     </div>
@@ -127,16 +130,14 @@
                 <h2>Naya Order</h2>
                 <div class="card">
                     <label>Society</label>
-                    <select id="order-society" onchange="populateTowers()"></select>
-                    <button type="button" class="btn btn-secondary btn-small" onclick="toggleOrderAddForm('society')">+ Nayi Society</button>
+                    <div class="select-with-action"><select id="order-society" onchange="populateTowers()"></select><button type="button" class="btn btn-secondary btn-small" onclick="toggleOrderAddForm('society')">+ Society</button></div>
                     <div id="order-add-society-form" class="hidden" style="margin:8px 0 14px">
                         <input type="text" id="order-new-society-name" placeholder="Nayi society ka naam">
                         <button type="button" class="btn btn-small" onclick="addSocietyFromOrder()">Society Save Karein</button>
                     </div>
 
                     <label>Tower</label>
-                    <select id="order-tower"></select>
-                    <button type="button" class="btn btn-secondary btn-small" onclick="toggleOrderAddForm('tower')">+ Naya Tower</button>
+                    <div class="select-with-action"><select id="order-tower"></select><button type="button" class="btn btn-secondary btn-small" onclick="toggleOrderAddForm('tower')">+ Tower</button></div>
                     <div id="order-add-tower-form" class="hidden" style="margin:8px 0 14px">
                         <input type="text" id="order-new-tower-name" placeholder="Tower jaise A, B, 1">
                         <button type="button" class="btn btn-small" onclick="addTowerFromOrder()">Tower Save Karein</button>
@@ -245,11 +246,13 @@
                     <h3>Payment QR Code</h3>
                     <div id="qr-display" style="margin-bottom: 10px; text-align: center;"></div>
                     <input type="file" id="qr-upload" accept="image/*" onchange="uploadImage(event, 'qr')">
+                    <button type="button" class="btn btn-secondary" onclick="deleteSavedImage('qr')">QR image delete karein</button>
                 </div>
                 <div class="card">
                     <h3>WhatsApp Group Link / Image</h3>
                     <div id="wa-display" style="margin-bottom: 10px; text-align: center;"></div>
                     <input type="file" id="wa-upload" accept="image/*" onchange="uploadImage(event, 'wa')">
+                    <button type="button" class="btn btn-secondary" onclick="deleteSavedImage('wa')">WhatsApp image delete karein</button>
                 </div>
             </div>
 
@@ -328,6 +331,7 @@
                         document.getElementById('login-view').classList.add('hidden');
                         document.getElementById('app-view').classList.remove('hidden');
                         loadAllData();
+                        loadSavedImages();
                     }
                 },
             });
@@ -374,6 +378,48 @@
             return data;
         }
 
+        let spreadsheetSheetIds = null;
+        async function sheetIdFor(tabName) {
+            if (!spreadsheetSheetIds) {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?fields=sheets(properties(sheetId,title))`;
+                const res = await fetch(url, {headers: {Authorization: `Bearer ${accessToken}`}});
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error?.message || 'Sheet list load nahi hui');
+                spreadsheetSheetIds = Object.fromEntries((data.sheets || []).map(s => [s.properties.title, s.properties.sheetId]));
+            }
+            if (spreadsheetSheetIds[tabName] === undefined) throw new Error(`${tabName} tab nahi mila`);
+            return spreadsheetSheetIds[tabName];
+        }
+
+        async function updateDataRow(tabName, rowNumber, values) {
+            const lastColumn = String.fromCharCode(64 + values.length);
+            const range = encodeURIComponent(`'${tabName}'!A${rowNumber}:${lastColumn}${rowNumber}`);
+            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}?valueInputOption=USER_ENTERED`, {
+                method: 'PUT', headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
+                body: JSON.stringify({values: [values]})
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || `Edit ${tabName} mein save nahi hua`);
+            return data;
+        }
+
+        async function deleteDataRows(tabName, rowNumbers) {
+            const uniqueRows = [...new Set(rowNumbers)].sort((a, b) => b - a);
+            if (!uniqueRows.length) return;
+            const sheetId = await sheetIdFor(tabName);
+            const requests = uniqueRows.map(rowNumber => ({deleteDimension: {range: {sheetId, dimension: 'ROWS', startIndex: rowNumber - 1, endIndex: rowNumber}}}));
+            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`, {
+                method: 'POST', headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
+                body: JSON.stringify({requests})
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || `Delete ${tabName} mein nahi hua`);
+        }
+
+        function actionButtons(editHandler, deleteHandler, id) {
+            return `<div class="record-actions"><button type="button" class="icon-btn" aria-label="Edit" title="Edit" onclick="${editHandler}('${id}')">✏️</button><button type="button" class="icon-btn delete" aria-label="Delete" title="Delete" onclick="${deleteHandler}('${id}')">🗑️</button></div>`;
+        }
+
         // --- DATA LOADING ---
         async function loadAllData() {
             try {
@@ -408,36 +454,26 @@
             const now = new Date();
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-            let todayOrders = 0, todaySales = 0, monthOrders = 0, monthSales = 0;
-            let todayPurchases = 0, monthPurchases = 0;
-
+            let todayOrders = 0, todaySales = 0, monthOrders = 0, monthSales = 0, monthPurchases = 0;
             sheetData.Orders.forEach(order => {
                 if (order.length < 12) return;
                 const date = parseSheetDate(order[1]);
                 if (!date) return;
-                const total = Number(order[11]) || 0;
-                if (date >= todayStart) { todayOrders++; todaySales += total; }
-                if (date >= monthStart) { monthOrders++; monthSales += total; }
+                const amount = Number(order[11]) || 0;
+                if (date >= todayStart) { todayOrders++; todaySales += amount; }
+                if (date >= monthStart) { monthOrders++; monthSales += amount; }
             });
             sheetData.Purchases.forEach(purchase => {
                 const date = parseSheetDate(purchase[1]);
-                if (!date) return;
-                const total = Number(purchase[2]) || 0;
-                if (date >= todayStart) todayPurchases += total;
-                if (date >= monthStart) monthPurchases += total;
+                if (date && date >= monthStart) monthPurchases += Number(purchase[2]) || 0;
             });
-
             const money = value => '₹' + value.toLocaleString('en-IN', {maximumFractionDigits: 2});
             document.getElementById('today-orders').innerText = todayOrders;
             document.getElementById('today-sales').innerText = money(todaySales);
             document.getElementById('month-orders').innerText = monthOrders;
             document.getElementById('month-sales').innerText = money(monthSales);
-            document.getElementById('today-purchases').innerText = money(todayPurchases);
             document.getElementById('month-purchases').innerText = money(monthPurchases);
-            const todayNet = todaySales - todayPurchases;
             const monthNet = monthSales - monthPurchases;
-            document.getElementById('today-net').innerText = `${todayNet < 0 ? '−' : '+'}${money(Math.abs(todayNet))} ${todayNet < 0 ? '(Loss)' : '(Surplus)'}`;
-            document.getElementById('today-net').parentElement.classList.toggle('loss', todayNet < 0);
             document.getElementById('month-net').innerText = `${monthNet < 0 ? '−' : '+'}${money(Math.abs(monthNet))} ${monthNet < 0 ? '(Loss)' : '(Surplus)'}`;
             document.getElementById('month-net').parentElement.classList.toggle('loss', monthNet < 0);
         }
@@ -578,12 +614,11 @@
                 await appendSheetData('Orders', orderRow);
 
                 // 2. Save to OrderItems
-                const itemPromises = items.map((item, index) => {
+                for (const [index, item] of items.entries()) {
                     const itemId = 'ITM-' + Date.now() + '-' + index;
                     const itemTotal = item.price * item.qty;
-                    return appendSheetData('OrderItems', [itemId, orderId, item.name, item.qty, item.price, itemTotal]);
-                });
-                await Promise.all(itemPromises);
+                    await appendSheetData('OrderItems', [itemId, orderId, item.name, item.qty, item.price, itemTotal]);
+                }
 
                 showMessage('Order saved successfully!');
                 
@@ -606,45 +641,119 @@
         function renderOrders() {
             const container = document.getElementById('orders-list');
             container.innerHTML = '';
-            
-            // Latest first
-            const sortedOrders = [...sheetData.Orders].reverse();
-
-            sortedOrders.forEach(order => {
+            const sortedOrders = sheetData.Orders.map((order, index) => ({order, rowNumber: index + 2})).reverse();
+            sortedOrders.forEach(({order, rowNumber}) => {
                 if (order.length < 12) return;
-                container.innerHTML += `
-                    <div class="card">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                            <strong>${order[0]}</strong>
-                            <span style="color:gray; font-size:12px;">${formatDateTimeForDisplay(order[1])}</span>
-                        </div>
-                        <div><strong>Location:</strong> ${order[2]}, Tower ${order[3]} - Flat ${order[4]} (Floor ${order[5]})</div>
-                        <div><strong>Customer:</strong> ${order[7] || 'N/A'} (${order[8] || 'N/A'})</div>
-                        <div style="margin-top: 10px; background:#f5f5f5; padding:10px; border-radius:5px;">
-                            <strong>Items:</strong> ${order[9]}<br>
-                            <strong>Qty:</strong> ${order[10]} | <strong>Total:</strong> ₹${order[11]}
-                        </div>
+                const orderId = order[0];
+                const lines = sheetData.OrderItems.map((item, index) => ({item, rowNumber: index + 2})).filter(x => x.item[1] === orderId);
+                const lineHtml = lines.length ? lines.map(({item}) => `<div class="order-line"><span>${item[2]} × ${item[3]} — ₹${item[5]}</span>${actionButtons('editOrderItem', 'deleteOrderItem', item[0])}</div>`).join('') : `<div>${order[9] || 'Item details nahi hain'}</div>`;
+                const contact = order[8] ? ` (${order[8]})` : '';
+                container.innerHTML += `<div class="card">
+                    <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
+                        <div><strong>${orderId}</strong><div style="color:gray;font-size:12px;margin-top:4px">${formatDateTimeForDisplay(order[1])}</div></div>
+                        ${actionButtons('editOrder', 'deleteOrder', orderId)}
                     </div>
-                `;
+                    <div><strong>Location:</strong> ${order[2]}, Tower ${order[3]} - Flat ${order[4]} (Floor ${order[5]})</div>
+                    <div><strong>Customer:</strong> ${order[7] || ''}${contact}</div>
+                    <div style="margin-top:10px;background:#f5f5f5;padding:10px;border-radius:5px">
+                        <strong>Items:</strong>${lineHtml}
+                        <strong>Qty:</strong> ${order[10]} | <strong>Total:</strong> ₹${order[11]}
+                    </div>
+                </div>`;
             });
+        }
+
+        async function editOrder(orderId) {
+            const index = sheetData.Orders.findIndex(row => row[0] === orderId);
+            if (index < 0) return;
+            const row = [...sheetData.Orders[index]];
+            const fields = [[2,'Society'],[3,'Tower'],[4,'Flat number'],[5,'Floor'],[6,'Address'],[7,'Customer name'],[8,'Contact number']];
+            for (const [col, label] of fields) {
+                const value = prompt(`Edit ${label}:`, row[col] || '');
+                if (value === null) return;
+                row[col] = value.trim();
+            }
+            try { await updateDataRow('Orders', index + 2, row); await loadAllData(); showMessage('Order update ho gaya.'); }
+            catch (err) { showMessage(err.message, true); }
+        }
+
+        async function deleteOrder(orderId) {
+            if (!confirm(`Order ${orderId} aur uske saare item records delete kar dein?`)) return;
+            try {
+                const itemRows = sheetData.OrderItems.map((row, i) => row[1] === orderId ? i + 2 : null).filter(Boolean);
+                const orderIndex = sheetData.Orders.findIndex(row => row[0] === orderId);
+                await deleteDataRows('OrderItems', itemRows);
+                if (orderIndex >= 0) await deleteDataRows('Orders', [orderIndex + 2]);
+                await loadAllData(); showMessage('Order delete ho gaya.');
+            } catch (err) { showMessage(err.message, true); }
+        }
+
+        async function editOrderItem(itemId) {
+            const index = sheetData.OrderItems.findIndex(row => row[0] === itemId);
+            if (index < 0) return;
+            const row = [...sheetData.OrderItems[index]];
+            const name = prompt('Item name:', row[2]); if (name === null) return;
+            const qtyText = prompt('Quantity:', row[3]); if (qtyText === null) return;
+            const priceText = prompt('Unit price:', row[4]); if (priceText === null) return;
+            const qty = Number(qtyText), price = Number(priceText);
+            if (!name.trim() || !Number.isFinite(qty) || qty < 1 || !Number.isFinite(price) || price < 0) { showMessage('Item, quantity aur price sahi bharein.', true); return; }
+            row[2] = name.trim(); row[3] = qty; row[4] = price; row[5] = qty * price;
+            try { await updateDataRow('OrderItems', index + 2, row); await syncOrderTotals(row[1]); showMessage('Order item update ho gaya.'); }
+            catch (err) { showMessage(err.message, true); }
+        }
+
+        async function deleteOrderItem(itemId) {
+            const index = sheetData.OrderItems.findIndex(row => row[0] === itemId);
+            if (index < 0 || !confirm('Ye order item delete kar dein?')) return;
+            const orderId = sheetData.OrderItems[index][1];
+            try { await deleteDataRows('OrderItems', [index + 2]); await syncOrderTotals(orderId); showMessage('Order item delete ho gaya.'); }
+            catch (err) { showMessage(err.message, true); }
+        }
+
+        async function syncOrderTotals(orderId) {
+            await loadAllData();
+            const index = sheetData.Orders.findIndex(row => row[0] === orderId);
+            if (index < 0) return;
+            const items = sheetData.OrderItems.filter(row => row[1] === orderId);
+            const row = [...sheetData.Orders[index]];
+            row[9] = items.map(item => `${item[2]} (x${item[3]})`).join(', ');
+            row[10] = items.reduce((sum, item) => sum + (Number(item[3]) || 0), 0);
+            row[11] = items.reduce((sum, item) => sum + (Number(item[5]) || 0), 0);
+            await updateDataRow('Orders', index + 2, row);
+            await loadAllData();
         }
 
         // --- MENU ---
         function renderMenu() {
             const container = document.getElementById('menu-list');
             container.innerHTML = '';
-            sheetData.Menu.forEach(item => {
-                if (item[4] === 'FALSE' || item[4] === 'Inactive') return; // Active check
-                container.innerHTML += `
-                    <div style="display:flex; justify-content:space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
-                        <div>
-                            <strong>${item[1]}</strong>
-                            <div style="font-size:12px; color:#666;">${item[2] || ''}</div>
-                        </div>
-                        <div style="font-weight:bold;">₹${item[3]}</div>
-                    </div>
-                `;
+            sheetData.Menu.forEach((item, index) => {
+                container.innerHTML += `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #eee">
+                    <div><strong>${item[1]}</strong><div style="font-size:12px;color:#666">${item[2] || ''}</div><strong>₹${item[3]}</strong><div style="font-size:12px;color:#777">${String(item[4]).toUpperCase() === 'FALSE' || String(item[4]).toUpperCase() === 'INACTIVE' ? 'Inactive' : 'Active'}</div></div>
+                    ${actionButtons('editMenuItem','deleteMenuItem',item[0])}
+                </div>`;
             });
+        }
+
+        async function editMenuItem(itemId) {
+            const index = sheetData.Menu.findIndex(row => row[0] === itemId); if (index < 0) return;
+            const row = [...sheetData.Menu[index]];
+            const name = prompt('Item name:', row[1]); if (name === null) return;
+            const details = prompt('Full details / contents:', row[2] || ''); if (details === null) return;
+            const priceText = prompt('Price:', row[3]); if (priceText === null) return;
+            const activeText = prompt('Active status TRUE ya FALSE:', row[4] || 'TRUE'); if (activeText === null) return;
+            const price = Number(priceText); const active = activeText.trim().toUpperCase();
+            if (!name.trim() || !Number.isFinite(price) || price < 0 || !['TRUE','FALSE'].includes(active)) { showMessage('Naam, valid price, aur TRUE/FALSE status bharein.', true); return; }
+            row[1] = name.trim(); row[2] = details.trim(); row[3] = price; row[4] = active;
+            try { await updateDataRow('Menu', index + 2, row); await loadAllData(); showMessage('Menu item update ho gaya.'); }
+            catch (err) { showMessage(err.message, true); }
+        }
+
+        async function deleteMenuItem(itemId) {
+            const index = sheetData.Menu.findIndex(row => row[0] === itemId);
+            if (index < 0 || !confirm('Menu item delete kar dein? Purane orders ka record bana rahega.')) return;
+            try { await deleteDataRows('Menu', [index + 2]); await loadAllData(); showMessage('Menu item delete ho gaya.'); }
+            catch (err) { showMessage(err.message, true); }
         }
 
         async function addMenuItem() {
@@ -736,11 +845,10 @@
                 await appendSheetData('Purchases', [purchaseId, dateTime, totalAmount]);
 
                 // 2. Save to PurchaseItems
-                const itemPromises = items.map((item, index) => {
+                for (const [index, item] of items.entries()) {
                     const itemId = 'PITM-' + Date.now() + '-' + index;
-                    return appendSheetData('PurchaseItems', [itemId, purchaseId, dateTime, item.name, item.price]);
-                });
-                await Promise.all(itemPromises);
+                    await appendSheetData('PurchaseItems', [itemId, purchaseId, dateTime, item.name, item.price]);
+                }
 
                 showMessage('Purchase saved successfully!');
                 document.getElementById('purchase-items-container').innerHTML = '';
@@ -755,51 +863,158 @@
         function renderPurchases() {
             const container = document.getElementById('purchase-history-list');
             if (!container) return;
-            if (!sheetData.Purchases.length) {
-                container.innerHTML = '<div class="card">Abhi koi purchase record nahi hai.</div>';
-                return;
-            }
-            const purchaseItemsById = new Map();
-            sheetData.PurchaseItems.forEach(item => {
-                const purchaseId = item[1];
-                if (!purchaseItemsById.has(purchaseId)) purchaseItemsById.set(purchaseId, []);
-                purchaseItemsById.get(purchaseId).push(item);
-            });
-            container.innerHTML = [...sheetData.Purchases].reverse().map(purchase => {
-                const items = purchaseItemsById.get(purchase[0]) || [];
-                const itemLines = items.map(item => `<div>${item[3] || 'Item'} — ₹${item[4] || 0}</div>`).join('');
+            if (!sheetData.Purchases.length) { container.innerHTML = '<div class="card">Abhi koi purchase record nahi hai.</div>'; return; }
+            const rows = [...sheetData.Purchases].map((purchase, index) => ({purchase, rowNumber: index + 2})).reverse();
+            container.innerHTML = rows.map(({purchase}) => {
+                const purchaseId = purchase[0];
+                const items = sheetData.PurchaseItems.map((item, index) => ({item, rowNumber: index + 2})).filter(x => x.item[1] === purchaseId);
+                const itemLines = items.length ? items.map(({item}) => `<div class="purchase-line"><span>${item[3] || 'Item'} — ₹${item[4] || 0}</span>${actionButtons('editPurchaseItem','deletePurchaseItem',item[0])}</div>`).join('') : '<div>Is purchase ke item rows Sheet mein nahi mile.</div>';
                 return `<div class="card">
-                    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px">
-                        <strong>${purchase[0] || 'Purchase'}</strong>
-                        <span style="color:#666;font-size:13px">${formatDateTimeForDisplay(purchase[1])}</span>
+                    <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
+                        <div><strong>${purchaseId || 'Purchase'}</strong><div style="color:#666;font-size:13px;margin-top:4px">${formatDateTimeForDisplay(purchase[1])}</div></div>
+                        ${actionButtons('editPurchase','deletePurchase',purchaseId)}
                     </div>
-                    ${itemLines || '<div>Item detail available nahi hai.</div>'}
+                    <div style="margin-top:8px">${itemLines}</div>
                     <div style="margin-top:8px"><strong>Total: ₹${purchase[2] || 0}</strong></div>
+                    <button type="button" class="btn btn-secondary btn-small" onclick="addPurchaseLine('${purchaseId}')">+ Is purchase mein item jodein</button>
                 </div>`;
             }).join('');
+        }
+
+        async function addPurchaseLine(purchaseId) {
+            const name = prompt('Naye purchase item ka naam:'); if (name === null || !name.trim()) return;
+            const priceText = prompt('Item ka price:'); if (priceText === null) return;
+            const price = Number(priceText); if (!Number.isFinite(price) || price < 0) { showMessage('Valid price bharein.', true); return; }
+            const purchase = sheetData.Purchases.find(row => row[0] === purchaseId);
+            if (!purchase) return;
+            try {
+                await appendSheetData('PurchaseItems', ['PITM-' + Date.now(), purchaseId, purchase[1], name.trim(), price]);
+                await syncPurchaseTotal(purchaseId);
+                showMessage('Item purane purchase mein add ho gaya.');
+            } catch (err) { showMessage(err.message, true); }
+        }
+
+        async function editPurchase(purchaseId) {
+            const index = sheetData.Purchases.findIndex(row => row[0] === purchaseId); if (index < 0) return;
+            const row = [...sheetData.Purchases[index]];
+            const dateTime = prompt('Purchase date & time:', row[1] || ''); if (dateTime === null) return;
+            row[1] = dateTime.trim();
+            try {
+                await updateDataRow('Purchases', index + 2, row);
+                for (let i = 0; i < sheetData.PurchaseItems.length; i++) {
+                    if (sheetData.PurchaseItems[i][1] === purchaseId) {
+                        const item = [...sheetData.PurchaseItems[i]]; item[2] = row[1];
+                        await updateDataRow('PurchaseItems', i + 2, item);
+                    }
+                }
+                await loadAllData(); showMessage('Purchase date update ho gayi.');
+            } catch (err) { showMessage(err.message, true); }
+        }
+
+        async function deletePurchase(purchaseId) {
+            if (!confirm(`Purchase ${purchaseId} aur uske saare item records delete kar dein?`)) return;
+            try {
+                const itemRows = sheetData.PurchaseItems.map((row, i) => row[1] === purchaseId ? i + 2 : null).filter(Boolean);
+                const index = sheetData.Purchases.findIndex(row => row[0] === purchaseId);
+                await deleteDataRows('PurchaseItems', itemRows);
+                if (index >= 0) await deleteDataRows('Purchases', [index + 2]);
+                await loadAllData(); showMessage('Purchase delete ho gayi.');
+            } catch (err) { showMessage(err.message, true); }
+        }
+
+        async function editPurchaseItem(itemId) {
+            const index = sheetData.PurchaseItems.findIndex(row => row[0] === itemId); if (index < 0) return;
+            const row = [...sheetData.PurchaseItems[index]];
+            const name = prompt('Purchase item name:', row[3]); if (name === null) return;
+            const priceText = prompt('Price:', row[4]); if (priceText === null) return;
+            const price = Number(priceText);
+            if (!name.trim() || !Number.isFinite(price) || price < 0) { showMessage('Item name aur valid price bharein.', true); return; }
+            row[3] = name.trim(); row[4] = price;
+            try { await updateDataRow('PurchaseItems', index + 2, row); await syncPurchaseTotal(row[1]); showMessage('Purchase item update ho gaya.'); }
+            catch (err) { showMessage(err.message, true); }
+        }
+
+        async function deletePurchaseItem(itemId) {
+            const index = sheetData.PurchaseItems.findIndex(row => row[0] === itemId);
+            if (index < 0 || !confirm('Ye purchase item delete kar dein?')) return;
+            const purchaseId = sheetData.PurchaseItems[index][1];
+            try { await deleteDataRows('PurchaseItems', [index + 2]); await syncPurchaseTotal(purchaseId); showMessage('Purchase item delete ho gaya.'); }
+            catch (err) { showMessage(err.message, true); }
+        }
+
+        async function syncPurchaseTotal(purchaseId) {
+            await loadAllData();
+            const index = sheetData.Purchases.findIndex(row => row[0] === purchaseId); if (index < 0) return;
+            const total = sheetData.PurchaseItems.filter(row => row[1] === purchaseId).reduce((sum, row) => sum + (Number(row[4]) || 0), 0);
+            const purchase = [...sheetData.Purchases[index]]; purchase[2] = total;
+            await updateDataRow('Purchases', index + 2, purchase);
+            await loadAllData();
         }
 
         function renderSocietyTowerList() {
             const container = document.getElementById('society-tower-list');
             if (!container) return;
             container.replaceChildren();
-            if (!sheetData.Societies.length) {
-                container.textContent = 'Koi society record nahi mila. Google Sheet ke Societies tab mein records check karein.';
-                return;
-            }
-            sheetData.Societies.forEach(society => {
-                const societyName = society[1] || '(Naam missing)';
-                const towers = sheetData.Towers.filter(tower => tower[1] === society[0]).map(tower => tower[2]).filter(Boolean);
+            if (!sheetData.Societies.length) { container.textContent = 'Koi society row nahi mili. Data load error ho to upar ka message dekhein.'; return; }
+            sheetData.Societies.forEach((society, societyIndex) => {
                 const row = document.createElement('div');
                 row.style.cssText = 'padding:10px 0;border-bottom:1px solid #eee';
-                const title = document.createElement('strong');
-                title.textContent = societyName;
-                const detail = document.createElement('div');
-                detail.style.cssText = 'margin-top:4px;color:#666';
-                detail.textContent = towers.length ? 'Towers: ' + towers.join(', ') : 'Abhi koi tower add nahi hai';
-                row.append(title, detail);
+                const head = document.createElement('div');
+                head.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px';
+                const title = document.createElement('strong'); title.textContent = society[1] || '(Naam missing)';
+                head.append(title);
+                head.insertAdjacentHTML('beforeend', actionButtons('editSociety','deleteSociety',society[0]));
+                row.appendChild(head);
+                const towers = sheetData.Towers.map((tower, towerIndex) => ({tower, towerIndex})).filter(x => x.tower[1] === society[0]);
+                if (!towers.length) {
+                    const empty = document.createElement('div'); empty.style.cssText = 'margin:6px 0 0 8px;color:#777'; empty.textContent = 'Abhi koi tower add nahi hai'; row.appendChild(empty);
+                } else {
+                    towers.forEach(({tower}) => {
+                        const towerRow = document.createElement('div');
+                        towerRow.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;margin:6px 0 0 8px;padding:6px 0;border-top:1px solid #f1f1f1';
+                        const name = document.createElement('span'); name.textContent = 'Tower ' + (tower[2] || '(Naam missing)');
+                        towerRow.append(name);
+                        towerRow.insertAdjacentHTML('beforeend', actionButtons('editTower','deleteTower',tower[0]));
+                        row.appendChild(towerRow);
+                    });
+                }
                 container.appendChild(row);
             });
+        }
+
+        async function editSociety(id) {
+            const index = sheetData.Societies.findIndex(row => row[0] === id); if (index < 0) return;
+            const row = [...sheetData.Societies[index]];
+            const name = prompt('Society name:', row[1]); if (name === null || !name.trim()) return;
+            row[1] = name.trim();
+            try { await updateDataRow('Societies', index + 2, row); await loadAllData(); showMessage('Society update ho gayi.'); }
+            catch (err) { showMessage(err.message, true); }
+        }
+
+        async function deleteSociety(id) {
+            const index = sheetData.Societies.findIndex(row => row[0] === id); if (index < 0) return;
+            if (!confirm('Society aur uske towers delete kar dein? Purane orders ka saved address bana rahega.')) return;
+            try {
+                const towerRows = sheetData.Towers.map((row, i) => row[1] === id ? i + 2 : null).filter(Boolean);
+                await deleteDataRows('Towers', towerRows);
+                await deleteDataRows('Societies', [index + 2]);
+                await loadAllData(); showMessage('Society aur linked towers delete ho gaye.');
+            } catch (err) { showMessage(err.message, true); }
+        }
+
+        async function editTower(id) {
+            const index = sheetData.Towers.findIndex(row => row[0] === id); if (index < 0) return;
+            const row = [...sheetData.Towers[index]];
+            const name = prompt('Tower name/code:', row[2]); if (name === null || !name.trim()) return;
+            row[2] = name.trim();
+            try { await updateDataRow('Towers', index + 2, row); await loadAllData(); showMessage('Tower update ho gaya.'); }
+            catch (err) { showMessage(err.message, true); }
+        }
+
+        async function deleteTower(id) {
+            const index = sheetData.Towers.findIndex(row => row[0] === id); if (index < 0 || !confirm('Tower delete kar dein?')) return;
+            try { await deleteDataRows('Towers', [index + 2]); await loadAllData(); showMessage('Tower delete ho gaya.'); }
+            catch (err) { showMessage(err.message, true); }
         }
 
         function toggleOrderAddForm(type) {
@@ -879,57 +1094,77 @@
             }
         }
 
-        // --- IMAGE UPLOAD (DRIVE) ---
-        // Note: Requires drive.file scope. We will set the file to 'Anyone with link can view' so <img> works.
-        async function uploadImage(event, type) {
-            const file = event.target.files[0];
-            if (!file) return;
+        // --- DRIVE IMAGES: load latest uploaded QR/WhatsApp image on every visit ---
+        async function listSavedImages(type) {
+            const q = encodeURIComponent(`trashed = false and name contains '${type}_'`);
+            const fields = encodeURIComponent('files(id,name,mimeType,createdTime)');
+            const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=${fields}&pageSize=100&orderBy=createdTime%20desc`, {
+                headers: {Authorization: `Bearer ${accessToken}`}
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || 'Drive images load nahi hui');
+            return data.files || [];
+        }
 
-            showMessage('Uploading image... please wait.', false);
+        function showDriveImage(type, file) {
+            const display = document.getElementById(type === 'qr' ? 'qr-display' : 'wa-display');
+            display.replaceChildren();
+            if (!file) { display.textContent = 'Abhi image upload nahi hai.'; return; }
+            const img = document.createElement('img');
+            img.src = `https://drive.google.com/uc?export=view&id=${encodeURIComponent(file.id)}`;
+            img.alt = type === 'qr' ? 'Payment QR code' : 'WhatsApp group image';
+            img.referrerPolicy = 'no-referrer';
+            img.style.cssText = 'max-width:100%;max-height:420px;object-fit:contain;border-radius:10px';
+            display.appendChild(img);
+        }
 
-            const metadata = {
-                name: type + '_' + Date.now() + '_' + file.name,
-                mimeType: file.type
-            };
-
-            const form = new FormData();
-            form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-            form.append('file', file);
-
-            try {
-                // 1. Upload file
-                const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-                    method: 'POST',
-                    headers: { Authorization: `Bearer ${accessToken}` },
-                    body: form
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error.message);
-
-                const fileId = data.id;
-
-                // 2. Make file public (Anyone with link can view)
-                await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions`, {
-                    method: 'POST',
-                    headers: { 
-                        Authorization: `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ role: 'reader', type: 'anyone' })
-                });
-
-                // 3. Display image
-                const imgUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
-                if (type === 'qr') {
-                    document.getElementById('qr-display').innerHTML = `<img src="${imgUrl}" style="max-width:100%; border-radius:8px;">`;
-                } else {
-                    document.getElementById('wa-display').innerHTML = `<img src="${imgUrl}" style="max-width:100%; border-radius:8px;">`;
-                }
-                showMessage('Image uploaded and displayed successfully!');
-            } catch (err) {
-                showMessage('Upload failed: ' + err.message, true);
+        async function loadSavedImages() {
+            for (const type of ['qr', 'wa']) {
+                try { const files = await listSavedImages(type); showDriveImage(type, files[0] || null); }
+                catch (err) { console.warn(type + ' image load failed:', err.message); }
             }
         }
+
+        async function uploadImage(event, type) {
+            const file = event.target.files?.[0]; if (!file) return;
+            showMessage('Image upload ho rahi hai…');
+            const metadata = {name: `${type}_${Date.now()}_${file.name}`, mimeType: file.type};
+            const form = new FormData();
+            form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
+            form.append('file', file);
+            try {
+                const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name', {
+                    method: 'POST', headers: {Authorization: `Bearer ${accessToken}`}, body: form
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error?.message || 'Drive upload fail hua');
+                const permissionRes = await fetch(`https://www.googleapis.com/drive/v3/files/${data.id}/permissions`, {
+                    method: 'POST', headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
+                    body: JSON.stringify({role: 'reader', type: 'anyone'})
+                });
+                if (!permissionRes.ok) {
+                    const permissionError = await permissionRes.json();
+                    throw new Error(permissionError.error?.message || 'Image permission set nahi hui');
+                }
+                await loadSavedImages();
+                showMessage('Image upload ho gayi aur display mein load kar di.');
+            } catch (err) { showMessage('Upload error: ' + err.message, true); }
+            finally { event.target.value = ''; }
+        }
+
+        async function deleteSavedImage(type) {
+            if (!confirm(`${type === 'qr' ? 'QR' : 'WhatsApp'} ki saved image delete kar dein?`)) return;
+            try {
+                const files = await listSavedImages(type);
+                for (const file of files) {
+                    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}`, {method: 'DELETE', headers: {Authorization: `Bearer ${accessToken}`}});
+                    if (!res.ok) { const data = await res.json(); throw new Error(data.error?.message || 'Image delete nahi hui'); }
+                }
+                showDriveImage(type, null);
+                showMessage('Image delete ho gayi.');
+            } catch (err) { showMessage(err.message, true); }
+        }
+
     </script>
 </body>
 </html>
