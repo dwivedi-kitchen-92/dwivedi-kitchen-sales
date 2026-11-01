@@ -10,10 +10,14 @@
         body { font-family: system-ui, -apple-system, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 60px; }
         .container { max-width: 800px; margin: 0 auto; padding: 15px; }
         .card { background: var(--card); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        .btn { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px; }
-        .btn-secondary { background: #4a4a4a; }
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight:650; min-height:44px; width: 100%; margin-top: 10px; transition:filter .15s ease,transform .15s ease,box-shadow .15s ease; }
+        .btn:hover { filter:brightness(.97); }
+        .btn:active { transform:translateY(1px); }
+        .btn:disabled { opacity:.65; cursor:wait; }
+        .btn-secondary { background: linear-gradient(135deg,#46536a,#303b50); }
         .btn-small { width: auto; padding: 5px 10px; font-size: 14px; }
-        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        input, select, textarea { width: 100%; padding: 11px 13px; margin: 5px 0 15px; border: 1px solid #d9dee7; border-radius: 10px; box-sizing: border-box; font-size: 16px; background-color:#fff; color:var(--text); }
+        input:focus, select:focus, textarea:focus { outline:none; border-color:#8296ca; box-shadow:0 0 0 3px rgba(92,119,190,.15); }
         .hidden { display: none !important; }
         .view { display: none; }
         .view.active { display: block; }
@@ -33,21 +37,50 @@
         .metric-purchases { --metric-color: #c47716; --metric-bg: #fff7e9; }
         .metric-net { --metric-color: #16845b; --metric-bg: #eefaf4; }
         .metric-net.loss { --metric-color: #c34343; --metric-bg: #fff1f1; }
-        .nav { position: fixed; right: 0; bottom: 0; left: 0; min-height: 72px; background: rgba(255,255,255,.97); display: flex; justify-content: space-around; align-items: center; padding: 7px 8px max(8px, env(safe-area-inset-bottom)); box-shadow: 0 -5px 22px rgba(28,38,58,.12); border-top: 1px solid #edf0f5; z-index: 100; }
-        .nav-btn { flex: 1; max-width: 104px; min-height: 56px; padding: 6px 3px; border: 0; border-radius: 14px; background: transparent; color: #687386; cursor: pointer; display: flex; flex-direction: column; gap: 3px; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; transition: background .15s ease,color .15s ease; }
+        .nav { position: fixed; right: 0; bottom: 0; left: 0; height: 72px; box-sizing: content-box; background: #fff; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: center; padding: 6px 10px max(8px, env(safe-area-inset-bottom)); box-shadow: 0 -4px 18px rgba(28,38,58,.09); border-top: 1px solid #edf0f5; z-index: 100; }
+        .nav-btn { width: 100%; min-width: 0; min-height: 56px; padding: 6px 3px; border: 0; border-radius: 14px; background: transparent; box-shadow: none !important; outline: none; color: #687386; cursor: pointer; display: flex; flex-direction: column; gap: 3px; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; transition: background .15s ease,color .15s ease; -webkit-tap-highlight-color: transparent; }
         .nav-btn .nav-icon { font-size: 21px; line-height: 1; }
         .nav-btn.active { background: #fff0f0; color: #d94f59; font-weight: 750; }
+        .nav-btn:focus, .nav-btn:focus-visible { outline:none; box-shadow:none !important; }
         label { display: block; font-weight: 600; margin-top: 7px; }
         .btn-small { display: inline-block; margin: 6px 8px 10px 0; min-height: 38px; }
         .select-with-action { display: flex; align-items: flex-start; gap: 8px; }
         .select-with-action select { flex: 1; min-width: 0; }
         .select-with-action .btn-small { flex: 0 0 auto; white-space: nowrap; margin-top: 5px; }
         .record-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 10px; }
-        .icon-btn { width: 40px; height: 38px; padding: 0; border: 1px solid #e1e5eb; border-radius: 10px; background: #fff; font-size: 18px; }
+        .icon-btn { width: 42px; height: 40px; padding: 0; border: 1px solid #e1e5eb; border-radius: 12px; background: #fff; font-size: 18px; box-shadow:0 2px 5px rgba(28,38,58,.06); cursor:pointer; }
         .icon-btn.delete { color: #c34343; }
         .purchase-line, .order-line { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:7px 0; border-bottom:1px solid #eee; }
         .purchase-line:last-child, .order-line:last-child { border-bottom:0; }
-        select { padding-right: 38px; }
+        select { appearance:none; -webkit-appearance:none; padding-right:42px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23687486' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; background-size:14px; }
+        button { font-family:inherit; -webkit-tap-highlight-color:transparent; }
+        .quick-action-grid, .more-shortcuts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+        .quick-action-grid .btn, .more-shortcuts .btn { min-height:58px; margin:0; border-radius:14px; font-weight:700; box-shadow:0 5px 12px rgba(38,48,65,.12); transition:transform .15s ease,box-shadow .15s ease; }
+        .quick-action-grid .btn:active, .more-shortcuts .btn:active { transform:translateY(1px); box-shadow:0 2px 6px rgba(38,48,65,.12); }
+        .quick-action-grid .btn-primary { background:linear-gradient(135deg,#ff7379,#ed5964); }
+        .quick-action-grid .btn-purchase { background:linear-gradient(135deg,#394b68,#27364e); }
+        .more-shortcuts .btn { background:#f2f5fa; color:#34445f; border:1px solid #e0e6ef; }
+        .edit-overlay { position:fixed; inset:0; z-index:300; display:none; align-items:center; justify-content:center; padding:16px; background:rgba(20,28,40,.54); backdrop-filter:blur(3px); }
+        .edit-overlay.open { display:flex; }
+        .edit-dialog { width:min(100%,720px); max-height:min(90dvh,900px); display:flex; flex-direction:column; overflow:hidden; background:#fff; border-radius:20px; box-shadow:0 24px 80px rgba(10,20,35,.28); }
+        .edit-head, .edit-foot { flex:none; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; background:#fff; }
+        .edit-head { border-bottom:1px solid #edf0f5; }
+        .edit-head h2 { margin:0; font-size:20px; }
+        .edit-body { padding:18px 20px; overflow:auto; overscroll-behavior:contain; }
+        .edit-foot { border-top:1px solid #edf0f5; justify-content:flex-end; }
+        .edit-error { display:none; margin:0 20px 12px; padding:10px 12px; border-radius:10px; color:#a93232; background:#fff0f0; }
+        .edit-error.show { display:block; }
+        .edit-foot .btn { width:auto; min-width:120px; margin:0; }
+        .edit-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 12px; }
+        .edit-grid .wide { grid-column:1/-1; }
+        .edit-items { border:1px solid #e6ebf2; border-radius:14px; padding:12px; margin:12px 0; background:#fafbfd; }
+        .edit-item-row { display:grid; grid-template-columns:minmax(0,2fr) minmax(70px,.75fr) minmax(90px,1fr) 42px; align-items:center; gap:8px; margin:8px 0; }
+        .edit-item-row.purchase { grid-template-columns:minmax(0,2fr) minmax(110px,1fr) 42px; }
+        .edit-item-row input { margin:0; min-width:0; }
+        .edit-live-total { display:flex; justify-content:space-between; gap:12px; padding:11px 12px; background:#fff3e3; border-radius:10px; font-weight:700; }
+        .edit-tower-row { display:flex; gap:8px; align-items:center; }
+        .edit-tower-row input { flex:1; }
+        .icon-btn:focus-visible, .btn:focus-visible, .select-with-action button:focus-visible { outline:3px solid #ffc66d; outline-offset:2px; }
         .order-total-bar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:16px; padding:12px 14px; border-radius:10px; background:#fff4e5; font-size:16px; }
         .order-total-bar > span:last-child { text-align:right; }
         .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -61,7 +94,7 @@
             .stat-box { padding: 12px 8px; border-radius: 11px; }
             .stat-box h3 { font-size: clamp(9px, 2.8vw, 12px); line-height: 1.15; white-space: nowrap; letter-spacing: -.2px; }
             .stat-box p { font-size: 16px; line-height: 1.2; overflow-wrap: anywhere; }
-            .nav { min-height: 70px; }
+            .nav { height:68px; padding-left:8px; padding-right:8px; }
             .nav-btn { min-height: 54px; font-size: 12px; }
             .nav-btn .nav-icon { font-size: 22px; }
             .flex-row { gap: 8px; }
@@ -72,7 +105,17 @@
             .item-row { gap: 6px; padding: 7px; }
             .item-row select, .item-row input { min-width: 0; }
             .order-total-bar { font-size:14px; padding:11px 12px; white-space:nowrap; }
+            .quick-action-grid, .more-shortcuts { gap:9px; }
+            .quick-action-grid .btn, .more-shortcuts .btn { min-height:54px; padding:10px 7px; font-size:14px; }
+            .edit-overlay { padding:8px; align-items:flex-end; }
+            .edit-dialog { width:100%; max-height:94dvh; border-radius:18px 18px 10px 10px; }
+            .edit-head, .edit-foot { padding:13px 15px; }
+            .edit-body { padding:14px 15px; }
+            .edit-item-row { grid-template-columns:minmax(0,1fr) 54px 70px 42px; gap:5px; }
+            .edit-item-row.purchase { grid-template-columns:minmax(0,1fr) 80px 42px; gap:5px; }
+            .edit-item-row input { padding:9px 7px; font-size:14px; }
         }
+        @media (max-width:360px) { .edit-grid { grid-template-columns:1fr; } .edit-grid .wide { grid-column:auto; } .nav-btn { font-size:11px; } }
     </style>
 </head>
 <body>
@@ -123,8 +166,10 @@
                 <p style="font-size:11px;color:#666;margin:-5px 2px 15px;white-space:nowrap">Net = recorded Sales − Purchases</p>
                 <div class="card">
                     <h3>Quick Actions</h3>
-                    <button class="btn" onclick="switchTab('new-order')">Naya Order</button>
-                    <button class="btn btn-secondary" onclick="switchTab('purchase')">Naya Purchase</button>
+                    <div class="quick-action-grid">
+                        <button class="btn btn-primary" onclick="switchTab('new-order')">＋ Naya Order</button>
+                        <button class="btn btn-purchase" onclick="switchTab('purchase')">＋ Naya Purchase</button>
+                    </div>
                 </div>
             </div>
 
@@ -247,8 +292,10 @@
             <div id="more" class="view">
                 <h2>More Settings</h2>
                 <div class="card">
-                    <button type="button" class="btn btn-secondary" onclick="switchTab('menu')">Menu Items / Edit Menu</button>
-                    <button type="button" class="btn btn-secondary" onclick="switchTab('manage')">Society / Tower Setup</button>
+                    <div class="more-shortcuts">
+                        <button type="button" class="btn" onclick="switchTab('menu')">🍽️ Menu Items</button>
+                        <button type="button" class="btn" onclick="switchTab('manage')">🏢 Society / Tower</button>
+                    </div>
                 </div>
                 <div class="card">
                     <h3>Payment QR Code</h3>
@@ -264,6 +311,18 @@
                 </div>
             </div>
 
+        </div>
+
+        <!-- Full-page edit form: opens as one sheet, updates preview fields/totals live. -->
+        <div id="edit-overlay" class="edit-overlay" onclick="if(event.target===this)closeRecordEditor()">
+            <section class="edit-dialog" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+                <div class="edit-head"><h2 id="edit-title">Edit record</h2><button type="button" class="icon-btn" aria-label="Close" onclick="closeRecordEditor()">✕</button></div>
+                <form id="edit-form" onsubmit="saveRecordEditor(event)">
+                    <div id="edit-body" class="edit-body"></div>
+                    <div id="edit-error" class="edit-error" role="alert"></div>
+                    <div class="edit-foot"><button type="button" class="btn btn-secondary" onclick="closeRecordEditor()">Cancel</button><button id="edit-save-btn" type="submit" class="btn">Save changes</button></div>
+                </form>
+            </section>
         </div>
 
         <!-- Navigation -->
@@ -426,6 +485,124 @@
 
         function actionButtons(editHandler, deleteHandler, id) {
             return `<div class="record-actions"><button type="button" class="icon-btn" aria-label="Edit" title="Edit" onclick="${editHandler}('${id}')">✏️</button><button type="button" class="icon-btn delete" aria-label="Delete" title="Delete" onclick="${deleteHandler}('${id}')">🗑️</button></div>`;
+        }
+
+        let recordEditorState = null;
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+        }
+        function editField(label, key, value, type = 'text', wide = false) {
+            return `<div class="${wide ? 'wide' : ''}"><label>${label}</label><input data-edit-field="${key}" type="${type}" value="${escapeHtml(value)}"></div>`;
+        }
+        function renderEditorItemRow(type, item = {}) {
+            if (type === 'purchase') return `<div class="edit-item-row purchase"><input data-item-name value="${escapeHtml(item.name)}" aria-label="Item name" placeholder="Purchase item"><input data-item-price type="number" min="0" step="0.01" value="${escapeHtml(item.price ?? '')}" aria-label="Price" placeholder="Price ₹"><button type="button" class="icon-btn delete" onclick="removeEditorItem(this)" aria-label="Remove item">×</button></div>`;
+            return `<div class="edit-item-row"><input data-item-name value="${escapeHtml(item.name)}" aria-label="Menu item" placeholder="Menu item"><input data-item-qty type="number" min="1" step="1" value="${escapeHtml(item.qty ?? 1)}" aria-label="Quantity" placeholder="Qty"><input data-item-price type="number" min="0" step="0.01" value="${escapeHtml(item.price ?? '')}" aria-label="Unit price" placeholder="Price ₹"><button type="button" class="icon-btn delete" onclick="removeEditorItem(this)" aria-label="Remove item">×</button></div>`;
+        }
+        function openRecordEditor(type, id) {
+            const groups = {order:'Orders', purchase:'Purchases', menu:'Menu', society:'Societies'};
+            const rows = sheetData[groups[type]] || [];
+            const index = rows.findIndex(row => row[0] === id);
+            if (index < 0) return;
+            const row = [...rows[index]];
+            let items = [];
+            if (type === 'order') items = sheetData.OrderItems.filter(item => item[1] === id).map(item => ({name:item[2],qty:item[3],price:item[4]}));
+            if (type === 'purchase') items = sheetData.PurchaseItems.filter(item => item[1] === id).map(item => ({name:item[3],price:item[4]}));
+            const titles = {order:'Edit order',purchase:'Edit purchase',menu:'Edit menu item',society:'Edit society & towers'};
+            document.getElementById('edit-title').textContent = titles[type];
+            recordEditorState = {type,id,index,row};
+            let body = '';
+            if (type === 'order') {
+                body = `<div class="edit-grid">${editField('Date & time','dateTime',row[1],'text',true)}${editField('Society','society',row[2])}${editField('Tower','tower',row[3])}${editField('Flat number','flat',row[4])}${editField('Floor','floor',row[5])}${editField('Extra address','address',row[6],'text',true)}${editField('Customer name (optional)','customer',row[7])}${editField('Contact number (optional)','contact',row[8])}</div>
+                    <div class="edit-items"><strong>Order items</strong><div id="editor-item-list">${items.map(item => renderEditorItemRow('order',item)).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorItem('order')">＋ Add item</button><div class="edit-live-total"><span>Total Qty: <b id="editor-qty">0</b></span><span>Final Total: <b id="editor-total">₹0</b></span></div></div>`;
+            } else if (type === 'purchase') {
+                body = `${editField('Date & time','dateTime',row[1],'text',true)}<div class="edit-items"><strong>Purchase items</strong><div id="editor-item-list">${items.map(item => renderEditorItemRow('purchase',item)).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorItem('purchase')">＋ Add item</button><div class="edit-live-total"><span>Total items: <b id="editor-qty">0</b></span><span>Total purchase: <b id="editor-total">₹0</b></span></div></div>`;
+            } else if (type === 'menu') {
+                body = `<div class="edit-grid">${editField('Item name','name',row[1],'text',true)}<div class="wide"><label>Full details / contents</label><textarea data-edit-field="details" rows="3">${escapeHtml(row[2])}</textarea></div>${editField('Price (₹)','price',row[3],'number')}<div><label>Active</label><select data-edit-field="active"><option value="TRUE" ${String(row[4]).toUpperCase() !== 'FALSE' ? 'selected' : ''}>Active</option><option value="FALSE" ${String(row[4]).toUpperCase() === 'FALSE' ? 'selected' : ''}>Inactive</option></select></div></div>`;
+            } else {
+                const towers = sheetData.Towers.filter(tower => tower[1] === id);
+                body = `${editField('Society name','name',row[1],'text',true)}<div class="edit-items"><strong>Towers</strong><div id="editor-tower-list">${towers.map(tower => `<div class="edit-tower-row"><input data-tower-name value="${escapeHtml(tower[2])}" aria-label="Tower name"><button type="button" class="icon-btn delete" onclick="this.parentElement.remove()" aria-label="Remove tower">×</button></div>`).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorTower()">＋ Add tower</button></div>`;
+            }
+            document.getElementById('edit-body').innerHTML = body;
+            document.getElementById('edit-error').classList.remove('show');
+            document.getElementById('edit-overlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('edit-body').oninput = updateEditorTotals;
+            updateEditorTotals();
+        }
+        function closeRecordEditor() {
+            document.getElementById('edit-overlay').classList.remove('open');
+            document.body.style.overflow = '';
+            recordEditorState = null;
+        }
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && document.getElementById('edit-overlay').classList.contains('open')) closeRecordEditor();
+        });
+        function addEditorItem(type) {
+            document.getElementById('editor-item-list').insertAdjacentHTML('beforeend', renderEditorItemRow(type));
+            updateEditorTotals();
+        }
+        function removeEditorItem(button) { button.closest('.edit-item-row').remove(); updateEditorTotals(); }
+        function addEditorTower() {
+            document.getElementById('editor-tower-list').insertAdjacentHTML('beforeend', `<div class="edit-tower-row"><input data-tower-name aria-label="Tower name" placeholder="Tower A"><button type="button" class="icon-btn delete" onclick="this.parentElement.remove()" aria-label="Remove tower">×</button></div>`);
+        }
+        function updateEditorTotals() {
+            if (!recordEditorState || !['order','purchase'].includes(recordEditorState.type)) return;
+            const rows = [...document.querySelectorAll('#editor-item-list .edit-item-row')];
+            const qty = rows.reduce((sum,item) => sum + (recordEditorState.type === 'order' ? (Number(item.querySelector('[data-item-qty]').value)||0) : 1),0);
+            const total = rows.reduce((sum,item) => sum + (Number(item.querySelector('[data-item-price]').value)||0) * (recordEditorState.type === 'order' ? (Number(item.querySelector('[data-item-qty]').value)||0) : 1),0);
+            document.getElementById('editor-qty').textContent = qty;
+            document.getElementById('editor-total').textContent = '₹' + total.toLocaleString('en-IN',{maximumFractionDigits:2});
+        }
+        function getEditorItems(type) {
+            return [...document.querySelectorAll('#editor-item-list .edit-item-row')].map(item => ({
+                name:item.querySelector('[data-item-name]').value.trim(),
+                qty:type === 'order' ? Number(item.querySelector('[data-item-qty]').value) : 1,
+                price:item.querySelector('[data-item-price]').value === '' ? NaN : Number(item.querySelector('[data-item-price]').value)
+            })).filter(item => item.name);
+        }
+        async function saveRecordEditor(event) {
+            event.preventDefault();
+            if (!recordEditorState) return;
+            const saveButton = document.getElementById('edit-save-btn');
+            saveButton.disabled = true; saveButton.textContent = 'Saving…';
+            try {
+                const {type,id,index,row} = recordEditorState;
+                if (type === 'order') {
+                    const items = getEditorItems(type);
+                    if (!items.length || items.some(item => !Number.isInteger(item.qty) || item.qty < 1 || !Number.isFinite(item.price) || item.price < 0)) throw new Error('Har item ka naam, valid quantity aur unit price bharein.');
+                    row[1]=document.querySelector('[data-edit-field="dateTime"]').value.trim();
+                    row[2]=document.querySelector('[data-edit-field="society"]').value.trim(); row[3]=document.querySelector('[data-edit-field="tower"]').value.trim();
+                    row[4]=document.querySelector('[data-edit-field="flat"]').value.trim(); row[5]=document.querySelector('[data-edit-field="floor"]').value.trim();
+                    row[6]=document.querySelector('[data-edit-field="address"]').value.trim(); row[7]=document.querySelector('[data-edit-field="customer"]').value.trim(); row[8]=document.querySelector('[data-edit-field="contact"]').value.trim();
+                    row[9]=items.map(item=>`${item.name} (x${item.qty})`).join(', '); row[10]=items.reduce((sum,item)=>sum+item.qty,0); row[11]=items.reduce((sum,item)=>sum+item.qty*item.price,0);
+                    const oldRows=sheetData.OrderItems.map((item,i)=>item[1]===id?i+2:null).filter(Boolean); await deleteDataRows('OrderItems',oldRows);
+                    for (const [i,item] of items.entries()) await appendSheetData('OrderItems',['ITM-'+Date.now()+'-'+i,id,item.name,item.qty,item.price,item.qty*item.price]);
+                    await updateDataRow('Orders',index+2,row);
+                } else if (type === 'purchase') {
+                    const items=getEditorItems(type); if (!items.length || items.some(item=>!Number.isFinite(item.price)||item.price<0)) throw new Error('Har purchase item ka naam aur valid price bharein.');
+                    row[1]=document.querySelector('[data-edit-field="dateTime"]').value.trim(); row[2]=items.reduce((sum,item)=>sum+item.price,0);
+                    const oldRows=sheetData.PurchaseItems.map((item,i)=>item[1]===id?i+2:null).filter(Boolean); await deleteDataRows('PurchaseItems',oldRows);
+                    for (const [i,item] of items.entries()) await appendSheetData('PurchaseItems',['PITM-'+Date.now()+'-'+i,id,row[1],item.name,item.price]);
+                    await updateDataRow('Purchases',index+2,row);
+                } else if (type === 'menu') {
+                    const name=document.querySelector('[data-edit-field="name"]').value.trim(), details=document.querySelector('[data-edit-field="details"]').value.trim();
+                    const priceText=document.querySelector('[data-edit-field="price"]').value;
+                    const price=Number(priceText), active=document.querySelector('[data-edit-field="active"]').value;
+                    if (!name || priceText === '' || !Number.isFinite(price) || price<0) throw new Error('Naam aur valid price bharein.');
+                    row[1]=name; row[2]=details; row[3]=price; row[4]=active; await updateDataRow('Menu',index+2,row);
+                } else if (type === 'society') {
+                    const name=document.querySelector('[data-edit-field="name"]').value.trim();
+                    const names=[...document.querySelectorAll('[data-tower-name]')].map(input=>input.value.trim()).filter(Boolean);
+                    if (!name) throw new Error('Society ka naam bharein.');
+                    row[1]=name; await updateDataRow('Societies',index+2,row);
+                    const oldRows=sheetData.Towers.map((tower,i)=>tower[1]===id?i+2:null).filter(Boolean); await deleteDataRows('Towers',oldRows);
+                    for (const [i,towerName] of names.entries()) await appendSheetData('Towers',['TWR-'+Date.now()+'-'+i,id,towerName,'TRUE',formatDateTimeForSheet()]);
+                }
+                closeRecordEditor(); await loadAllData(); showMessage('Changes save ho gaye.');
+            } catch(err) {
+                const feedback=document.getElementById('edit-error');
+                feedback.textContent=err.message; feedback.classList.add('show');
+            } finally { saveButton.disabled=false; saveButton.textContent='Save changes'; }
         }
 
         // --- DATA LOADING ---
@@ -673,33 +850,7 @@
         }
 
         async function editOrder(orderId) {
-            const index = sheetData.Orders.findIndex(row => row[0] === orderId); if (index < 0) return;
-            const row = [...sheetData.Orders[index]];
-            const existingItems = sheetData.OrderItems.filter(item => item[1] === orderId);
-            const fields = [[1,'Date & time'],[2,'Society'],[3,'Tower'],[4,'Flat number'],[5,'Floor'],[6,'Address'],[7,'Customer name'],[8,'Contact number']];
-            for (const [col, label] of fields) { const value = prompt(`${label}:`, row[col] || ''); if (value === null) return; row[col] = value.trim(); }
-            const oldItemText = existingItems.map(item => `${item[2]} | ${item[3]} | ${item[4]}`).join('\n');
-            const input = prompt('Order items, ek line mein: Naam | Quantity | Unit price', oldItemText);
-            if (input === null) return;
-            const items = input.split('\n').map(line => line.trim()).filter(Boolean).map(line => {
-                const [name, qtyText, priceText] = line.split('|').map(x => x.trim());
-                return {name, qty: Number(qtyText), price: Number(priceText)};
-            });
-            if (!items.length || items.some(item => !item.name || !Number.isFinite(item.qty) || item.qty < 1 || !Number.isFinite(item.price) || item.price < 0)) {
-                showMessage('Items ka format Naam | Quantity | Unit price rakhein.', true); return;
-            }
-            row[9] = items.map(item => `${item.name} (x${item.qty})`).join(', ');
-            row[10] = items.reduce((sum, item) => sum + item.qty, 0);
-            row[11] = items.reduce((sum, item) => sum + item.qty * item.price, 0);
-            try {
-                const oldRows = sheetData.OrderItems.map((item, i) => item[1] === orderId ? i + 2 : null).filter(Boolean);
-                await deleteDataRows('OrderItems', oldRows);
-                for (const [itemIndex, item] of items.entries()) {
-                    await appendSheetData('OrderItems', ['ITM-' + Date.now() + '-' + itemIndex, orderId, item.name, item.qty, item.price, item.qty * item.price]);
-                }
-                await updateDataRow('Orders', index + 2, row);
-                await loadAllData(); showMessage('Order aur uske items update ho gaye.');
-            } catch (err) { showMessage(err.message, true); }
+            openRecordEditor('order', orderId);
         }
 
         async function deleteOrder(orderId) {
@@ -726,17 +877,7 @@
         }
 
         async function editMenuItem(itemId) {
-            const index = sheetData.Menu.findIndex(row => row[0] === itemId); if (index < 0) return;
-            const row = [...sheetData.Menu[index]];
-            const name = prompt('Item name:', row[1]); if (name === null) return;
-            const details = prompt('Full details / contents:', row[2] || ''); if (details === null) return;
-            const priceText = prompt('Price:', row[3]); if (priceText === null) return;
-            const activeText = prompt('Active status TRUE ya FALSE:', row[4] || 'TRUE'); if (activeText === null) return;
-            const price = Number(priceText); const active = activeText.trim().toUpperCase();
-            if (!name.trim() || !Number.isFinite(price) || price < 0 || !['TRUE','FALSE'].includes(active)) { showMessage('Naam, valid price, aur TRUE/FALSE status bharein.', true); return; }
-            row[1] = name.trim(); row[2] = details.trim(); row[3] = price; row[4] = active;
-            try { await updateDataRow('Menu', index + 2, row); await loadAllData(); showMessage('Menu item update ho gaya.'); }
-            catch (err) { showMessage(err.message, true); }
+            openRecordEditor('menu', itemId);
         }
 
         async function deleteMenuItem(itemId) {
@@ -871,30 +1012,7 @@
         }
 
         async function editPurchase(purchaseId) {
-            const index = sheetData.Purchases.findIndex(row => row[0] === purchaseId); if (index < 0) return;
-            const row = [...sheetData.Purchases[index]];
-            const dateTime = prompt('Purchase date & time:', row[1] || ''); if (dateTime === null) return;
-            const existingItems = sheetData.PurchaseItems.filter(item => item[1] === purchaseId);
-            const oldItemText = existingItems.map(item => `${item[3]} | ${item[4]}`).join('\n');
-            const input = prompt('Purchase items, ek line mein: Naam | Price', oldItemText); if (input === null) return;
-            const items = input.split('\n').map(line => line.trim()).filter(Boolean).map(line => {
-                const [name, priceText] = line.split('|').map(x => x.trim());
-                return {name, price: Number(priceText)};
-            });
-            if (!items.length || items.some(item => !item.name || !Number.isFinite(item.price) || item.price < 0)) {
-                showMessage('Items ka format Naam | Price rakhein.', true); return;
-            }
-            row[1] = dateTime.trim();
-            row[2] = items.reduce((sum, item) => sum + item.price, 0);
-            try {
-                const oldRows = sheetData.PurchaseItems.map((item, i) => item[1] === purchaseId ? i + 2 : null).filter(Boolean);
-                await deleteDataRows('PurchaseItems', oldRows);
-                for (const [itemIndex, item] of items.entries()) {
-                    await appendSheetData('PurchaseItems', ['PITM-' + Date.now() + '-' + itemIndex, purchaseId, row[1], item.name, item.price]);
-                }
-                await updateDataRow('Purchases', index + 2, row);
-                await loadAllData(); showMessage('Purchase aur uske items update ho gaye.');
-            } catch (err) { showMessage(err.message, true); }
+            openRecordEditor('purchase', purchaseId);
         }
 
         async function deletePurchase(purchaseId) {
@@ -928,24 +1046,7 @@
         }
 
         async function editSociety(id) {
-            const index = sheetData.Societies.findIndex(row => row[0] === id); if (index < 0) return;
-            const row = [...sheetData.Societies[index]];
-            const name = prompt('Society name:', row[1]); if (name === null || !name.trim()) return;
-            const towers = sheetData.Towers.filter(tower => tower[1] === id);
-            const towerText = prompt('Is society ke tower names (comma se alag karein):', towers.map(tower => tower[2]).join(', '));
-            if (towerText === null) return;
-            const towerNames = [...new Set(towerText.split(',').map(value => value.trim()).filter(Boolean))];
-            row[1] = name.trim();
-            try {
-                await updateDataRow('Societies', index + 2, row);
-                const oldRows = sheetData.Towers.map((tower, i) => tower[1] === id ? i + 2 : null).filter(Boolean);
-                await deleteDataRows('Towers', oldRows);
-                for (const [i, towerName] of towerNames.entries()) {
-                    await appendSheetData('Towers', ['TWR-' + Date.now() + '-' + i, id, towerName, 'TRUE', formatDateTimeForSheet()]);
-                }
-                await loadAllData(); showMessage('Society aur towers update ho gaye.');
-            }
-            catch (err) { showMessage(err.message, true); }
+            openRecordEditor('society', id);
         }
 
         async function deleteSociety(id) {
