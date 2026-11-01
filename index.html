@@ -328,11 +328,6 @@
                     <div id="qr-display" style="text-align:center"></div>
                     <input type="file" id="qr-upload" class="hidden" accept="image/*" onchange="uploadImage(event, 'qr')">
                 </div>
-                <div class="card">
-                    <div class="media-card-head"><h3>WhatsApp Group Link / Image</h3><div class="media-actions"><button id="wa-upload-first" type="button" class="btn btn-secondary media-upload-trigger" onclick="document.getElementById('wa-upload').click()">＋ Upload</button><button id="wa-edit" type="button" class="icon-btn hidden" aria-label="WhatsApp image edit" title="WhatsApp image change karein" onclick="document.getElementById('wa-upload').click()">✏️</button></div></div>
-                    <div id="wa-display" style="text-align:center"></div>
-                    <input type="file" id="wa-upload" class="hidden" accept="image/*" onchange="uploadImage(event, 'wa')">
-                </div>
             </div>
 
         </div>
@@ -712,7 +707,7 @@
                 }
             });
 
-            const itemSelectHTML = `<option value="">Choose item</option>` + sheetData.Menu.map(m => `<option value="${m[0]}" data-price="${m[3]}">${m[1]}</option>`).join('');
+            const itemSelectHTML = `<option value="">Choose item</option>` + sheetData.Menu.map(m => `<option value="${m[0]}" data-price="${m[3]}">${m[1]} — ₹${m[3]}</option>`).join('');
             document.querySelectorAll('.order-item-select').forEach(sel => {
                 const val = sel.value;
                 sel.innerHTML = itemSelectHTML;
@@ -754,7 +749,7 @@
             row.className = 'order-item-row';
             row.innerHTML = `
                 <div><label>Menu item</label><select class="order-item-select" onchange="updateOrderRowPrice(this)">
-                    ${`<option value="">Choose item</option>` + sheetData.Menu.map(m => `<option value="${m[0]}" data-price="${m[3]}">${m[1]}</option>`).join('')}
+                    ${`<option value="">Choose item</option>` + sheetData.Menu.map(m => `<option value="${m[0]}" data-price="${m[3]}">${m[1]} — ₹${m[3]}</option>`).join('')}
                 </select></div>
                 <div><label>Price</label><div class="order-row-price-value">₹—</div></div>
                 <div><label>Qty</label><input type="number" class="order-item-qty" min="1" value="1" oninput="calculateOrderTotals()"></div>
@@ -773,7 +768,7 @@
         function calculateOrderTotals() {
             let totalQty = 0;
             let totalAmount = 0;
-            document.querySelectorAll('#order-items-container .item-row').forEach(row => {
+            document.querySelectorAll('#order-items-container .order-item-row').forEach(row => {
                 const select = row.querySelector('.order-item-select');
                 const qty = parseInt(row.querySelector('.order-item-qty').value) || 0;
                 if (select.value) {
@@ -801,13 +796,13 @@
             }
 
             const items = [];
-            document.querySelectorAll('#order-items-container .item-row').forEach(row => {
+            document.querySelectorAll('#order-items-container .order-item-row').forEach(row => {
                 const select = row.querySelector('.order-item-select');
                 const qty = parseInt(row.querySelector('.order-item-qty').value);
                 if (select.value && qty > 0) {
                     items.push({
                         id: select.value,
-                        name: select.options[select.selectedIndex].text.split(' - ')[0],
+                        name: (sheetData.Menu.find(menuItem => menuItem[0] === select.value) || [null, select.options[select.selectedIndex].text])[1],
                         price: parseFloat(select.options[select.selectedIndex].getAttribute('data-price')),
                         qty: qty
                     });
@@ -943,37 +938,39 @@
         }
 
         // --- PURCHASE ---
-        // Generate unique item names for datalist
-        function getPurchaseSuggestions() {
-            const names = new Set(sheetData.PurchaseItems.map(p => p[3]));
-            return Array.from(names).join('|'); // Use pipe delimiter for simple JS logic
-        }
-
         function addPurchaseItemRow() {
             const container = document.getElementById('purchase-items-container');
             const row = document.createElement('div');
             row.className = 'item-row';
-            // Using datalist for suggestions
+            const latestItems = new Map();
+            sheetData.PurchaseItems.forEach(item => { if (item[3]) latestItems.set(item[3], item[4]); });
+            const savedOptions = [...latestItems.entries()].map(([name, price]) => `<option value="${escapeHtml(name)}" data-price="${escapeHtml(price)}">${escapeHtml(name)}</option>`).join('');
             row.innerHTML = `
-                <input type="text" class="purchase-item-name" placeholder="Item Name" list="purchase-suggestions" style="flex:2; margin:0;">
-                <input type="number" class="purchase-item-price" placeholder="Price ₹" min="0" step="0.01" style="flex:1; margin:0; width:80px;" oninput="calculatePurchaseTotals()">
-                <button class="btn btn-secondary btn-small" onclick="this.parentElement.remove(); calculatePurchaseTotals();" style="margin:0;">X</button>
+                <select class="purchase-item-select" aria-label="Purchase item" onchange="togglePurchaseItemName(this)" style="flex:2; min-width:0; margin:0;">
+                    <option value="">Choose saved item</option>${savedOptions}<option value="__NEW_PURCHASE_ITEM__">＋ New item name</option>
+                </select>
+                <input type="text" class="purchase-item-name hidden" placeholder="Type new item" aria-label="New purchase item name" style="flex:2; min-width:0; margin:0;">
+                <input type="number" class="purchase-item-price" placeholder="Price ₹" aria-label="Purchase price" min="0" step="0.01" style="flex:1; margin:0; width:80px;" oninput="calculatePurchaseTotals()">
+                <button type="button" class="btn btn-secondary btn-small" aria-label="Remove item" onclick="this.parentElement.remove(); calculatePurchaseTotals();" style="margin:0;">×</button>
             `;
             container.appendChild(row);
-            
-            // Ensure datalist exists
-            if (!document.getElementById('purchase-suggestions')) {
-                const datalist = document.createElement('datalist');
-                datalist.id = 'purchase-suggestions';
-                document.body.appendChild(datalist);
-            }
-            // Populate datalist
-            const datalist = document.getElementById('purchase-suggestions');
-            datalist.innerHTML = '';
-            const uniqueNames = [...new Set(sheetData.PurchaseItems.map(p => p[3]))];
-            uniqueNames.forEach(name => {
-                datalist.innerHTML += `<option value="${name}">`;
-            });
+        }
+
+        function togglePurchaseItemName(select) {
+            const row = select.closest('.item-row');
+            const customName = row.querySelector('.purchase-item-name');
+            const priceInput = row.querySelector('.purchase-item-price');
+            const isNew = select.value === '__NEW_PURCHASE_ITEM__';
+            customName.classList.toggle('hidden', !isNew);
+            select.classList.toggle('hidden', isNew);
+            if (isNew) { customName.value = ''; priceInput.value = ''; customName.focus(); }
+            else { priceInput.value = select.value ? (select.selectedOptions[0].dataset.price || '') : ''; }
+            calculatePurchaseTotals();
+        }
+
+        function getPurchaseItemName(row) {
+            const select = row.querySelector('.purchase-item-select');
+            return select.value === '__NEW_PURCHASE_ITEM__' ? row.querySelector('.purchase-item-name').value.trim() : select.value.trim();
         }
 
         function calculatePurchaseTotals() {
@@ -988,7 +985,7 @@
         async function savePurchase() {
             const items = [];
             document.querySelectorAll('#purchase-items-container .item-row').forEach(row => {
-                const name = row.querySelector('.purchase-item-name').value;
+                const name = getPurchaseItemName(row);
                 const price = parseFloat(row.querySelector('.purchase-item-price').value);
                 if (name && price >= 0) {
                     items.push({ name, price });
@@ -1216,7 +1213,7 @@
         }
 
         async function loadSavedImages() {
-            for (const type of ['qr', 'wa']) {
+            for (const type of ['qr']) {
                 try { const files = await listSavedImages(type); await showDriveImage(type, files[0] || null); }
                 catch (err) { console.warn(type + ' image load failed:', err.message); }
             }
