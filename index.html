@@ -62,11 +62,12 @@
         .more-shortcuts .btn { background:#f2f5fa; color:#34445f; border:1px solid #e0e6ef; }
         .edit-overlay { position:fixed; inset:0; z-index:300; display:none; align-items:center; justify-content:center; padding:16px; background:rgba(20,28,40,.54); backdrop-filter:blur(3px); }
         .edit-overlay.open { display:flex; }
-        .edit-dialog { width:min(100%,720px); max-height:min(90dvh,900px); display:flex; flex-direction:column; overflow:hidden; background:#fff; border-radius:20px; box-shadow:0 24px 80px rgba(10,20,35,.28); }
+        .edit-dialog { width:min(100%,720px); height:min(90dvh,900px); max-height:min(90dvh,900px); display:flex; flex-direction:column; overflow:hidden; background:#fff; border-radius:20px; box-shadow:0 24px 80px rgba(10,20,35,.28); }
+        .edit-dialog form { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
         .edit-head, .edit-foot { flex:none; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; background:#fff; }
         .edit-head { border-bottom:1px solid #edf0f5; }
         .edit-head h2 { margin:0; font-size:20px; }
-        .edit-body { padding:18px 20px; overflow:auto; overscroll-behavior:contain; }
+        .edit-body { flex:1; min-height:0; padding:18px 20px; overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
         .edit-foot { border-top:1px solid #edf0f5; justify-content:flex-end; }
         .edit-error { display:none; margin:0 20px 12px; padding:10px 12px; border-radius:10px; color:#a93232; background:#fff0f0; }
         .edit-error.show { display:block; }
@@ -80,6 +81,11 @@
         .edit-live-total { display:flex; justify-content:space-between; gap:12px; padding:11px 12px; background:#fff3e3; border-radius:10px; font-weight:700; }
         .edit-tower-row { display:flex; gap:8px; align-items:center; }
         .edit-tower-row input { flex:1; }
+        .media-card-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+        .media-card-head h3 { margin:0; }
+        .media-actions { display:flex; align-items:center; gap:8px; }
+        .media-upload-trigger { width:auto; min-height:40px; margin:0; padding:8px 13px; border-radius:12px; }
+        .media-image { display:block; margin:12px auto 4px; max-width:100%; max-height:420px; object-fit:contain; border-radius:12px; }
         .icon-btn:focus-visible, .btn:focus-visible, .select-with-action button:focus-visible { outline:3px solid #ffc66d; outline-offset:2px; }
         .order-total-bar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:16px; padding:12px 14px; border-radius:10px; background:#fff4e5; font-size:16px; }
         .order-total-bar > span:last-child { text-align:right; }
@@ -108,7 +114,7 @@
             .quick-action-grid, .more-shortcuts { gap:9px; }
             .quick-action-grid .btn, .more-shortcuts .btn { min-height:54px; padding:10px 7px; font-size:14px; }
             .edit-overlay { padding:8px; align-items:flex-end; }
-            .edit-dialog { width:100%; max-height:94dvh; border-radius:18px 18px 10px 10px; }
+            .edit-dialog { width:100%; height:94dvh; max-height:94dvh; border-radius:18px 18px 10px 10px; }
             .edit-head, .edit-foot { padding:13px 15px; }
             .edit-body { padding:14px 15px; }
             .edit-item-row { grid-template-columns:minmax(0,1fr) 54px 70px 42px; gap:5px; }
@@ -298,16 +304,14 @@
                     </div>
                 </div>
                 <div class="card">
-                    <h3>Payment QR Code</h3>
-                    <div id="qr-display" style="margin-bottom: 10px; text-align: center;"></div>
-                    <input type="file" id="qr-upload" accept="image/*" onchange="uploadImage(event, 'qr')">
-                    <button type="button" class="btn btn-secondary" onclick="deleteSavedImage('qr')">QR image delete karein</button>
+                    <div class="media-card-head"><h3>Payment QR Code</h3><div class="media-actions"><button id="qr-upload-first" type="button" class="btn btn-secondary media-upload-trigger" onclick="document.getElementById('qr-upload').click()">＋ Upload</button><button id="qr-edit" type="button" class="icon-btn hidden" aria-label="QR image edit" title="QR image change karein" onclick="document.getElementById('qr-upload').click()">✏️</button></div></div>
+                    <div id="qr-display" style="text-align:center"></div>
+                    <input type="file" id="qr-upload" class="hidden" accept="image/*" onchange="uploadImage(event, 'qr')">
                 </div>
                 <div class="card">
-                    <h3>WhatsApp Group Link / Image</h3>
-                    <div id="wa-display" style="margin-bottom: 10px; text-align: center;"></div>
-                    <input type="file" id="wa-upload" accept="image/*" onchange="uploadImage(event, 'wa')">
-                    <button type="button" class="btn btn-secondary" onclick="deleteSavedImage('wa')">WhatsApp image delete karein</button>
+                    <div class="media-card-head"><h3>WhatsApp Group Link / Image</h3><div class="media-actions"><button id="wa-upload-first" type="button" class="btn btn-secondary media-upload-trigger" onclick="document.getElementById('wa-upload').click()">＋ Upload</button><button id="wa-edit" type="button" class="icon-btn hidden" aria-label="WhatsApp image edit" title="WhatsApp image change karein" onclick="document.getElementById('wa-upload').click()">✏️</button></div></div>
+                    <div id="wa-display" style="text-align:center"></div>
+                    <input type="file" id="wa-upload" class="hidden" accept="image/*" onchange="uploadImage(event, 'wa')">
                 </div>
             </div>
 
@@ -713,12 +717,12 @@
         }
 
         function autoCalcFloor() {
-            const flat = document.getElementById('order-flat').value;
-            if (!flat) return;
-            const match = flat.match(/\d+/);
-            if (match && match[0].length >= 3) {
-                // e.g. 101 -> 1st floor
-                document.getElementById('order-floor').value = match[0].charAt(0);
+            const flatDigits = document.getElementById('order-flat').value.replace(/\D/g, '');
+            const floorInput = document.getElementById('order-floor');
+            if (!flatDigits) { floorInput.value = ''; return; }
+            if (flatDigits.length >= 3) {
+                // Remove the last two digits: 101 -> floor 1, 303 -> 3, 1101 -> 11.
+                floorInput.value = String(Number(flatDigits.slice(0, -2)));
             }
         }
 
@@ -1150,14 +1154,19 @@
         }
 
         const savedImageObjectUrls = {};
+        function setImageControls(type, hasImage) {
+            document.getElementById(`${type}-upload-first`).classList.toggle('hidden', hasImage);
+            document.getElementById(`${type}-edit`).classList.toggle('hidden', !hasImage);
+        }
         async function showDriveImage(type, file) {
             const display = document.getElementById(type === 'qr' ? 'qr-display' : 'wa-display');
             display.replaceChildren();
             if (savedImageObjectUrls[type]) { URL.revokeObjectURL(savedImageObjectUrls[type]); delete savedImageObjectUrls[type]; }
-            if (!file) { display.textContent = 'Abhi image upload nahi hai.'; return; }
+            if (!file) { display.textContent = 'Abhi image upload nahi hai.'; setImageControls(type,false); return; }
+            setImageControls(type,true);
             const img = document.createElement('img');
             img.alt = type === 'qr' ? 'Payment QR code' : 'WhatsApp group image';
-            img.style.cssText = 'max-width:100%;max-height:420px;object-fit:contain;border-radius:10px';
+            img.className = 'media-image';
             display.textContent = 'Image load ho rahi hai…';
             try {
                 const res = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?alt=media`, {
@@ -1187,6 +1196,7 @@
         async function uploadImage(event, type) {
             const file = event.target.files?.[0]; if (!file) return;
             showMessage('Image upload ho rahi hai…');
+            const previousFiles = await listSavedImages(type).catch(() => []);
             const metadata = {name: `${type}_${Date.now()}_${file.name}`, mimeType: file.type};
             const form = new FormData();
             form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
@@ -1204,6 +1214,10 @@
                 if (!permissionRes.ok) {
                     const permissionError = await permissionRes.json();
                     throw new Error(permissionError.error?.message || 'Image permission set nahi hui');
+                }
+                for (const oldFile of previousFiles) {
+                    try { await fetch(`https://www.googleapis.com/drive/v3/files/${oldFile.id}`, {method:'DELETE',headers:{Authorization:`Bearer ${accessToken}`}}); }
+                    catch (cleanupError) { console.warn('Old image cleanup skipped:', cleanupError.message); }
                 }
                 await loadSavedImages();
                 showMessage('Image upload ho gayi aur display mein load kar di.');
