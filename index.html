@@ -645,8 +645,8 @@
             sortedOrders.forEach(({order, rowNumber}) => {
                 if (order.length < 12) return;
                 const orderId = order[0];
-                const lines = sheetData.OrderItems.map((item, index) => ({item, rowNumber: index + 2})).filter(x => x.item[1] === orderId);
-                const lineHtml = lines.length ? lines.map(({item}) => `<div class="order-line"><span>${item[2]} × ${item[3]} — ₹${item[5]}</span>${actionButtons('editOrderItem', 'deleteOrderItem', item[0])}</div>`).join('') : `<div>${order[9] || 'Item details nahi hain'}</div>`;
+                const lines = sheetData.OrderItems.filter(item => item[1] === orderId);
+                const lineHtml = lines.length ? lines.map(item => `${item[2]} × ${item[3]} — ₹${item[5]}`).join(', ') : (order[9] || 'Item details nahi hain');
                 const contact = order[8] ? ` (${order[8]})` : '';
                 container.innerHTML += `<div class="card">
                     <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
@@ -656,7 +656,7 @@
                     <div><strong>Location:</strong> ${order[2]}, Tower ${order[3]} - Flat ${order[4]} (Floor ${order[5]})</div>
                     <div><strong>Customer:</strong> ${order[7] || ''}${contact}</div>
                     <div style="margin-top:10px;background:#f5f5f5;padding:10px;border-radius:5px">
-                        <strong>Items:</strong>${lineHtml}
+                        <strong>Items:</strong> ${lineHtml}<br>
                         <strong>Qty:</strong> ${order[10]} | <strong>Total:</strong> ₹${order[11]}
                     </div>
                 </div>`;
@@ -664,17 +664,33 @@
         }
 
         async function editOrder(orderId) {
-            const index = sheetData.Orders.findIndex(row => row[0] === orderId);
-            if (index < 0) return;
+            const index = sheetData.Orders.findIndex(row => row[0] === orderId); if (index < 0) return;
             const row = [...sheetData.Orders[index]];
-            const fields = [[2,'Society'],[3,'Tower'],[4,'Flat number'],[5,'Floor'],[6,'Address'],[7,'Customer name'],[8,'Contact number']];
-            for (const [col, label] of fields) {
-                const value = prompt(`Edit ${label}:`, row[col] || '');
-                if (value === null) return;
-                row[col] = value.trim();
+            const existingItems = sheetData.OrderItems.filter(item => item[1] === orderId);
+            const fields = [[1,'Date & time'],[2,'Society'],[3,'Tower'],[4,'Flat number'],[5,'Floor'],[6,'Address'],[7,'Customer name'],[8,'Contact number']];
+            for (const [col, label] of fields) { const value = prompt(`${label}:`, row[col] || ''); if (value === null) return; row[col] = value.trim(); }
+            const oldItemText = existingItems.map(item => `${item[2]} | ${item[3]} | ${item[4]}`).join('\n');
+            const input = prompt('Order items, ek line mein: Naam | Quantity | Unit price', oldItemText);
+            if (input === null) return;
+            const items = input.split('\n').map(line => line.trim()).filter(Boolean).map(line => {
+                const [name, qtyText, priceText] = line.split('|').map(x => x.trim());
+                return {name, qty: Number(qtyText), price: Number(priceText)};
+            });
+            if (!items.length || items.some(item => !item.name || !Number.isFinite(item.qty) || item.qty < 1 || !Number.isFinite(item.price) || item.price < 0)) {
+                showMessage('Items ka format Naam | Quantity | Unit price rakhein.', true); return;
             }
-            try { await updateDataRow('Orders', index + 2, row); await loadAllData(); showMessage('Order update ho gaya.'); }
-            catch (err) { showMessage(err.message, true); }
+            row[9] = items.map(item => `${item.name} (x${item.qty})`).join(', ');
+            row[10] = items.reduce((sum, item) => sum + item.qty, 0);
+            row[11] = items.reduce((sum, item) => sum + item.qty * item.price, 0);
+            try {
+                const oldRows = sheetData.OrderItems.map((item, i) => item[1] === orderId ? i + 2 : null).filter(Boolean);
+                await deleteDataRows('OrderItems', oldRows);
+                for (const [itemIndex, item] of items.entries()) {
+                    await appendSheetData('OrderItems', ['ITM-' + Date.now() + '-' + itemIndex, orderId, item.name, item.qty, item.price, item.qty * item.price]);
+                }
+                await updateDataRow('Orders', index + 2, row);
+                await loadAllData(); showMessage('Order aur uske items update ho gaye.');
+            } catch (err) { showMessage(err.message, true); }
         }
 
         async function deleteOrder(orderId) {
@@ -686,41 +702,6 @@
                 if (orderIndex >= 0) await deleteDataRows('Orders', [orderIndex + 2]);
                 await loadAllData(); showMessage('Order delete ho gaya.');
             } catch (err) { showMessage(err.message, true); }
-        }
-
-        async function editOrderItem(itemId) {
-            const index = sheetData.OrderItems.findIndex(row => row[0] === itemId);
-            if (index < 0) return;
-            const row = [...sheetData.OrderItems[index]];
-            const name = prompt('Item name:', row[2]); if (name === null) return;
-            const qtyText = prompt('Quantity:', row[3]); if (qtyText === null) return;
-            const priceText = prompt('Unit price:', row[4]); if (priceText === null) return;
-            const qty = Number(qtyText), price = Number(priceText);
-            if (!name.trim() || !Number.isFinite(qty) || qty < 1 || !Number.isFinite(price) || price < 0) { showMessage('Item, quantity aur price sahi bharein.', true); return; }
-            row[2] = name.trim(); row[3] = qty; row[4] = price; row[5] = qty * price;
-            try { await updateDataRow('OrderItems', index + 2, row); await syncOrderTotals(row[1]); showMessage('Order item update ho gaya.'); }
-            catch (err) { showMessage(err.message, true); }
-        }
-
-        async function deleteOrderItem(itemId) {
-            const index = sheetData.OrderItems.findIndex(row => row[0] === itemId);
-            if (index < 0 || !confirm('Ye order item delete kar dein?')) return;
-            const orderId = sheetData.OrderItems[index][1];
-            try { await deleteDataRows('OrderItems', [index + 2]); await syncOrderTotals(orderId); showMessage('Order item delete ho gaya.'); }
-            catch (err) { showMessage(err.message, true); }
-        }
-
-        async function syncOrderTotals(orderId) {
-            await loadAllData();
-            const index = sheetData.Orders.findIndex(row => row[0] === orderId);
-            if (index < 0) return;
-            const items = sheetData.OrderItems.filter(row => row[1] === orderId);
-            const row = [...sheetData.Orders[index]];
-            row[9] = items.map(item => `${item[2]} (x${item[3]})`).join(', ');
-            row[10] = items.reduce((sum, item) => sum + (Number(item[3]) || 0), 0);
-            row[11] = items.reduce((sum, item) => sum + (Number(item[5]) || 0), 0);
-            await updateDataRow('Orders', index + 2, row);
-            await loadAllData();
         }
 
         // --- MENU ---
@@ -867,47 +848,43 @@
             const rows = [...sheetData.Purchases].map((purchase, index) => ({purchase, rowNumber: index + 2})).reverse();
             container.innerHTML = rows.map(({purchase}) => {
                 const purchaseId = purchase[0];
-                const items = sheetData.PurchaseItems.map((item, index) => ({item, rowNumber: index + 2})).filter(x => x.item[1] === purchaseId);
-                const itemLines = items.length ? items.map(({item}) => `<div class="purchase-line"><span>${item[3] || 'Item'} — ₹${item[4] || 0}</span>${actionButtons('editPurchaseItem','deletePurchaseItem',item[0])}</div>`).join('') : '<div>Is purchase ke item rows Sheet mein nahi mile.</div>';
+                const items = sheetData.PurchaseItems.filter(item => item[1] === purchaseId);
+                const itemLines = items.length ? items.map(item => `${item[3] || 'Item'} — ₹${item[4] || 0}`).join(', ') : 'Is purchase ke item rows Sheet mein nahi mile.';
                 return `<div class="card">
                     <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
                         <div><strong>${purchaseId || 'Purchase'}</strong><div style="color:#666;font-size:13px;margin-top:4px">${formatDateTimeForDisplay(purchase[1])}</div></div>
                         ${actionButtons('editPurchase','deletePurchase',purchaseId)}
                     </div>
-                    <div style="margin-top:8px">${itemLines}</div>
+                    <div style="margin-top:8px"><strong>Items:</strong> ${itemLines}</div>
                     <div style="margin-top:8px"><strong>Total: ₹${purchase[2] || 0}</strong></div>
-                    <button type="button" class="btn btn-secondary btn-small" onclick="addPurchaseLine('${purchaseId}')">+ Is purchase mein item jodein</button>
                 </div>`;
             }).join('');
-        }
-
-        async function addPurchaseLine(purchaseId) {
-            const name = prompt('Naye purchase item ka naam:'); if (name === null || !name.trim()) return;
-            const priceText = prompt('Item ka price:'); if (priceText === null) return;
-            const price = Number(priceText); if (!Number.isFinite(price) || price < 0) { showMessage('Valid price bharein.', true); return; }
-            const purchase = sheetData.Purchases.find(row => row[0] === purchaseId);
-            if (!purchase) return;
-            try {
-                await appendSheetData('PurchaseItems', ['PITM-' + Date.now(), purchaseId, purchase[1], name.trim(), price]);
-                await syncPurchaseTotal(purchaseId);
-                showMessage('Item purane purchase mein add ho gaya.');
-            } catch (err) { showMessage(err.message, true); }
         }
 
         async function editPurchase(purchaseId) {
             const index = sheetData.Purchases.findIndex(row => row[0] === purchaseId); if (index < 0) return;
             const row = [...sheetData.Purchases[index]];
             const dateTime = prompt('Purchase date & time:', row[1] || ''); if (dateTime === null) return;
+            const existingItems = sheetData.PurchaseItems.filter(item => item[1] === purchaseId);
+            const oldItemText = existingItems.map(item => `${item[3]} | ${item[4]}`).join('\n');
+            const input = prompt('Purchase items, ek line mein: Naam | Price', oldItemText); if (input === null) return;
+            const items = input.split('\n').map(line => line.trim()).filter(Boolean).map(line => {
+                const [name, priceText] = line.split('|').map(x => x.trim());
+                return {name, price: Number(priceText)};
+            });
+            if (!items.length || items.some(item => !item.name || !Number.isFinite(item.price) || item.price < 0)) {
+                showMessage('Items ka format Naam | Price rakhein.', true); return;
+            }
             row[1] = dateTime.trim();
+            row[2] = items.reduce((sum, item) => sum + item.price, 0);
             try {
-                await updateDataRow('Purchases', index + 2, row);
-                for (let i = 0; i < sheetData.PurchaseItems.length; i++) {
-                    if (sheetData.PurchaseItems[i][1] === purchaseId) {
-                        const item = [...sheetData.PurchaseItems[i]]; item[2] = row[1];
-                        await updateDataRow('PurchaseItems', i + 2, item);
-                    }
+                const oldRows = sheetData.PurchaseItems.map((item, i) => item[1] === purchaseId ? i + 2 : null).filter(Boolean);
+                await deleteDataRows('PurchaseItems', oldRows);
+                for (const [itemIndex, item] of items.entries()) {
+                    await appendSheetData('PurchaseItems', ['PITM-' + Date.now() + '-' + itemIndex, purchaseId, row[1], item.name, item.price]);
                 }
-                await loadAllData(); showMessage('Purchase date update ho gayi.');
+                await updateDataRow('Purchases', index + 2, row);
+                await loadAllData(); showMessage('Purchase aur uske items update ho gaye.');
             } catch (err) { showMessage(err.message, true); }
         }
 
@@ -922,62 +899,21 @@
             } catch (err) { showMessage(err.message, true); }
         }
 
-        async function editPurchaseItem(itemId) {
-            const index = sheetData.PurchaseItems.findIndex(row => row[0] === itemId); if (index < 0) return;
-            const row = [...sheetData.PurchaseItems[index]];
-            const name = prompt('Purchase item name:', row[3]); if (name === null) return;
-            const priceText = prompt('Price:', row[4]); if (priceText === null) return;
-            const price = Number(priceText);
-            if (!name.trim() || !Number.isFinite(price) || price < 0) { showMessage('Item name aur valid price bharein.', true); return; }
-            row[3] = name.trim(); row[4] = price;
-            try { await updateDataRow('PurchaseItems', index + 2, row); await syncPurchaseTotal(row[1]); showMessage('Purchase item update ho gaya.'); }
-            catch (err) { showMessage(err.message, true); }
-        }
-
-        async function deletePurchaseItem(itemId) {
-            const index = sheetData.PurchaseItems.findIndex(row => row[0] === itemId);
-            if (index < 0 || !confirm('Ye purchase item delete kar dein?')) return;
-            const purchaseId = sheetData.PurchaseItems[index][1];
-            try { await deleteDataRows('PurchaseItems', [index + 2]); await syncPurchaseTotal(purchaseId); showMessage('Purchase item delete ho gaya.'); }
-            catch (err) { showMessage(err.message, true); }
-        }
-
-        async function syncPurchaseTotal(purchaseId) {
-            await loadAllData();
-            const index = sheetData.Purchases.findIndex(row => row[0] === purchaseId); if (index < 0) return;
-            const total = sheetData.PurchaseItems.filter(row => row[1] === purchaseId).reduce((sum, row) => sum + (Number(row[4]) || 0), 0);
-            const purchase = [...sheetData.Purchases[index]]; purchase[2] = total;
-            await updateDataRow('Purchases', index + 2, purchase);
-            await loadAllData();
-        }
-
         function renderSocietyTowerList() {
             const container = document.getElementById('society-tower-list');
             if (!container) return;
             container.replaceChildren();
             if (!sheetData.Societies.length) { container.textContent = 'Koi society row nahi mili. Data load error ho to upar ka message dekhein.'; return; }
-            sheetData.Societies.forEach((society, societyIndex) => {
+            sheetData.Societies.forEach(society => {
+                const towers = sheetData.Towers.filter(tower => tower[1] === society[0]).map(tower => tower[2]).filter(Boolean);
                 const row = document.createElement('div');
-                row.style.cssText = 'padding:10px 0;border-bottom:1px solid #eee';
-                const head = document.createElement('div');
-                head.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px';
+                row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #eee';
+                const details = document.createElement('div');
                 const title = document.createElement('strong'); title.textContent = society[1] || '(Naam missing)';
-                head.append(title);
-                head.insertAdjacentHTML('beforeend', actionButtons('editSociety','deleteSociety',society[0]));
-                row.appendChild(head);
-                const towers = sheetData.Towers.map((tower, towerIndex) => ({tower, towerIndex})).filter(x => x.tower[1] === society[0]);
-                if (!towers.length) {
-                    const empty = document.createElement('div'); empty.style.cssText = 'margin:6px 0 0 8px;color:#777'; empty.textContent = 'Abhi koi tower add nahi hai'; row.appendChild(empty);
-                } else {
-                    towers.forEach(({tower}) => {
-                        const towerRow = document.createElement('div');
-                        towerRow.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:8px;margin:6px 0 0 8px;padding:6px 0;border-top:1px solid #f1f1f1';
-                        const name = document.createElement('span'); name.textContent = 'Tower ' + (tower[2] || '(Naam missing)');
-                        towerRow.append(name);
-                        towerRow.insertAdjacentHTML('beforeend', actionButtons('editTower','deleteTower',tower[0]));
-                        row.appendChild(towerRow);
-                    });
-                }
+                const towerNames = document.createElement('div'); towerNames.style.cssText = 'margin-top:4px;color:#666';
+                towerNames.textContent = towers.length ? 'Towers: ' + towers.join(', ') : 'Abhi koi tower add nahi hai';
+                details.append(title, towerNames); row.appendChild(details);
+                row.insertAdjacentHTML('beforeend', actionButtons('editSociety','deleteSociety',society[0]));
                 container.appendChild(row);
             });
         }
@@ -1000,21 +936,6 @@
                 await deleteDataRows('Societies', [index + 2]);
                 await loadAllData(); showMessage('Society aur linked towers delete ho gaye.');
             } catch (err) { showMessage(err.message, true); }
-        }
-
-        async function editTower(id) {
-            const index = sheetData.Towers.findIndex(row => row[0] === id); if (index < 0) return;
-            const row = [...sheetData.Towers[index]];
-            const name = prompt('Tower name/code:', row[2]); if (name === null || !name.trim()) return;
-            row[2] = name.trim();
-            try { await updateDataRow('Towers', index + 2, row); await loadAllData(); showMessage('Tower update ho gaya.'); }
-            catch (err) { showMessage(err.message, true); }
-        }
-
-        async function deleteTower(id) {
-            const index = sheetData.Towers.findIndex(row => row[0] === id); if (index < 0 || !confirm('Tower delete kar dein?')) return;
-            try { await deleteDataRows('Towers', [index + 2]); await loadAllData(); showMessage('Tower delete ho gaya.'); }
-            catch (err) { showMessage(err.message, true); }
         }
 
         function toggleOrderAddForm(type) {
