@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dwivedi Kitchen Sales</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root { --primary: #ff6b6b; --bg: #f8f9fa; --text: #333; --card: #fff; }
+        body { font-family: system-ui, -apple-system, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 60px; }
+        .container { max-width: 800px; margin: 0 auto; padding: 15px; }
+        .card { background: var(--card); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px; }
+        .btn-secondary { background: #4a4a4a; }
+        .btn-small { width: auto; padding: 5px 10px; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
+        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); z-index: 100; }
+        .nav-btn { background: none; border: none; font-size: 14px; color: #666; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
+        .nav-btn.active { color: var(--primary); font-weight: bold; }
+        .hidden { display: none !important; }
+        .view { display: none; }
+        .view.active { display: block; }
+        .flex-row { display: flex; gap: 10px; }
+        .flex-row > * { flex: 1; }
+        .item-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; background: #eee; padding: 10px; border-radius: 5px;}
+        h2 { margin-top: 0; font-size: 20px; }
+        .message { padding: 10px; border-radius: 5px; margin-bottom: 15px; display: none; }
+        .msg-success { background: #d4edda; color: #155724; display: block; }
+        .msg-error { background: #f8d7da; color: #721c24; display: block; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stat-box { background: white; padding: 15px; border-radius: 8px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .stat-box h3 { margin: 0; font-size: 14px; color: #666; }
+        .stat-box p { margin: 5px 0 0; font-size: 20px; font-weight: bold; color: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-view" class="container" style="text-align: center; margin-top: 50px;">
+        <h1>Dwivedi Kitchen</h1>
+        <p>Please sign in with your authorized Google account to manage sales.</p>
+        <div id="g_id_onload"
+             data-client_id="91521766084-r2ekts6unmvvnh0ho640qh7vjvbem10v.apps.googleusercontent.com"
+             data-callback="handleCredentialResponse"
+             data-auto_prompt="false">
+        </div>
+        <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular" data-logo_alignment="left" style="display: flex; justify-content: center;"></div>
+        <p id="login-msg" style="color: red; margin-top: 20px;"></p>
+        <button id="auth-btn" class="btn" onclick="initAuth()" style="margin-top: 20px;">Sign in with Google</button>
+    </div>
+
+    <!-- Main App -->
+    <div id="app-view" class="hidden">
+        <div class="container">
+            <!-- Global Messages -->
+            <div id="global-msg" class="message"></div>
+
+            <!-- HOME -->
+            <div id="home" class="view active">
+                <h2>Dashboard</h2>
+                <div class="grid-2" style="margin-bottom: 15px;">
+                    <div class="stat-box">
+                        <h3>Aaj ke Orders</h3>
+                        <p id="today-orders">0</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Aaj ki Sales</h3>
+                        <p id="today-sales">₹0</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Is Mahine ke Orders</h3>
+                        <p id="month-orders">0</p>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Is Mahine ki Sales</h3>
+                        <p id="month-sales">₹0</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>Quick Actions</h3>
+                    <button class="btn" onclick="switchTab('new-order')">Naya Order</button>
+                    <button class="btn btn-secondary" onclick="switchTab('purchase')">Naya Purchase</button>
+                    <button class="btn btn-secondary" onclick="switchTab('manage')">Society / Tower Setup</button>
+                </div>
+            </div>
+
+            <!-- NEW ORDER -->
+            <div id="new-order" class="view">
+                <h2>Naya Order</h2>
+                <div class="card">
+                    <label>Society</label>
+                    <select id="order-society" onchange="populateTowers()"></select>
+
+                    <label>Tower</label>
+                    <select id="order-tower"></select>
+
+                    <div class="flex-row">
+                        <div>
+                            <label>Flat Number</label>
+                            <input type="text" id="order-flat" oninput="autoCalcFloor()" placeholder="e.g. 101">
+                        </div>
+                        <div>
+                            <label>Floor</label>
+                            <input type="text" id="order-floor" placeholder="Auto">
+                        </div>
+                    </div>
+
+                    <label>Extra Address (Optional)</label>
+                    <input type="text" id="order-address" placeholder="Near lift, etc.">
+
+                    <div class="flex-row">
+                        <div>
+                            <label>Customer Name (Optional)</label>
+                            <input type="text" id="order-name">
+                        </div>
+                        <div>
+                            <label>Contact No (Optional)</label>
+                            <input type="text" id="order-contact">
+                        </div>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
+
+                    <h3>Items</h3>
+                    <div id="order-items-container"></div>
+                    <button class="btn btn-secondary btn-small" onclick="addOrderItemRow()">+ Add Item</button>
+                    
+                    <div style="margin-top: 20px; text-align: right; font-size: 18px;">
+                        <strong>Total Qty: <span id="order-total-qty">0</span></strong><br>
+                        <strong>Final Total: ₹<span id="order-total-amount">0</span></strong>
+                    </div>
+                    <button class="btn" onclick="saveOrder()" style="margin-top: 15px;">Save Order</button>
+                </div>
+            </div>
+
+            <!-- ORDERS LIST -->
+            <div id="orders" class="view">
+                <h2>Orders History</h2>
+                <div id="orders-list"></div>
+            </div>
+
+            <!-- MENU -->
+            <div id="menu" class="view">
+                <h2>Menu Items</h2>
+                <div id="menu-list" class="card"></div>
+            </div>
+
+            <!-- PURCHASE -->
+            <div id="purchase" class="view">
+                <h2>New Purchase</h2>
+                <div class="card">
+                    <div id="purchase-items-container"></div>
+                    <button class="btn btn-secondary btn-small" onclick="addPurchaseItemRow()">+ Add Purchase Item</button>
+                    <div style="margin-top: 20px; text-align: right; font-size: 18px;">
+                        <strong>Total Purchase: ₹<span id="purchase-total-amount">0</span></strong>
+                    </div>
+                    <button class="btn" onclick="savePurchase()" style="margin-top: 15px;">Save Purchase</button>
+                </div>
+            </div>
+
+            <!-- MANAGE SOCIETY/TOWER -->
+            <div id="manage" class="view">
+                <h2>Society / Tower Setup</h2>
+                <div class="card">
+                    <h3>Add New Society</h3>
+                    <input type="text" id="new-society-name" placeholder="Society Name">
+                    <button class="btn" onclick="addSociety()">Add Society</button>
+                </div>
+                <div class="card">
+                    <h3>Add Tower to Society</h3>
+                    <select id="manage-society"></select>
+                    <input type="text" id="new-tower-name" placeholder="Tower Name (e.g. A, B, 1)">
+                    <button class="btn" onclick="addTower()">Add Tower</button>
+                </div>
+            </div>
+
+            <!-- MORE (Images) -->
+            <div id="more" class="view">
+                <h2>More Settings</h2>
+                <div class="card">
+                    <h3>Payment QR Code</h3>
+                    <div id="qr-display" style="margin-bottom: 10px; text-align: center;"></div>
+                    <input type="file" id="qr-upload" accept="image/*" onchange="uploadImage(event, 'qr')">
+                </div>
+                <div class="card">
+                    <h3>WhatsApp Group Link / Image</h3>
+                    <div id="wa-display" style="margin-bottom: 10px; text-align: center;"></div>
+                    <input type="file" id="wa-upload" accept="image/*" onchange="uploadImage(event, 'wa')">
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav">
+            <button class="nav-btn active" onclick="switchTab('home')">Home</button>
+            <button class="nav-btn" onclick="switchTab('orders')">Orders</button>
+            <button class="nav-btn" onclick="switchTab('menu')">Menu</button>
+            <button class="nav-btn" onclick="switchTab('more')">More</button>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURATION
+        const CLIENT_ID = '91521766084-r2ekts6unmvvnh0ho640qh7vjvbem10v.apps.googleusercontent.com';
+        const SPREADSHEET_ID = '1kRoEzjDq2r9HCA58ehasg_6lFYeDJzo-ze4qlXrEggc';
+        const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+
+        let tokenClient;
+        let accessToken = null;
+        let sheetData = {
+            Societies: [],
+            Towers: [],
+            Menu: [],
+            Orders: [],
+            OrderItems: [],
+            Purchases: [],
+            PurchaseItems: []
+        };
+        let menuItemsData = [];
+
+        // --- AUTHENTICATION ---
+        window.onload = () => {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: (tokenResponse) => {
+                    if (tokenResponse && tokenResponse.access_token) {
+                        accessToken = tokenResponse.access_token;
+                        document.getElementById('login-view').classList.add('hidden');
+                        document.getElementById('app-view').classList.remove('hidden');
+                        loadAllData();
+                    }
+                },
+            });
+            // Auto login attempt if token exists in session (optional, but GIS handles prompt)
+        };
+
+        function initAuth() {
+            tokenClient.requestAccessToken({prompt: 'consent'});
+        }
+
+        function showMessage(msg, isError = false) {
+            const el = document.getElementById('global-msg');
+            el.textContent = msg;
+            el.className = isError ? 'message msg-error' : 'message msg-success';
+            setTimeout(() => { el.className = 'message'; }, 4000);
+        }
+
+        // --- API CALLS ---
+        async function fetchSheetData(tabName) {
+            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${tabName}`, {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            });
+            const data = await res.json();
+            return data.values || [];
+        }
+
+        async function appendSheetData(tabName, values) {
+            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${tabName}:append?valueInputOption=USER_ENTERED`, {
+                method: 'POST',
+                headers: { 
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ values: [values] })
+            });
+            if (!res.ok) throw new Error(`Failed to save to ${tabName}`);
+            return await res.json();
+        }
+
+        // --- DATA LOADING ---
+        async function loadAllData() {
+            try {
+                const tabs = Object.keys(sheetData);
+                const promises = tabs.map(tab => fetchSheetData(tab));
+                const results = await Promise.all(promises);
+                
+                tabs.forEach((tab, index) => {
+                    // Skip header row if present
+                    let data = results[index];
+                    if (data.length > 0 && (data[0][0] === 'Society ID' || data[0][0] === 'Order ID' || data[0][0] === 'Item ID' || data[0][0] === 'Purchase ID' || data[0][0] === 'Tower ID' || data[0][0] === 'Order Item ID' || data[0][0] === 'Purchase Item ID')) {
+                        data = data.slice(1);
+                    }
+                    sheetData[tab] = data;
+                });
+
+                populateDropdowns();
+                renderMenu();
+                renderOrders();
+                renderDashboard();
+                calculateOrderTotals();
+                calculatePurchaseTotals();
+            } catch (err) {
+                showMessage('Data load failed: ' + err.message, true);
+            }
+        }
+
+        // --- HOME DASHBOARD ---
+        function renderDashboard() {
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            let todayOrders = 0, todaySales = 0, monthOrders = 0, monthSales = 0;
+
+            sheetData.Orders.forEach(order => {
+                // order[1] is Date & Time, order[11] is Final Total
+                if (order.length < 12) return;
+                const orderDate = new Date(order[1]);
+                if (isNaN(orderDate)) return;
+                const total = parseFloat(order[11]) || 0;
+
+                if (orderDate >= today) {
+                    todayOrders++;
+                    todaySales += total;
+                }
+                if (orderDate >= startOfMonth) {
+                    monthOrders++;
+                    monthSales += total;
+                }
+            });
+
+            document.getElementById('today-orders').innerText = todayOrders;
+            document.getElementById('today-sales').innerText = '₹' + todaySales;
+            document.getElementById('month-orders').innerText = monthOrders;
+            document.getElementById('month-sales').innerText = '₹' + monthSales;
+        }
+
+        // --- NAVIGATION ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            
+            const navBtns = document.querySelectorAll('.nav-btn');
+            // Highlight appropriate nav button (Not perfect for sub-menus but functional)
+            if(tabId === 'home' || tabId === 'orders' || tabId === 'menu' || tabId === 'more') {
+                navBtns.forEach(btn => {
+                    if(btn.innerText.toLowerCase() === tabId) btn.classList.add('active');
+                });
+            } else {
+                navBtns[0].classList.add('active'); // Default to Home highlight
+            }
+        }
+
+        // --- POPULATE DROPDOWNS ---
+        function populateDropdowns() {
+            const socSelect = document.getElementById('order-society');
+            const manSocSelect = document.getElementById('manage-society');
+            socSelect.innerHTML = '<option value="">Select Society</option>';
+            manSocSelect.innerHTML = '<option value="">Select Society</option>';
+
+            sheetData.Societies.forEach(soc => {
+                if (soc[2] === 'TRUE' || soc[2] === 'Active' || soc[2] === 'active' || !soc[2]) { // Check active status
+                    const opt = `<option value="${soc[0]}">${soc[1]}</option>`;
+                    socSelect.innerHTML += opt;
+                    manSocSelect.innerHTML += opt;
+                }
+            });
+
+            const itemSelectHTML = `<option value="">Select Item</option>` + sheetData.Menu.map(m => `<option value="${m[0]}" data-price="${m[3]}">${m[1]} - ₹${m[3]}</option>`).join('');
+            document.querySelectorAll('.order-item-select').forEach(sel => {
+                const val = sel.value;
+                sel.innerHTML = itemSelectHTML;
+                sel.value = val;
+            });
+        }
+
+        function populateTowers() {
+            const socId = document.getElementById('order-society').value;
+            const towerSelect = document.getElementById('order-tower');
+            towerSelect.innerHTML = '<option value="">Select Tower</option>';
+            
+            if (!socId) return;
+
+            sheetData.Towers.forEach(t => {
+                if (t[1] === socId && (t[3] === 'TRUE' || t[3] === 'Active' || t[3] === 'active' || !t[3])) {
+                    towerSelect.innerHTML += `<option value="${t[0]}">${t[2]}</option>`;
+                }
+            });
+        }
+
+        function autoCalcFloor() {
+            const flat = document.getElementById('order-flat').value;
+            if (!flat) return;
+            const match = flat.match(/\d+/);
+            if (match && match[0].length >= 3) {
+                // e.g. 101 -> 1st floor
+                document.getElementById('order-floor').value = match[0].charAt(0);
+            }
+        }
+
+        // --- NEW ORDER ---
+        function addOrderItemRow() {
+            const container = document.getElementById('order-items-container');
+            const row = document.createElement('div');
+            row.className = 'item-row';
+            row.innerHTML = `
+                <select class="order-item-select" style="flex:2; margin:0;" onchange="calculateOrderTotals()">
+                    ${`<option value="">Select Item</option>` + sheetData.Menu.map(m => `<option value="${m[0]}" data-price="${m[3]}">${m[1]} - ₹${m[3]}</option>`).join('')}
+                </select>
+                <input type="number" class="order-item-qty" min="1" value="1" style="flex:1; margin:0; width:60px;" oninput="calculateOrderTotals()">
+                <button class="btn btn-secondary btn-small" onclick="this.parentElement.remove(); calculateOrderTotals();" style="margin:0;">X</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function calculateOrderTotals() {
+            let totalQty = 0;
+            let totalAmount = 0;
+            document.querySelectorAll('#order-items-container .item-row').forEach(row => {
+                const select = row.querySelector('.order-item-select');
+                const qty = parseInt(row.querySelector('.order-item-qty').value) || 0;
+                if (select.value) {
+                    const price = parseFloat(select.options[select.selectedIndex].getAttribute('data-price')) || 0;
+                    totalQty += qty;
+                    totalAmount += (price * qty);
+                }
+            });
+            document.getElementById('order-total-qty').innerText = totalQty;
+            document.getElementById('order-total-amount').innerText = totalAmount;
+        }
+
+        async function saveOrder() {
+            const socId = document.getElementById('order-society').value;
+            const towerId = document.getElementById('order-tower').value;
+            const flat = document.getElementById('order-flat').value;
+            const floor = document.getElementById('order-floor').value;
+            const address = document.getElementById('order-address').value;
+            const name = document.getElementById('order-name').value;
+            const contact = document.getElementById('order-contact').value;
+            
+            if (!socId || !towerId || !flat) {
+                showMessage('Please fill Society, Tower, and Flat Number.', true);
+                return;
+            }
+
+            const items = [];
+            document.querySelectorAll('#order-items-container .item-row').forEach(row => {
+                const select = row.querySelector('.order-item-select');
+                const qty = parseInt(row.querySelector('.order-item-qty').value);
+                if (select.value && qty > 0) {
+                    items.push({
+                        id: select.value,
+                        name: select.options[select.selectedIndex].text.split(' - ')[0],
+                        price: parseFloat(select.options[select.selectedIndex].getAttribute('data-price')),
+                        qty: qty
+                    });
+                }
+            });
+
+            if (items.length === 0) {
+                showMessage('Please add at least one item.', true);
+                return;
+            }
+
+            const totalQty = document.getElementById('order-total-qty').innerText;
+            const totalAmount = document.getElementById('order-total-amount').innerText;
+            const dateTime = new Date().toISOString();
+            const orderId = 'ORD-' + Date.now();
+
+            const socName = document.getElementById('order-society').options[document.getElementById('order-society').selectedIndex].text;
+            const towerName = document.getElementById('order-tower').options[document.getElementById('order-tower').selectedIndex].text;
+
+            try {
+                // 1. Save to Orders
+                const orderRow = [orderId, dateTime, socName, towerName, flat, floor, address, name, contact, items.map(i => i.name + ' (x' + i.qty + ')').join(', '), totalQty, totalAmount];
+                await appendSheetData('Orders', orderRow);
+
+                // 2. Save to OrderItems
+                const itemPromises = items.map((item, index) => {
+                    const itemId = 'ITM-' + Date.now() + '-' + index;
+                    const itemTotal = item.price * item.qty;
+                    return appendSheetData('OrderItems', [itemId, orderId, item.name, item.qty, item.price, itemTotal]);
+                });
+                await Promise.all(itemPromises);
+
+                showMessage('Order saved successfully!');
+                
+                // Reset Form
+                document.getElementById('order-items-container').innerHTML = '';
+                document.getElementById('order-flat').value = '';
+                document.getElementById('order-floor').value = '';
+                document.getElementById('order-name').value = '';
+                document.getElementById('order-contact').value = '';
+                calculateOrderTotals();
+                loadAllData(); // Reload to reflect changes
+
+            } catch (err) {
+                showMessage('Error saving order: ' + err.message, true);
+            }
+        }
+
+        // --- ORDERS LIST ---
+        function renderOrders() {
+            const container = document.getElementById('orders-list');
+            container.innerHTML = '';
+            
+            // Latest first
+            const sortedOrders = [...sheetData.Orders].reverse();
+
+            sortedOrders.forEach(order => {
+                if (order.length < 12) return;
+                container.innerHTML += `
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                            <strong>${order[0]}</strong>
+                            <span style="color:gray; font-size:12px;">${new Date(order[1]).toLocaleString()}</span>
+                        </div>
+                        <div><strong>Location:</strong> ${order[2]}, ${order[3]} - Flat ${order[4]} (Floor ${order[5]})</div>
+                        <div><strong>Customer:</strong> ${order[7] || 'N/A'} (${order[8] || 'N/A'})</div>
+                        <div style="margin-top: 10px; background:#f5f5f5; padding:10px; border-radius:5px;">
+                            <strong>Items:</strong> ${order[9]}<br>
+                            <strong>Qty:</strong> ${order[10]} | <strong>Total:</strong> ₹${order[11]}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- MENU ---
+        function renderMenu() {
+            const container = document.getElementById('menu-list');
+            container.innerHTML = '';
+            sheetData.Menu.forEach(item => {
+                if (item[4] === 'FALSE' || item[4] === 'Inactive') return; // Active check
+                container.innerHTML += `
+                    <div style="display:flex; justify-content:space-between; padding: 10px 0; border-bottom: 1px solid #eee;">
+                        <div>
+                            <strong>${item[1]}</strong>
+                            <div style="font-size:12px; color:#666;">${item[2] || ''}</div>
+                        </div>
+                        <div style="font-weight:bold;">₹${item[3]}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- PURCHASE ---
+        // Generate unique item names for datalist
+        function getPurchaseSuggestions() {
+            const names = new Set(sheetData.PurchaseItems.map(p => p[3]));
+            return Array.from(names).join('|'); // Use pipe delimiter for simple JS logic
+        }
+
+        function addPurchaseItemRow() {
+            const container = document.getElementById('purchase-items-container');
+            const row = document.createElement('div');
+            row.className = 'item-row';
+            // Using datalist for suggestions
+            row.innerHTML = `
+                <input type="text" class="purchase-item-name" placeholder="Item Name" list="purchase-suggestions" style="flex:2; margin:0;">
+                <input type="number" class="purchase-item-price" placeholder="Price ₹" min="0" step="0.01" style="flex:1; margin:0; width:80px;" oninput="calculatePurchaseTotals()">
+                <button class="btn btn-secondary btn-small" onclick="this.parentElement.remove(); calculatePurchaseTotals();" style="margin:0;">X</button>
+            `;
+            container.appendChild(row);
+            
+            // Ensure datalist exists
+            if (!document.getElementById('purchase-suggestions')) {
+                const datalist = document.createElement('datalist');
+                datalist.id = 'purchase-suggestions';
+                document.body.appendChild(datalist);
+            }
+            // Populate datalist
+            const datalist = document.getElementById('purchase-suggestions');
+            datalist.innerHTML = '';
+            const uniqueNames = [...new Set(sheetData.PurchaseItems.map(p => p[3]))];
+            uniqueNames.forEach(name => {
+                datalist.innerHTML += `<option value="${name}">`;
+            });
+        }
+
+        function calculatePurchaseTotals() {
+            let total = 0;
+            document.querySelectorAll('#purchase-items-container .item-row').forEach(row => {
+                const price = parseFloat(row.querySelector('.purchase-item-price').value) || 0;
+                total += price;
+            });
+            document.getElementById('purchase-total-amount').innerText = total;
+        }
+
+        async function savePurchase() {
+            const items = [];
+            document.querySelectorAll('#purchase-items-container .item-row').forEach(row => {
+                const name = row.querySelector('.purchase-item-name').value;
+                const price = parseFloat(row.querySelector('.purchase-item-price').value);
+                if (name && price >= 0) {
+                    items.push({ name, price });
+                }
+            });
+
+            if (items.length === 0) {
+                showMessage('Please add at least one purchase item.', true);
+                return;
+            }
+
+            const totalAmount = document.getElementById('purchase-total-amount').innerText;
+            const dateTime = new Date().toISOString();
+            const purchaseId = 'PUR-' + Date.now();
+
+            try {
+                // 1. Save to Purchases
+                await appendSheetData('Purchases', [purchaseId, dateTime, totalAmount]);
+
+                // 2. Save to PurchaseItems
+                const itemPromises = items.map((item, index) => {
+                    const itemId = 'PITM-' + Date.now() + '-' + index;
+                    return appendSheetData('PurchaseItems', [itemId, purchaseId, dateTime, item.name, item.price]);
+                });
+                await Promise.all(itemPromises);
+
+                showMessage('Purchase saved successfully!');
+                document.getElementById('purchase-items-container').innerHTML = '';
+                calculatePurchaseTotals();
+                loadAllData();
+
+            } catch (err) {
+                showMessage('Error saving purchase: ' + err.message, true);
+            }
+        }
+
+        // --- MANAGE SOCIETY/TOWER ---
+        async function addSociety() {
+            const name = document.getElementById('new-society-name').value.trim();
+            if (!name) return;
+            
+            const socId = 'SOC-' + Date.now();
+            const createdAt = new Date().toISOString();
+            try {
+                await appendSheetData('Societies', [socId, name, 'TRUE', createdAt]);
+                showMessage('Society added!');
+                document.getElementById('new-society-name').value = '';
+                loadAllData();
+            } catch (err) {
+                showMessage('Error adding society: ' + err.message, true);
+            }
+        }
+
+        async function addTower() {
+            const socId = document.getElementById('manage-society').value;
+            const name = document.getElementById('new-tower-name').value.trim();
+            if (!socId || !name) {
+                showMessage('Please select society and enter tower name.', true);
+                return;
+            }
+
+            const towerId = 'TWR-' + Date.now();
+            const createdAt = new Date().toISOString();
+            try {
+                await appendSheetData('Towers', [towerId, socId, name, 'TRUE', createdAt]);
+                showMessage('Tower added!');
+                document.getElementById('new-tower-name').value = '';
+                loadAllData();
+            } catch (err) {
+                showMessage('Error adding tower: ' + err.message, true);
+            }
+        }
+
+        // --- IMAGE UPLOAD (DRIVE) ---
+        // Note: Requires drive.file scope. We will set the file to 'Anyone with link can view' so <img> works.
+        async function uploadImage(event, type) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            showMessage('Uploading image... please wait.', false);
+
+            const metadata = {
+                name: type + '_' + Date.now() + '_' + file.name,
+                mimeType: file.type
+            };
+
+            const form = new FormData();
+            form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+            form.append('file', file);
+
+            try {
+                // 1. Upload file
+                const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${accessToken}` },
+                    body: form
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error.message);
+
+                const fileId = data.id;
+
+                // 2. Make file public (Anyone with link can view)
+                await fetch(`https://www.googleapis.com/drive/v3/files/${fileId}/permissions`, {
+                    method: 'POST',
+                    headers: { 
+                        Authorization: `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ role: 'reader', type: 'anyone' })
+                });
+
+                // 3. Display image
+                const imgUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+                if (type === 'qr') {
+                    document.getElementById('qr-display').innerHTML = `<img src="${imgUrl}" style="max-width:100%; border-radius:8px;">`;
+                } else {
+                    document.getElementById('wa-display').innerHTML = `<img src="${imgUrl}" style="max-width:100%; border-radius:8px;">`;
+                }
+                showMessage('Image uploaded and displayed successfully!');
+            } catch (err) {
+                showMessage('Upload failed: ' + err.message, true);
+            }
+        }
+    </script>
+</body>
+</html>
