@@ -109,6 +109,7 @@
         .purchase-saved-empty { padding:10px 11px; color:#76675b; font-size:13px; }
         .purchase-entry-price { min-width:0; }
         .purchase-entry-remove { width:42px; min-width:42px; height:44px; margin:0; padding:0; border-radius:13px; }
+        .purchase-form { padding:2px 4px 16px; }
         .icon-btn:focus-visible, .btn:focus-visible, .select-with-action button:focus-visible { outline:3px solid #ffc66d; outline-offset:2px; }
         .order-total-bar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:16px; padding:12px 14px; border-radius:10px; background:#fff4e5; font-size:16px; }
         .order-total-bar > span:last-child { text-align:right; }
@@ -119,6 +120,13 @@
             body { padding-bottom: 78px; }
             .container { padding: 12px; }
             .card { padding: 13px; }
+            #new-order > .card { padding:13px; }
+            #new-order label { margin-top:6px; }
+            #new-order input, #new-order select { margin-bottom:11px; }
+            #new-order .flex-row { gap:9px; }
+            #new-order hr { margin:15px 0 !important; }
+            #new-order h3 { margin:12px 0 8px; }
+            .purchase-form { padding:0 1px 12px; }
             .grid-2 { gap: 8px; }
             .stat-box { padding: 12px 8px; border-radius: 11px; }
             .stat-box h3 { font-size: clamp(9px, 2.8vw, 12px); line-height: 1.15; white-space: nowrap; letter-spacing: -.2px; }
@@ -133,10 +141,12 @@
             .flex-row > * { min-width: 0; }
             .item-row { gap: 6px; padding: 7px; }
             .item-row select, .item-row input { min-width: 0; }
-            .purchase-entry-row { grid-template-columns:minmax(0,1fr) 78px 38px; gap:6px; padding:7px; }
+            .purchase-entry-row { grid-template-columns:minmax(0,1fr) 74px 36px; gap:6px; padding:9px 0; border:0; border-bottom:1px solid rgba(104,75,49,.14); border-radius:0; background:transparent; }
             .purchase-name-control { gap:5px; }
-            .purchase-name-control > button { width:38px; height:44px; }
-            .purchase-entry-remove { width:38px; min-width:38px; height:44px; }
+            .purchase-name-control > input { padding:10px 9px; font-size:15px; }
+            .purchase-name-control > button { width:35px; height:44px; border-radius:12px; }
+            .purchase-entry-price { padding:10px 6px !important; font-size:14px !important; text-align:center; }
+            .purchase-entry-remove { width:36px; min-width:36px; height:42px; border-radius:12px; }
             .order-item-row { grid-template-columns:minmax(88px,1fr) 62px 48px 42px; gap:4px; padding:7px; }
             .order-item-row select, .order-item-row input, .order-row-price-value, .order-item-row .icon-btn { height:40px; }
             .order-item-row select { padding:7px 23px 7px 7px; background-position:right 7px center; font-size:13px; }
@@ -156,6 +166,22 @@
             .edit-item-row { grid-template-columns:minmax(0,1fr) 54px 70px 42px; gap:5px; }
             .edit-item-row.purchase { grid-template-columns:minmax(0,1fr) 80px 42px; gap:5px; }
             .edit-item-row input { padding:9px 7px; font-size:14px; }
+        }
+        @media (max-width:380px) {
+            .app-brand-header { gap:8px; padding:10px; }
+            .brand-logo-wrap { width:43px; height:43px; }
+            .brand-name { font-size:16px; }
+            .brand-tagline { font-size:9px; }
+            .brand-badge { padding:6px 7px; font-size:9px; }
+            .select-with-action { align-items:center; }
+            .select-with-action .btn-small { font-size:11px; padding:7px 7px; }
+            .order-item-row { grid-template-columns:minmax(72px,1fr) 58px 44px 34px; gap:3px; padding:6px; }
+            .order-item-row select { font-size:12px; padding-left:6px; padding-right:19px; }
+            .order-item-row .icon-btn { width:34px; min-height:38px; }
+            .purchase-entry-row { grid-template-columns:minmax(0,1fr) 68px 34px; gap:5px; }
+            .purchase-name-control > input { font-size:14px; }
+            .purchase-name-control > button { width:33px; }
+            .purchase-entry-remove { width:34px; min-width:34px; }
         }
         @media (max-width:360px) { .edit-grid { grid-template-columns:1fr; } .edit-grid .wide { grid-column:auto; } .nav-btn { font-size:11px; } }
 
@@ -324,6 +350,38 @@
             .card, .stat-box { transition:transform .18s ease,box-shadow .18s ease; }
             .card:hover { box-shadow:0 18px 38px rgba(75,37,24,.11),0 3px 9px rgba(75,37,24,.05); }
         }
+        /* Keep purchase entry rows light and use the available phone width well. */
+        #purchase .purchase-entry-row { padding:10px 0; border:0; border-bottom:1px solid rgba(104,75,49,.14); border-radius:0; background:transparent; }
+        @media (max-width:600px) {
+            #app-view .container { padding:12px 13px 22px; }
+            #app-view .view > h2 { margin:6px 2px 14px; }
+            #app-view .card { padding:14px; margin-bottom:14px; }
+            #app-view input, #app-view select, #app-view textarea { min-height:44px; margin:4px 0 12px; padding:11px 12px; font-size:16px; }
+            #app-view label { margin-top:5px; font-size:13px; line-height:1.2; }
+            #purchase .purchase-form { padding:0 2px 12px; }
+            #purchase .purchase-entry-row { grid-template-columns:minmax(0,1fr) 76px 38px; gap:6px; padding:9px 0; }
+            #purchase .purchase-name-control { gap:5px; }
+            #purchase .purchase-name-control > input { min-height:44px; margin:0; padding:10px 9px; font-size:15px; }
+            #purchase .purchase-name-control > button { width:36px; height:44px; }
+            #purchase .purchase-entry-price { min-height:44px; margin:0; padding:9px 5px; font-size:14px; text-align:center; }
+            #purchase .purchase-entry-remove { width:38px; min-width:38px; height:42px; min-height:42px; }
+            #new-order > .card { padding:13px; }
+            #new-order label { margin-top:6px; }
+            #new-order input, #new-order select { margin-bottom:11px; }
+            #new-order .flex-row { gap:9px; }
+            #new-order hr { margin:15px 0 !important; }
+            #new-order h3 { margin:12px 0 8px; }
+            #new-order .order-item-row { grid-template-columns:minmax(78px,1fr) 60px 46px 38px; gap:4px; }
+            #new-order .order-item-row select { min-height:40px; height:40px; margin:0; padding:7px 22px 7px 7px; font-size:12px; }
+            #new-order .order-item-row input { min-height:40px; height:40px; margin:0; padding:7px 5px; font-size:14px; }
+        }
+        @media (max-width:380px) {
+            #purchase .purchase-entry-row { grid-template-columns:minmax(0,1fr) 68px 34px; gap:5px; }
+            #purchase .purchase-name-control > input { font-size:14px; }
+            #purchase .purchase-name-control > button { width:33px; }
+            #purchase .purchase-entry-remove { width:34px; min-width:34px; }
+            #new-order .order-item-row { grid-template-columns:minmax(70px,1fr) 56px 42px 34px; gap:3px; padding:6px; }
+        }
     </style>
 </head>
 <body>
@@ -456,7 +514,7 @@
             <!-- PURCHASE -->
             <div id="purchase" class="view">
                 <h2>New Purchase</h2>
-                <div class="card">
+                <div class="purchase-form">
                     <div id="purchase-items-container"></div>
                     <button class="btn btn-secondary btn-small" onclick="addPurchaseItemRow()">+ Add Purchase Item</button>
                     <div style="margin-top: 20px; text-align: right; font-size: 18px;">
