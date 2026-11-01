@@ -47,6 +47,9 @@
         .icon-btn.delete { color: #c34343; }
         .purchase-line, .order-line { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:7px 0; border-bottom:1px solid #eee; }
         .purchase-line:last-child, .order-line:last-child { border-bottom:0; }
+        select { padding-right: 38px; }
+        .order-total-bar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:16px; padding:12px 14px; border-radius:10px; background:#fff4e5; font-size:16px; }
+        .order-total-bar > span:last-child { text-align:right; }
         .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .stat-box { min-width: 0; }
         .nav { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
@@ -56,7 +59,7 @@
             .card { padding: 13px; }
             .grid-2 { gap: 8px; }
             .stat-box { padding: 12px 8px; border-radius: 11px; }
-            .stat-box h3 { font-size: 12px; line-height: 1.25; }
+            .stat-box h3 { font-size: clamp(9px, 2.8vw, 12px); line-height: 1.15; white-space: nowrap; letter-spacing: -.2px; }
             .stat-box p { font-size: 16px; line-height: 1.2; overflow-wrap: anywhere; }
             .nav { min-height: 70px; }
             .nav-btn { min-height: 54px; font-size: 12px; }
@@ -68,6 +71,7 @@
             .flex-row > * { min-width: 0; }
             .item-row { gap: 6px; padding: 7px; }
             .item-row select, .item-row input { min-width: 0; }
+            .order-total-bar { font-size:14px; padding:11px 12px; white-space:nowrap; }
         }
     </style>
 </head>
@@ -92,36 +96,35 @@
                 <h2>Dashboard</h2>
                 <div class="grid-2" style="margin-bottom: 15px;">
                     <div class="stat-box metric-orders">
-                        <h3>Aaj ke Orders</h3>
+                        <h3>Aaj Orders</h3>
                         <p id="today-orders">0</p>
                     </div>
                     <div class="stat-box metric-sales">
-                        <h3>Aaj ki Sales</h3>
+                        <h3>Aaj Sales</h3>
                         <p id="today-sales">₹0</p>
                     </div>
                     <div class="stat-box metric-orders">
-                        <h3>Is Mahine ke Orders</h3>
+                        <h3>Mahine Orders</h3>
                         <p id="month-orders">0</p>
                     </div>
                     <div class="stat-box metric-sales">
-                        <h3>Is Mahine ki Sales</h3>
+                        <h3>Mahine Sales</h3>
                         <p id="month-sales">₹0</p>
                     </div>
                     <div class="stat-box metric-purchases">
-                        <h3>Is Mahine ki Purchases</h3>
+                        <h3>Mahine Purchases</h3>
                         <p id="month-purchases">₹0</p>
                     </div>
                     <div class="stat-box metric-net">
-                        <h3>Is Mahine ka Net (Sales − Purchases)</h3>
+                        <h3>Mahine ka Net</h3>
                         <p id="month-net">₹0</p>
                     </div>
                 </div>
-                <p style="font-size:12px;color:#666;margin:-5px 2px 15px">Net sirf recorded sales minus recorded purchases hai; baaki kharche aur bacha hua stock ismein shamil nahi hain.</p>
+                <p style="font-size:11px;color:#666;margin:-5px 2px 15px;white-space:nowrap">Net = recorded Sales − Purchases</p>
                 <div class="card">
                     <h3>Quick Actions</h3>
                     <button class="btn" onclick="switchTab('new-order')">Naya Order</button>
                     <button class="btn btn-secondary" onclick="switchTab('purchase')">Naya Purchase</button>
-                    <button class="btn btn-secondary" onclick="switchTab('manage')">Society / Tower Setup</button>
                 </div>
             </div>
 
@@ -174,10 +177,7 @@
                     <div id="order-items-container"></div>
                     <button class="btn btn-secondary btn-small" onclick="addOrderItemRow()">+ Add Item</button>
                     
-                    <div style="margin-top: 20px; text-align: right; font-size: 18px;">
-                        <strong>Total Qty: <span id="order-total-qty">0</span></strong><br>
-                        <strong>Final Total: ₹<span id="order-total-amount">0</span></strong>
-                    </div>
+                    <div class="order-total-bar"><span>Total Qty: <strong id="order-total-qty">0</strong></span><span>Final Total: <strong>₹<span id="order-total-amount">0</span></strong></span></div>
                     <button class="btn" onclick="saveOrder()" style="margin-top: 15px;">Save Order</button>
                 </div>
             </div>
@@ -186,22 +186,6 @@
             <div id="orders" class="view">
                 <h2>Orders History</h2>
                 <div id="orders-list"></div>
-            </div>
-
-            <!-- MENU -->
-            <div id="menu" class="view">
-                <h2>Menu Items</h2>
-                <div id="menu-list" class="card"></div>
-                <div class="card">
-                    <h3>Menu mein naya item jodein</h3>
-                    <label>Item Name</label>
-                    <input type="text" id="new-menu-name" placeholder="Jaise: Special Thali">
-                    <label>Full Details / Contents</label>
-                    <textarea id="new-menu-details" rows="3" placeholder="Item mein kya-kya hai? (Optional)"></textarea>
-                    <label>Price (₹)</label>
-                    <input type="number" id="new-menu-price" min="0" step="0.01" placeholder="Price">
-                    <button class="btn" onclick="addMenuItem()">Menu Item Save Karein</button>
-                </div>
             </div>
 
             <!-- PURCHASE -->
@@ -215,8 +199,28 @@
                     </div>
                     <button class="btn" onclick="savePurchase()" style="margin-top: 15px;">Save Purchase</button>
                 </div>
-                <h3>Purane Purchases</h3>
+            </div>
+
+            <!-- PURCHASE HISTORY -->
+            <div id="purchases" class="view">
+                <h2>Purchase History</h2>
                 <div id="purchase-history-list"></div>
+            </div>
+
+            <!-- MENU (accessible from More) -->
+            <div id="menu" class="view">
+                <h2>Menu Items</h2>
+                <div id="menu-list" class="card"></div>
+                <div class="card">
+                    <h3>Menu mein naya item jodein</h3>
+                    <label>Item Name</label>
+                    <input type="text" id="new-menu-name" placeholder="Jaise: Special Thali">
+                    <label>Full Details / Contents</label>
+                    <textarea id="new-menu-details" rows="3" placeholder="Item mein kya-kya hai? (Optional)"></textarea>
+                    <label>Price (₹)</label>
+                    <input type="number" id="new-menu-price" min="0" step="0.01" placeholder="Price">
+                    <button class="btn" onclick="addMenuItem()">Menu Item Save Karein</button>
+                </div>
             </div>
 
             <!-- MANAGE SOCIETY/TOWER -->
@@ -243,6 +247,10 @@
             <div id="more" class="view">
                 <h2>More Settings</h2>
                 <div class="card">
+                    <button type="button" class="btn btn-secondary" onclick="switchTab('menu')">Menu Items / Edit Menu</button>
+                    <button type="button" class="btn btn-secondary" onclick="switchTab('manage')">Society / Tower Setup</button>
+                </div>
+                <div class="card">
                     <h3>Payment QR Code</h3>
                     <div id="qr-display" style="margin-bottom: 10px; text-align: center;"></div>
                     <input type="file" id="qr-upload" accept="image/*" onchange="uploadImage(event, 'qr')">
@@ -262,7 +270,7 @@
         <nav class="nav" aria-label="Main navigation">
             <button class="nav-btn active" data-tab="home" onclick="switchTab('home')"><span class="nav-icon">⌂</span><span>Home</span></button>
             <button class="nav-btn" data-tab="orders" onclick="switchTab('orders')"><span class="nav-icon">▤</span><span>Orders</span></button>
-            <button class="nav-btn" data-tab="menu" onclick="switchTab('menu')"><span class="nav-icon">♨</span><span>Menu</span></button>
+            <button class="nav-btn" data-tab="purchases" onclick="switchTab('purchases')"><span class="nav-icon">🛒</span><span>Purchases</span></button>
             <button class="nav-btn" data-tab="more" onclick="switchTab('more')"><span class="nav-icon">⋯</span><span>More</span></button>
         </nav>
     </div>
@@ -474,7 +482,7 @@
             document.getElementById('month-sales').innerText = money(monthSales);
             document.getElementById('month-purchases').innerText = money(monthPurchases);
             const monthNet = monthSales - monthPurchases;
-            document.getElementById('month-net').innerText = `${monthNet < 0 ? '−' : '+'}${money(Math.abs(monthNet))} ${monthNet < 0 ? '(Loss)' : '(Surplus)'}`;
+            document.getElementById('month-net').innerText = `${monthNet < 0 ? '−' : '+'}${money(Math.abs(monthNet))}`;
             document.getElementById('month-net').parentElement.classList.toggle('loss', monthNet < 0);
         }
 
@@ -482,8 +490,9 @@
         function switchTab(tabId) {
             document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
+            const activeNavTab = ({purchase: 'purchases', menu: 'more', manage: 'more', 'new-order': 'home'})[tabId] || tabId;
             document.querySelectorAll('.nav-btn').forEach(button => {
-                button.classList.toggle('active', button.dataset.tab === tabId || (button.dataset.tab === 'home' && !['orders', 'menu', 'more'].includes(tabId)));
+                button.classList.toggle('active', button.dataset.tab === activeNavTab);
             });
         }
 
@@ -922,8 +931,20 @@
             const index = sheetData.Societies.findIndex(row => row[0] === id); if (index < 0) return;
             const row = [...sheetData.Societies[index]];
             const name = prompt('Society name:', row[1]); if (name === null || !name.trim()) return;
+            const towers = sheetData.Towers.filter(tower => tower[1] === id);
+            const towerText = prompt('Is society ke tower names (comma se alag karein):', towers.map(tower => tower[2]).join(', '));
+            if (towerText === null) return;
+            const towerNames = [...new Set(towerText.split(',').map(value => value.trim()).filter(Boolean))];
             row[1] = name.trim();
-            try { await updateDataRow('Societies', index + 2, row); await loadAllData(); showMessage('Society update ho gayi.'); }
+            try {
+                await updateDataRow('Societies', index + 2, row);
+                const oldRows = sheetData.Towers.map((tower, i) => tower[1] === id ? i + 2 : null).filter(Boolean);
+                await deleteDataRows('Towers', oldRows);
+                for (const [i, towerName] of towerNames.entries()) {
+                    await appendSheetData('Towers', ['TWR-' + Date.now() + '-' + i, id, towerName, 'TRUE', formatDateTimeForSheet()]);
+                }
+                await loadAllData(); showMessage('Society aur towers update ho gaye.');
+            }
             catch (err) { showMessage(err.message, true); }
         }
 
@@ -1027,21 +1048,37 @@
             return data.files || [];
         }
 
-        function showDriveImage(type, file) {
+        const savedImageObjectUrls = {};
+        async function showDriveImage(type, file) {
             const display = document.getElementById(type === 'qr' ? 'qr-display' : 'wa-display');
             display.replaceChildren();
+            if (savedImageObjectUrls[type]) { URL.revokeObjectURL(savedImageObjectUrls[type]); delete savedImageObjectUrls[type]; }
             if (!file) { display.textContent = 'Abhi image upload nahi hai.'; return; }
             const img = document.createElement('img');
-            img.src = `https://drive.google.com/uc?export=view&id=${encodeURIComponent(file.id)}`;
             img.alt = type === 'qr' ? 'Payment QR code' : 'WhatsApp group image';
-            img.referrerPolicy = 'no-referrer';
             img.style.cssText = 'max-width:100%;max-height:420px;object-fit:contain;border-radius:10px';
-            display.appendChild(img);
+            display.textContent = 'Image load ho rahi hai…';
+            try {
+                const res = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?alt=media`, {
+                    headers: {Authorization: `Bearer ${accessToken}`}
+                });
+                if (!res.ok) { const error = await res.json(); throw new Error(error.error?.message || 'Image download nahi hui'); }
+                savedImageObjectUrls[type] = URL.createObjectURL(await res.blob());
+                img.src = savedImageObjectUrls[type];
+                display.replaceChildren(img);
+            } catch (err) {
+                // Public thumbnail fallback lets the image render even if Drive media API blocks this browser.
+                img.referrerPolicy = 'no-referrer';
+                img.src = `https://drive.google.com/thumbnail?id=${encodeURIComponent(file.id)}&sz=w1200`;
+                img.onerror = () => { display.textContent = 'Image load nahi hui. Drive mein image sharing “Anyone with the link” par check karein.'; };
+                display.replaceChildren(img);
+                console.warn(type + ' image download failed:', err.message);
+            }
         }
 
         async function loadSavedImages() {
             for (const type of ['qr', 'wa']) {
-                try { const files = await listSavedImages(type); showDriveImage(type, files[0] || null); }
+                try { const files = await listSavedImages(type); await showDriveImage(type, files[0] || null); }
                 catch (err) { console.warn(type + ' image load failed:', err.message); }
             }
         }
@@ -1081,7 +1118,7 @@
                     const res = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}`, {method: 'DELETE', headers: {Authorization: `Bearer ${accessToken}`}});
                     if (!res.ok) { const data = await res.json(); throw new Error(data.error?.message || 'Image delete nahi hui'); }
                 }
-                showDriveImage(type, null);
+                await showDriveImage(type, null);
                 showMessage('Image delete ho gayi.');
             } catch (err) { showMessage(err.message, true); }
         }
