@@ -1,0 +1,19 @@
+{
+  "name": "Dwivedi Kitchen",
+  "short_name": "Dwivedi Kitchen",
+  "description": "Sales, purchases and kitchen management for Dwivedi Kitchens",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f2e7",
+  "theme_color": "#17633f",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "static/logo.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,2284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dwivedi Kitchen Sales</title>
+    <link rel="icon" type="image/png" href="static/logo.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#17633f">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Dwivedi Kitchen">
+    <link rel="apple-touch-icon" href="static/logo.png">
+    <script src="https://accounts.google.com/gsi/client" defer onload="onGoogleIdentityLoaded()"></script>
+    <style>
+        :root { --primary: #ff6b6b; --bg: #f8f9fa; --text: #333; --card: #fff; }
+        body { font-family: system-ui, -apple-system, sans-serif; margin: 0; background: var(--bg); color: var(--text); padding-bottom: 60px; }
+        .container { max-width: 800px; margin: 0 auto; padding: 15px; }
+        .card { background: var(--card); padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 12px; cursor: pointer; font-size: 16px; font-weight:650; min-height:44px; width: 100%; margin-top: 10px; transition:filter .15s ease,transform .15s ease,box-shadow .15s ease; }
+        .btn:hover { filter:brightness(.97); }
+        .btn:active { transform:translateY(1px); }
+        .btn:disabled { opacity:.65; cursor:wait; }
+        .btn-secondary { background: linear-gradient(135deg,#46536a,#303b50); }
+        .btn-small { width: auto; padding: 5px 10px; font-size: 14px; }
+        input, select, textarea { width: 100%; padding: 11px 13px; margin: 5px 0 15px; border: 1px solid #d9dee7; border-radius: 10px; box-sizing: border-box; font-size: 16px; background-color:#fff; color:var(--text); }
+        input:focus, select:focus, textarea:focus { outline:none; border-color:#8296ca; box-shadow:0 0 0 3px rgba(92,119,190,.15); }
+        .hidden { display: none !important; }
+        .view { display: none; }
+        .view.active { display: block; }
+        .flex-row { display: flex; gap: 10px; }
+        .flex-row > * { flex: 1; }
+        .item-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; background: #eee; padding: 10px; border-radius: 5px;}
+        .order-item-row { display:grid; grid-template-columns:minmax(100px,1fr) 82px 66px 42px; gap:8px; align-items:end; margin:8px 0; padding:10px; border:1px solid #e5e9f0; border-radius:12px; background:#f8f9fc; }
+        .order-item-row > div { min-width:0; }
+        .order-item-row label { margin:0 0 4px; font-size:12px; line-height:1.15; white-space:nowrap; color:#667085; }
+        .order-item-row select, .order-item-row input { min-width:0; width:100%; height:42px; margin:0; padding:8px 30px 8px 9px; font-size:14px; }
+        .order-item-row input { padding-right:8px; }
+        .order-row-price-value { height:42px; display:flex; align-items:center; justify-content:center; overflow:hidden; white-space:nowrap; border:1px solid #e5e9f0; border-radius:10px; background:#fff; color:#16845b; font-weight:750; font-size:14px; }
+        .order-item-row .icon-btn { width:42px; height:42px; }
+        h2 { margin-top: 0; font-size: 20px; }
+        .message { padding: 10px; border-radius: 5px; margin-bottom: 15px; display: none; }
+        .msg-success { background: #d4edda; color: #155724; display: block; }
+        .msg-error { background: #f8d7da; color: #721c24; display: block; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stat-box { background: var(--metric-bg, white); padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(25,35,55,0.08); border: 1px solid rgba(25,35,55,0.05); border-left: 4px solid var(--metric-color, #9aa3b2); }
+        .stat-box h3 { margin: 0; font-size: 14px; line-height: 1.3; color: #566070; }
+        .stat-box p { margin: 7px 0 0; font-size: 20px; line-height: 1.2; font-weight: 750; color: var(--metric-color, #526071); }
+        .metric-orders { --metric-color: #4763c7; --metric-bg: #f1f4ff; }
+        .metric-sales { --metric-color: #16845b; --metric-bg: #eefaf4; }
+        .metric-purchases { --metric-color: #c47716; --metric-bg: #fff7e9; }
+        .metric-net { --metric-color: #16845b; --metric-bg: #eefaf4; }
+        .metric-net.loss { --metric-color: #c34343; --metric-bg: #fff1f1; }
+        .nav { position: fixed; right: 0; bottom: 0; left: 0; height: 72px; box-sizing: content-box; background: #fff; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: center; padding: 6px 10px max(8px, env(safe-area-inset-bottom)); box-shadow: 0 -4px 18px rgba(28,38,58,.09); border-top: 1px solid #edf0f5; z-index: 100; }
+        .nav-btn { width: 100%; min-width: 0; min-height: 56px; padding: 6px 3px; border: 0; border-radius: 14px; background: transparent; box-shadow: none !important; outline: none; color: #687386; cursor: pointer; display: flex; flex-direction: column; gap: 3px; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; transition: background .15s ease,color .15s ease; -webkit-tap-highlight-color: transparent; }
+        .nav-btn .nav-icon { font-size: 21px; line-height: 1; }
+        .nav-btn.active { background: #fff0f0; color: #d94f59; font-weight: 750; }
+        .nav-btn:focus, .nav-btn:focus-visible { outline:none; box-shadow:none !important; }
+        label { display: block; font-weight: 600; margin-top: 7px; }
+        .btn-small { display: inline-block; margin: 6px 8px 10px 0; min-height: 38px; }
+        .select-with-action { display: flex; align-items: flex-start; gap: 8px; }
+        .select-with-action select { flex: 1; min-width: 0; }
+        .select-with-action .btn-small { flex: 0 0 auto; white-space: nowrap; margin-top: 5px; }
+        .record-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 10px; }
+        .icon-btn { width: 42px; height: 40px; padding: 0; border: 1px solid #e1e5eb; border-radius: 12px; background: #fff; font-size: 18px; box-shadow:0 2px 5px rgba(28,38,58,.06); cursor:pointer; }
+        .icon-btn.delete { color: #c34343; }
+        .purchase-line, .order-line { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:7px 0; border-bottom:1px solid #eee; }
+        .purchase-line:last-child, .order-line:last-child { border-bottom:0; }
+        select { appearance:none; -webkit-appearance:none; padding-right:42px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23687486' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; background-size:14px; }
+        button { font-family:inherit; -webkit-tap-highlight-color:transparent; }
+        .quick-action-grid, .more-shortcuts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+        .quick-action-grid .btn, .more-shortcuts .btn { min-height:58px; margin:0; border-radius:14px; font-weight:700; box-shadow:0 5px 12px rgba(38,48,65,.12); transition:transform .15s ease,box-shadow .15s ease; }
+        .quick-action-grid .btn:active, .more-shortcuts .btn:active { transform:translateY(1px); box-shadow:0 2px 6px rgba(38,48,65,.12); }
+        .quick-action-grid .btn-primary { background:linear-gradient(135deg,#ff7379,#ed5964); }
+        .quick-action-grid .btn-purchase { background:linear-gradient(135deg,#394b68,#27364e); }
+        .more-shortcuts .btn { background:#f2f5fa; color:#34445f; border:1px solid #e0e6ef; }
+        .edit-overlay { position:fixed; inset:0; z-index:300; display:none; align-items:center; justify-content:center; padding:16px; background:rgba(20,28,40,.54); backdrop-filter:blur(3px); }
+        .edit-overlay.open { display:flex; }
+        .edit-dialog { width:min(100%,720px); height:min(90dvh,900px); max-height:min(90dvh,900px); display:flex; flex-direction:column; overflow:hidden; background:#fff; border-radius:20px; box-shadow:0 24px 80px rgba(10,20,35,.28); }
+        .edit-dialog form { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
+        .edit-head, .edit-foot { flex:none; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; background:#fff; }
+        .edit-head { border-bottom:1px solid #edf0f5; }
+        .edit-head h2 { margin:0; font-size:20px; }
+        .edit-body { flex:1; min-height:0; padding:18px 20px; overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
+        .edit-foot { border-top:1px solid #edf0f5; justify-content:flex-end; }
+        .edit-error { display:none; margin:0 20px 12px; padding:10px 12px; border-radius:10px; color:#a93232; background:#fff0f0; }
+        .edit-error.show { display:block; }
+        .edit-foot .btn { width:auto; min-width:120px; margin:0; }
+        .edit-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 12px; }
+        .edit-grid .wide { grid-column:1/-1; }
+        .edit-items { border:1px solid #e6ebf2; border-radius:14px; padding:12px; margin:12px 0; background:#fafbfd; }
+        .edit-item-row { display:grid; grid-template-columns:minmax(0,2fr) minmax(70px,.75fr) minmax(90px,1fr) 42px; align-items:center; gap:8px; margin:8px 0; }
+        .edit-item-row.purchase { grid-template-columns:minmax(0,2fr) minmax(110px,1fr) 42px; }
+        .edit-item-head { display:grid; grid-template-columns:minmax(0,2fr) minmax(70px,.75fr) minmax(90px,1fr) 42px; gap:8px; margin:12px 0 4px; color:#667085; font-size:12px; font-weight:700; }
+        .edit-item-head.purchase { grid-template-columns:minmax(0,2fr) minmax(110px,1fr) 42px; }
+        .edit-item-head span { white-space:nowrap; }
+        .edit-item-head span:last-child { text-align:center; }
+        .edit-item-row input { margin:0; min-width:0; }
+        .edit-live-total { display:flex; justify-content:space-between; gap:12px; padding:11px 12px; background:#fff3e3; border-radius:10px; font-weight:700; }
+        .edit-tower-row { display:flex; gap:8px; align-items:center; }
+        .edit-tower-row input { flex:1; }
+        .media-card-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+        .media-card-head h3 { margin:0; }
+        .media-actions { display:flex; align-items:center; gap:8px; }
+        .media-upload-trigger { width:auto; min-height:40px; margin:0; padding:8px 13px; border-radius:12px; }
+        .media-image { display:block; margin:12px auto 4px; max-width:100%; max-height:420px; object-fit:contain; border-radius:12px; }
+        .purchase-entry-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(100px,.38fr) 42px; gap:9px; padding:10px; border:1px solid rgba(104,75,49,.14); border-radius:16px; background:rgba(250,247,239,.9); }
+        .purchase-name-control { position:relative; display:flex; min-width:0; gap:7px; }
+        .purchase-name-control > input { flex:1; min-width:0; }
+        .purchase-name-control > button { flex:none; width:44px; height:44px; border:1px solid rgba(104,75,49,.18); border-radius:13px; color:#4b3829; background:rgba(255,255,255,.9); font-size:19px; font-weight:700; cursor:pointer; }
+        .purchase-saved-menu { position:absolute; z-index:40; top:calc(100% + 5px); right:0; left:0; max-height:230px; overflow:auto; padding:6px; border:1px solid rgba(104,75,49,.18); border-radius:14px; background:rgba(255,253,247,.98); box-shadow:0 14px 30px rgba(54,34,22,.18); backdrop-filter:blur(16px); }
+        .purchase-saved-option { display:flex; width:100%; align-items:center; justify-content:space-between; gap:12px; padding:10px 11px; border:0; border-radius:9px; color:#30241d; background:transparent; text-align:left; font:inherit; cursor:pointer; }
+        .purchase-saved-option:hover, .purchase-saved-option:focus-visible { background:#edf5ec; outline:none; }
+        .purchase-saved-option span:last-child { flex:none; color:var(--brand-green,#17633f); font-weight:750; }
+        .purchase-saved-empty { padding:10px 11px; color:#76675b; font-size:13px; }
+        .purchase-entry-price { min-width:0; }
+        .purchase-entry-remove { width:42px; min-width:42px; height:44px; margin:0; padding:0; border-radius:13px; }
+        .purchase-form { padding:2px 4px 16px; }
+        .icon-btn:focus-visible, .btn:focus-visible, .select-with-action button:focus-visible { outline:3px solid #ffc66d; outline-offset:2px; }
+        .order-total-bar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:16px; padding:12px 14px; border-radius:10px; background:#fff4e5; font-size:16px; }
+        .order-total-bar > span:last-child { text-align:right; }
+        .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .stat-box { min-width: 0; }
+        .nav { padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+        @media (max-width: 480px) {
+            body { padding-bottom: 78px; }
+            .container { padding: 12px; }
+            .card { padding: 13px; }
+            #new-order > .card { padding:13px; }
+            #new-order label { margin-top:6px; }
+            #new-order input, #new-order select { margin-bottom:11px; }
+            #new-order .flex-row { gap:9px; }
+            #new-order hr { margin:15px 0 !important; }
+            #new-order h3 { margin:12px 0 8px; }
+            .purchase-form { padding:0 1px 12px; }
+            .grid-2 { gap: 8px; }
+            .stat-box { padding: 12px 8px; border-radius: 11px; }
+            .stat-box h3 { font-size: clamp(9px, 2.8vw, 12px); line-height: 1.15; white-space: nowrap; letter-spacing: -.2px; }
+            .stat-box p { font-size: 16px; line-height: 1.2; overflow-wrap: anywhere; }
+            .nav { height:68px; padding-left:8px; padding-right:8px; }
+            .nav-btn { min-height: 54px; font-size: 12px; }
+            .nav-btn .nav-icon { font-size: 22px; }
+            .flex-row { gap: 8px; }
+            .select-with-action { gap: 6px; }
+            .select-with-action .btn-small { font-size: 12px; padding: 7px 9px; }
+            .icon-btn { width: 42px; min-height: 42px; }
+            .flex-row > * { min-width: 0; }
+            .item-row { gap: 6px; padding: 7px; }
+            .item-row select, .item-row input { min-width: 0; }
+            .purchase-entry-row { grid-template-columns:minmax(0,1fr) 74px 36px; gap:6px; padding:9px 0; border:0; border-bottom:1px solid rgba(104,75,49,.14); border-radius:0; background:transparent; }
+            .purchase-name-control { gap:5px; }
+            .purchase-name-control > input { padding:10px 9px; font-size:15px; }
+            .purchase-name-control > button { width:35px; height:44px; border-radius:12px; }
+            .purchase-entry-price { padding:10px 6px !important; font-size:14px !important; text-align:center; }
+            .purchase-entry-remove { width:36px; min-width:36px; height:42px; border-radius:12px; }
+            .order-item-row { grid-template-columns:minmax(88px,1fr) 62px 48px 42px; gap:4px; padding:7px; }
+            .order-item-row select, .order-item-row input, .order-row-price-value, .order-item-row .icon-btn { height:40px; }
+            .order-item-row select { padding:7px 23px 7px 7px; background-position:right 7px center; font-size:13px; }
+            .order-item-row input { padding:7px 5px; font-size:14px; }
+            .order-row-price-value { font-size:13px; }
+            .order-item-row .icon-btn { width:42px; min-height:40px; }
+            .edit-item-head { grid-template-columns:minmax(0,1fr) 54px 70px 42px; gap:5px; font-size:11px; }
+            .edit-item-head.purchase { grid-template-columns:minmax(0,1fr) 80px 42px; gap:5px; }
+            label { font-size:13px; line-height:1.2; }
+            .order-total-bar { font-size:14px; padding:11px 12px; white-space:nowrap; }
+            .quick-action-grid, .more-shortcuts { gap:9px; }
+            .quick-action-grid .btn, .more-shortcuts .btn { min-height:54px; padding:10px 7px; font-size:14px; }
+            .edit-overlay { padding:8px; align-items:flex-end; }
+            .edit-dialog { width:100%; height:94dvh; max-height:94dvh; border-radius:18px 18px 10px 10px; }
+            .edit-head, .edit-foot { padding:13px 15px; }
+            .edit-body { padding:14px 15px; }
+            .edit-item-row { grid-template-columns:minmax(0,1fr) 54px 70px 42px; gap:5px; }
+            .edit-item-row.purchase { grid-template-columns:minmax(0,1fr) 80px 42px; gap:5px; }
+            .edit-item-row input { padding:9px 7px; font-size:14px; }
+        }
+        @media (max-width:380px) {
+            .app-brand-header { gap:8px; padding:10px; }
+            .brand-logo-wrap { width:43px; height:43px; }
+            .brand-name { font-size:16px; }
+            .brand-tagline { font-size:9px; }
+            .brand-badge { padding:6px 7px; font-size:9px; }
+            .select-with-action { align-items:center; }
+            .select-with-action .btn-small { font-size:11px; padding:7px 7px; }
+            .order-item-row { grid-template-columns:minmax(72px,1fr) 58px 44px 34px; gap:3px; padding:6px; }
+            .order-item-row select { font-size:12px; padding-left:6px; padding-right:19px; }
+            .order-item-row .icon-btn { width:34px; min-height:38px; }
+            .purchase-entry-row { grid-template-columns:minmax(0,1fr) 68px 34px; gap:5px; }
+            .purchase-name-control > input { font-size:14px; }
+            .purchase-name-control > button { width:33px; }
+            .purchase-entry-remove { width:34px; min-width:34px; }
+        }
+        @media (max-width:360px) { .edit-grid { grid-template-columns:1fr; } .edit-grid .wide { grid-column:auto; } .nav-btn { font-size:11px; } }
+
+        /* Dwivedi Kitchen brand refresh: warm ivory, forest green, cocoa and turmeric. */
+        :root {
+            color-scheme: light;
+            --primary: #17633f;
+            --bg: #f7f2e7;
+            --text: #30241d;
+            --card: rgba(255, 253, 247, .78);
+            --brand-green: #17633f;
+            --brand-green-dark: #0e472e;
+            --brand-cocoa: #4b2518;
+            --brand-gold: #e9a91b;
+            --brand-red: #c94a3b;
+            --glass-border: rgba(111, 75, 43, .14);
+            --glass-shadow: 0 14px 34px rgba(75, 37, 24, .09), 0 2px 7px rgba(75, 37, 24, .05);
+        }
+        html { min-height:100%; background:var(--bg); }
+        body {
+            min-height:100vh;
+            padding-bottom:calc(94px + env(safe-area-inset-bottom));
+            color:var(--text);
+            background:
+                radial-gradient(ellipse at 5% 0%, rgba(233,169,27,.13), transparent 34rem),
+                radial-gradient(ellipse at 100% 25%, rgba(23,99,63,.09), transparent 36rem),
+                linear-gradient(155deg,#fbf7ee 0%,#f4efe4 52%,#f8f5ed 100%);
+            font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+        .container { max-width:900px; padding:20px 18px 28px; }
+        .app-brand-header {
+            position:relative;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            gap:14px;
+            max-width:864px;
+            margin:18px auto 0;
+            padding:13px 18px;
+            border:1px solid rgba(255,255,255,.55);
+            border-radius:22px;
+            color:#fffaf0;
+            background:linear-gradient(120deg,rgba(14,71,46,.96),rgba(23,99,63,.92) 62%,rgba(75,37,24,.94));
+            box-shadow:0 14px 34px rgba(32,63,43,.2), inset 0 1px 0 rgba(255,255,255,.2);
+            overflow:hidden;
+        }
+        .app-brand-header::after { content:""; position:absolute; width:180px; height:180px; right:-65px; top:-116px; border:1px solid rgba(255,255,255,.16); border-radius:50%; box-shadow:0 0 0 20px rgba(255,255,255,.035),0 0 0 42px rgba(255,255,255,.025); pointer-events:none; }
+        .brand-lockup { display:flex; align-items:center; gap:12px; min-width:0; position:relative; z-index:1; }
+        .brand-logo-wrap { position:relative; display:grid; place-items:center; flex:none; width:54px; height:54px; overflow:hidden; border:1px solid rgba(255,255,255,.56); border-radius:17px; background:#fff7df; box-shadow:0 4px 14px rgba(0,0,0,.13); }
+        .brand-logo-wrap .brand-fallback { font-size:30px; line-height:1; }
+        .brand-logo { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:inherit; }
+        .brand-name { display:block; font-family:Georgia, "Times New Roman", serif; font-size:21px; font-weight:750; line-height:1.08; letter-spacing:.1px; }
+        .brand-tagline { display:block; margin-top:4px; color:rgba(255,250,240,.82); font-size:12px; letter-spacing:.35px; }
+        .brand-badge { position:relative; z-index:1; flex:none; padding:8px 11px; border:1px solid rgba(255,255,255,.23); border-radius:999px; background:rgba(255,255,255,.12); color:#fff8e9; font-size:11px; font-weight:750; white-space:nowrap; backdrop-filter:blur(10px); }
+        .login-view { max-width:520px; margin:8vh auto 0; padding:24px; }
+        .login-card { padding:30px 26px; border:1px solid rgba(255,255,255,.82); border-radius:28px; background:rgba(255,253,247,.78); box-shadow:var(--glass-shadow); backdrop-filter:blur(18px); }
+        .login-brand { display:flex; align-items:center; justify-content:center; gap:15px; margin-bottom:16px; text-align:left; }
+        .login-brand .brand-logo-wrap { width:76px; height:76px; border-color:var(--glass-border); border-radius:23px; }
+        .login-brand .brand-fallback { font-size:40px; }
+        .login-brand .brand-name { color:var(--brand-green-dark); font-size:25px; }
+        .login-brand .brand-tagline { color:#746253; }
+        .login-card > p { color:#6d5d50; line-height:1.55; }
+        .card, .stat-box {
+            border:1px solid rgba(255,255,255,.78);
+            border-radius:22px;
+            background:var(--card);
+            box-shadow:var(--glass-shadow);
+            backdrop-filter:blur(16px);
+            -webkit-backdrop-filter:blur(16px);
+        }
+        .card { padding:18px; margin-bottom:17px; }
+        .stat-box { padding:16px 14px; border-color:var(--glass-border); border-left:4px solid var(--metric-color,var(--brand-green)); }
+        .metric-orders { --metric-color:#4069a4; --metric-bg:rgba(238,243,250,.85); }
+        .metric-sales, .metric-net { --metric-color:var(--brand-green); --metric-bg:rgba(234,246,236,.88); }
+        .metric-purchases { --metric-color:#a96908; --metric-bg:rgba(255,246,222,.9); }
+        .metric-net.loss { --metric-color:#bd4037; --metric-bg:rgba(255,239,232,.92); }
+        .stat-box h3 { color:#635448; }
+        .stat-box p { color:var(--metric-color); }
+        h1,h2,h3 { color:var(--brand-cocoa); }
+        h2 { margin:8px 2px 16px; font-size:clamp(22px,4vw,28px); letter-spacing:-.45px; }
+        h3 { letter-spacing:-.15px; }
+        label { color:#594638; font-size:14px; }
+        input, select, textarea {
+            border:1px solid rgba(104,75,49,.2);
+            border-radius:14px;
+            background-color:rgba(255,255,255,.76);
+            color:#30241d;
+            box-shadow:inset 0 1px 2px rgba(75,37,24,.025);
+        }
+        input:focus, select:focus, textarea:focus { border-color:rgba(23,99,63,.65); box-shadow:0 0 0 4px rgba(23,99,63,.12); }
+        select { padding-right:46px; background-position:right 16px center; }
+        .btn {
+            min-height:48px;
+            border-radius:15px;
+            background:linear-gradient(135deg,#1e754b,#115437);
+            box-shadow:0 7px 16px rgba(17,84,55,.19),inset 0 1px 0 rgba(255,255,255,.18);
+            font-weight:700;
+        }
+        .btn:hover { filter:brightness(1.06); }
+        .btn-secondary { background:linear-gradient(135deg,#5b3828,#3f251a); box-shadow:0 6px 14px rgba(63,37,26,.17); }
+        .btn-small { min-height:40px; border-radius:12px; }
+        .quick-action-grid .btn-primary { background:linear-gradient(135deg,#218252,#115437); }
+        .quick-action-grid .btn-purchase { background:linear-gradient(135deg,#d99a13,#b66d08); }
+        .quick-action-grid .btn, .more-shortcuts .btn { min-height:62px; border-radius:17px; }
+        .more-shortcuts .btn { color:#3d3026; border:1px solid rgba(104,75,49,.16); background:rgba(255,255,255,.72); box-shadow:var(--glass-shadow); }
+        .order-item-row, .item-row { border:1px solid rgba(104,75,49,.14); border-radius:16px; background:rgba(250,247,239,.9); }
+        .order-row-price-value { border-color:rgba(23,99,63,.13); color:var(--brand-green); }
+        .order-total-bar { border:1px solid rgba(233,169,27,.18); border-radius:15px; background:linear-gradient(110deg,rgba(255,245,218,.95),rgba(255,250,237,.92)); color:#493728; }
+        .purchase-line, .order-line { border-color:rgba(104,75,49,.11); }
+        .icon-btn { border-color:rgba(104,75,49,.16); border-radius:13px; box-shadow:0 3px 10px rgba(75,37,24,.07); }
+        .icon-btn.delete { color:var(--brand-red); }
+        .message { border-radius:13px; }
+        .msg-success { color:#155c39; background:#e4f4e8; }
+        .msg-error { color:#8f3029; background:#fff0eb; }
+        .nav {
+            height:76px;
+            box-sizing:content-box;
+            padding:8px 12px max(10px,env(safe-area-inset-bottom));
+            border-top:1px solid rgba(255,255,255,.9);
+            background:rgba(255,253,248,.83);
+            box-shadow:0 -10px 30px rgba(75,37,24,.1);
+            backdrop-filter:blur(22px);
+            -webkit-backdrop-filter:blur(22px);
+        }
+        .nav-btn { min-height:60px; border-radius:17px; color:#76675b; font-size:12px; }
+        .nav-btn .nav-icon { font-size:23px; }
+        .nav-btn.active { color:var(--brand-green-dark); background:rgba(225,240,224,.84); }
+        .nav-btn:active { transform:scale(.97); }
+        .edit-overlay { background:rgba(40,31,24,.48); backdrop-filter:blur(8px); }
+        .edit-dialog { border:1px solid rgba(255,255,255,.8); border-radius:24px; background:rgba(255,253,247,.97); box-shadow:0 24px 80px rgba(54,34,22,.28); }
+        .edit-head, .edit-foot { background:rgba(255,253,247,.96); }
+        .edit-items { border-color:rgba(104,75,49,.13); border-radius:17px; background:rgba(248,245,237,.78); }
+        .edit-live-total { border:1px solid rgba(233,169,27,.16); border-radius:13px; background:#fff4dc; }
+        .media-image { border:1px solid rgba(104,75,49,.12); border-radius:18px; box-shadow:var(--glass-shadow); }
+        hr { border-color:rgba(104,75,49,.15) !important; }
+        @media (max-width:600px) {
+            body { padding-bottom:calc(88px + env(safe-area-inset-bottom)); }
+            .container { padding:14px 13px 24px; }
+            .app-brand-header { margin:10px 12px 0; padding:11px 13px; border-radius:19px; }
+            .brand-logo-wrap { width:48px; height:48px; border-radius:15px; }
+            .brand-name { font-size:18px; }
+            .brand-tagline { font-size:10px; }
+            .brand-badge { padding:7px 9px; font-size:10px; }
+            .login-view { margin:5vh auto 0; padding:15px; }
+            .login-card { padding:23px 18px; border-radius:24px; }
+            .login-brand .brand-logo-wrap { width:66px; height:66px; }
+            .login-brand .brand-name { font-size:22px; }
+            .card { padding:15px; border-radius:19px; }
+            .grid-2 { gap:9px; }
+            .stat-box { padding:13px 8px; border-radius:17px; }
+            .stat-box h3 { font-size:clamp(10px,3.1vw,13px); line-height:1.2; white-space:normal; letter-spacing:-.15px; }
+            .stat-box p { font-size:clamp(16px,4.8vw,21px); }
+            .nav { height:70px; padding-left:9px; padding-right:9px; }
+            .nav-btn { min-height:57px; font-size:12px; }
+            .nav-btn .nav-icon { font-size:23px; }
+            .select-with-action .btn-small { padding:7px 9px; }
+            .order-item-row { grid-template-columns:minmax(82px,1fr) 62px 48px 38px; gap:4px; padding:7px; }
+            .order-item-row .icon-btn { width:38px; }
+            .order-total-bar { font-size:14px; padding:12px 10px; }
+            .quick-action-grid { gap:10px; }
+            .quick-action-grid .btn { min-height:56px; font-size:14px; }
+            .edit-overlay { padding:7px; }
+            .edit-dialog { border-radius:21px 21px 12px 12px; }
+        }
+        @media (prefers-reduced-motion: no-preference) {
+            .card, .stat-box { transition:transform .18s ease,box-shadow .18s ease; }
+            .card:hover { box-shadow:0 18px 38px rgba(75,37,24,.11),0 3px 9px rgba(75,37,24,.05); }
+        }
+        /* Keep purchase entry rows light and use the available phone width well. */
+        #purchase .purchase-entry-row { padding:10px 0; border:0; border-bottom:1px solid rgba(104,75,49,.14); border-radius:0; background:transparent; }
+        @media (max-width:600px) {
+            #app-view .container { padding:12px 13px 22px; }
+            #app-view .view > h2 { margin:6px 2px 14px; }
+            #app-view .card { padding:14px; margin-bottom:14px; }
+            #app-view input, #app-view select, #app-view textarea { min-height:44px; margin:4px 0 12px; padding:11px 12px; font-size:16px; }
+            #app-view label { margin-top:5px; font-size:13px; line-height:1.2; }
+            #purchase .purchase-form { padding:0 2px 12px; }
+            #purchase .purchase-entry-row { grid-template-columns:minmax(0,1fr) 76px 38px; gap:6px; padding:9px 0; }
+            #purchase .purchase-name-control { gap:5px; }
+            #purchase .purchase-name-control > input { min-height:44px; margin:0; padding:10px 9px; font-size:15px; }
+            #purchase .purchase-name-control > button { width:36px; height:44px; }
+            #purchase .purchase-entry-price { min-height:44px; margin:0; padding:9px 5px; font-size:14px; text-align:center; }
+            #purchase .purchase-entry-remove { width:38px; min-width:38px; height:42px; min-height:42px; }
+            #new-order > .card { padding:13px; }
+            #new-order label { margin-top:6px; }
+            #new-order input, #new-order select { margin-bottom:11px; }
+            #new-order .flex-row { gap:9px; }
+            #new-order hr { margin:15px 0 !important; }
+            #new-order h3 { margin:12px 0 8px; }
+            #new-order .order-item-row { grid-template-columns:minmax(78px,1fr) 60px 46px 38px; gap:4px; }
+            #new-order .order-item-row select { min-height:40px; height:40px; margin:0; padding:7px 22px 7px 7px; font-size:12px; }
+            #new-order .order-item-row input { min-height:40px; height:40px; margin:0; padding:7px 5px; font-size:14px; }
+        }
+        @media (max-width:380px) {
+            #purchase .purchase-entry-row { grid-template-columns:minmax(0,1fr) 68px 34px; gap:5px; }
+            #purchase .purchase-name-control > input { font-size:14px; }
+            #purchase .purchase-name-control > button { width:33px; }
+            #purchase .purchase-entry-remove { width:34px; min-width:34px; }
+            #new-order .order-item-row { grid-template-columns:minmax(70px,1fr) 56px 42px 34px; gap:3px; padding:6px; }
+        }
+
+        /* Orders location grouping and menu bulk-copy controls */
+        .orders-toolbar, .menu-selection-toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; margin:0 0 14px; padding:12px; border:1px solid rgba(104,75,49,.14); border-radius:16px; background:rgba(255,253,247,.82); }
+        .orders-toolbar .btn, .menu-selection-toolbar .btn { width:auto; margin:0; min-height:42px; padding:9px 13px; font-size:14px; }
+        .location-group { margin-bottom:12px; overflow:hidden; border:1px solid rgba(104,75,49,.15); border-radius:17px; background:rgba(255,253,247,.82); box-shadow:var(--glass-shadow); }
+        .location-group summary { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px; cursor:pointer; list-style:none; }
+        .location-group summary::-webkit-details-marker { display:none; }
+        .location-group summary::after { content:"⌄"; color:var(--brand-green); font-size:20px; font-weight:800; }
+        .location-group[open] summary { border-bottom:1px solid rgba(104,75,49,.12); }
+        .location-group-meta { display:block; margin-top:4px; color:#76675b; font-size:12px; }
+        .location-group-orders { padding:0 10px 2px; }
+        .location-group-orders .card { margin:10px 0; box-shadow:none; background:rgba(255,255,255,.65); }
+        .menu-select-all { display:flex; align-items:center; gap:8px; margin:0; font-size:14px; }
+        .menu-select-all input, .menu-item-select { width:19px; height:19px; min-height:19px !important; margin:0 !important; accent-color:var(--brand-green); }
+        .menu-item-row { display:flex; align-items:center; gap:11px; padding:12px 2px; border-bottom:1px solid rgba(104,75,49,.11); }
+        .menu-item-row:last-child { border-bottom:0; }
+        .menu-item-info { flex:1; min-width:0; }
+        .menu-item-info .menu-details { margin:3px 0 5px; color:#6d5d50; font-size:13px; white-space:pre-wrap; overflow-wrap:anywhere; }
+        .menu-item-info .menu-status { margin-top:3px; color:#817367; font-size:12px; }
+        .menu-item-row .record-actions { flex:none; margin:0; }
+        .menu-selection-count { color:#67564a; font-size:13px; font-weight:700; }
+        @media (max-width:480px) {
+            .orders-toolbar, .menu-selection-toolbar { padding:10px; }
+            .orders-toolbar .btn, .menu-selection-toolbar .btn { min-height:40px; padding:8px 10px; font-size:13px; }
+            .menu-item-row { gap:8px; }
+            .menu-item-row .record-actions { gap:4px; }
+            .menu-item-row .icon-btn { width:36px; min-width:36px; }
+        }
+
+        /* Payment Status, WhatsApp & AI Importer Styles */
+        .badge { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:750; letter-spacing:.3px; }
+        .badge-paid { background:#e4f4e8; color:#155c39; border:1px solid rgba(21,92,57,.25); }
+        .badge-pending { background:#fff3cd; color:#8a6008; border:1px solid rgba(138,96,8,.32); }
+        .badge-upi { background:#e7f1ff; color:#0c5460; border:1px solid rgba(12,84,96,.22); }
+        .badge-cash { background:#f4f0eb; color:#604c3e; border:1px solid rgba(96,76,62,.22); }
+        .btn-whatsapp { background:linear-gradient(135deg,#25d366,#128c7e); color:#fff; border:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-weight:700; padding:8px 12px; border-radius:12px; font-size:13px; cursor:pointer; text-decoration:none; box-shadow:0 3px 8px rgba(37,211,102,.25); }
+        .btn-whatsapp:hover { filter:brightness(1.05); }
+        .btn-mark-paid { padding:5px 10px; font-size:12px; font-weight:750; border-radius:10px; border:1px solid #17633f; background:#e8f6ed; color:#17633f; cursor:pointer; }
+        .btn-mark-paid:hover { background:#17633f; color:#fff; }
+        .order-filter-bar { display:flex; gap:8px; margin:0 0 14px; overflow-x:auto; padding-bottom:4px; -webkit-overflow-scrolling:touch; }
+        .order-filter-btn { flex:none; padding:8px 14px; border-radius:12px; font-size:13px; font-weight:650; border:1px solid rgba(104,75,49,.2); background:rgba(255,253,247,.75); color:#594638; cursor:pointer; transition:all .15s ease; }
+        .order-filter-btn.active { background:var(--brand-green); color:#fff; border-color:var(--brand-green); box-shadow:0 4px 10px rgba(23,99,63,.2); }
+        .btn-ai-magic { background:linear-gradient(135deg,#7c3aed,#4f46e5); color:#fff; border:none; box-shadow:0 4px 12px rgba(124,58,237,.25); font-weight:700; }
+        .btn-ai-magic:hover { filter:brightness(1.08); }
+        .ai-tab-bar { display:flex; gap:6px; margin-bottom:12px; border-bottom:1px solid rgba(104,75,49,.15); padding-bottom:8px; }
+        .ai-tab-btn { flex:1; padding:9px; border-radius:10px; border:1px solid rgba(104,75,49,.18); background:rgba(255,255,255,.7); font-size:13px; font-weight:700; color:#594638; cursor:pointer; }
+        .ai-tab-btn.active { background:var(--brand-green); color:#fff; border-color:var(--brand-green); }
+        .ai-parsed-table { width:100%; border-collapse:collapse; margin-top:12px; font-size:14px; }
+        .ai-parsed-table th { text-align:left; padding:8px; background:rgba(23,99,63,.08); color:var(--brand-cocoa); font-weight:700; border-radius:6px; }
+        .ai-parsed-table td { padding:7px 5px; border-bottom:1px solid rgba(104,75,49,.1); }
+        .ai-parsed-table input { margin:0; padding:6px 8px; font-size:14px; }
+        .card-setting-field { margin-bottom:14px; }
+        .card-setting-field label { margin-bottom:4px; }
+        .order-card-meta { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:8px 0; }
+        .order-card-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:12px; padding-top:10px; border-top:1px solid rgba(104,75,49,.1); }
+
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div id="login-view" class="container login-view">
+      <div class="login-card" style="text-align:center">
+        <div class="login-brand">
+          <div class="brand-logo-wrap"><span class="brand-fallback" aria-hidden="true">🍲</span><img class="brand-logo" src="static/logo.png" alt="Dwivedi Kitchen logo" onerror="this.style.display='none'"></div>
+          <div><span class="brand-name">Dwivedi Kitchen</span><span class="brand-tagline">Ghar jaisa swad, har roz</span></div>
+        </div>
+        <p>Please sign in with your authorized Google account to manage sales.</p>
+        <p id="login-msg" style="color: red; margin-top: 20px;"></p>
+        <button id="auth-btn" class="btn" onclick="initAuth()" style="margin-top: 20px;">Sign in with Google</button>
+      </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app-view" class="hidden">
+        <header class="app-brand-header">
+          <div class="brand-lockup">
+            <div class="brand-logo-wrap"><span class="brand-fallback" aria-hidden="true">🍲</span><img class="brand-logo" src="static/logo.png" alt="" onerror="this.style.display='none'"></div>
+            <div><span class="brand-name">Dwivedi Kitchen</span><span class="brand-tagline">Ghar jaisa swad, har roz</span></div>
+          </div>
+          <span class="brand-badge">🌿 100% Veg</span>
+        </header>
+        <div class="container">
+            <!-- Global Messages -->
+            <div id="global-msg" class="message"></div>
+
+            <!-- HOME -->
+            <div id="home" class="view active">
+                <h2>Dashboard</h2>
+                <div class="grid-2" style="margin-bottom: 15px;">
+                    <div class="stat-box metric-orders">
+                        <h3>Aaj Orders</h3>
+                        <p id="today-orders">0</p>
+                    </div>
+                    <div class="stat-box metric-sales">
+                        <h3>Aaj Sales</h3>
+                        <p id="today-sales">₹0</p>
+                    </div>
+                    <div class="stat-box metric-orders">
+                        <h3>Mahine Orders</h3>
+                        <p id="month-orders">0</p>
+                    </div>
+                    <div class="stat-box metric-sales">
+                        <h3>Mahine Sales</h3>
+                        <p id="month-sales">₹0</p>
+                    </div>
+                    <div class="stat-box metric-purchases">
+                        <h3>Mahine Purchases</h3>
+                        <p id="month-purchases">₹0</p>
+                    </div>
+                    <div class="stat-box metric-net">
+                        <h3>Mahine ka Net</h3>
+                        <p id="month-net">₹0</p>
+                    </div>
+                    <div class="stat-box" style="--metric-color: #c47716; --metric-bg: rgba(255,247,233,.95); grid-column: 1 / -1;">
+                        <h3>Pending Payments (Vasooli Baaki)</h3>
+                        <p id="pending-sales">₹0</p>
+                    </div>
+                </div>
+                <p style="font-size:11px;color:#666;margin:-5px 2px 15px;white-space:nowrap">Net = recorded Sales − Purchases</p>
+                <div class="card">
+                    <h3>Quick Actions</h3>
+                    <div class="quick-action-grid">
+                        <button class="btn btn-primary" onclick="switchTab('new-order')">＋ Naya Order</button>
+                        <button class="btn btn-purchase" onclick="switchTab('purchase')">＋ Naya Purchase</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW ORDER -->
+            <div id="new-order" class="view">
+                <h2>Naya Order</h2>
+                <div class="card">
+                    <label>Society</label>
+                    <div class="select-with-action"><select id="order-society" onchange="populateTowers()"></select><button type="button" class="btn btn-secondary btn-small" onclick="toggleOrderAddForm('society')">+ Society</button></div>
+                    <div id="order-add-society-form" class="hidden" style="margin:8px 0 14px">
+                        <input type="text" id="order-new-society-name" placeholder="Nayi society ka naam">
+                        <button type="button" class="btn btn-small" onclick="addSocietyFromOrder()">Society Save Karein</button>
+                    </div>
+
+                    <label>Tower</label>
+                    <div class="select-with-action"><select id="order-tower"></select><button type="button" class="btn btn-secondary btn-small" onclick="toggleOrderAddForm('tower')">+ Tower</button></div>
+                    <div id="order-add-tower-form" class="hidden" style="margin:8px 0 14px">
+                        <input type="text" id="order-new-tower-name" placeholder="Tower jaise A, B, 1">
+                        <button type="button" class="btn btn-small" onclick="addTowerFromOrder()">Tower Save Karein</button>
+                    </div>
+
+                    <div class="flex-row">
+                        <div>
+                            <label>Flat Number</label>
+                            <input type="text" id="order-flat" oninput="autoCalcFloor(); autoFillCustomerByFlat();" placeholder="e.g. 101">
+                        </div>
+                        <div>
+                            <label>Floor</label>
+                            <input type="text" id="order-floor" placeholder="Auto">
+                        </div>
+                    </div>
+
+                    <label>Extra Address (Optional)</label>
+                    <input type="text" id="order-address" placeholder="Near lift, etc.">
+
+                    <div class="flex-row">
+                        <div>
+                            <label>Customer Name</label>
+                            <input type="text" id="order-name" placeholder="Optional">
+                        </div>
+                        <div>
+                            <label>Contact No.</label>
+                            <input type="text" id="order-contact" placeholder="Optional">
+                        </div>
+                    </div>
+
+                    <div class="flex-row">
+                        <div>
+                            <label>Payment Status</label>
+                            <select id="order-payment-status">
+                                <option value="Paid" selected>🟢 Paid</option>
+                                <option value="Pending">🟡 Pending (Baad mein)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Payment Mode</label>
+                            <select id="order-payment-mode">
+                                <option value="UPI" selected>UPI / Online</option>
+                                <option value="Cash">Cash</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
+
+                    <h3>Items</h3>
+                    <div id="order-items-container"></div>
+                    <button class="btn btn-secondary btn-small" onclick="addOrderItemRow()">+ Add Item</button>
+                    
+                    <div class="order-total-bar"><span>Total Qty: <strong id="order-total-qty">0</strong></span><span>Final Total: <strong>₹<span id="order-total-amount">0</span></strong></span></div>
+                    <button class="btn" onclick="saveOrder()" style="margin-top: 15px;">Save Order</button>
+                </div>
+            </div>
+
+            <!-- ORDERS LIST -->
+            <div id="orders" class="view">
+                <h2>Orders History</h2>
+                <div class="order-filter-bar">
+                    <button type="button" class="order-filter-btn active" data-filter="all" onclick="setOrderFilter('all')">All (<span id="count-filter-all">0</span>)</button>
+                    <button type="button" class="order-filter-btn" data-filter="pending" onclick="setOrderFilter('pending')">🟡 Pending (<span id="count-filter-pending">0</span>)</button>
+                    <button type="button" class="order-filter-btn" data-filter="paid" onclick="setOrderFilter('paid')">🟢 Paid (<span id="count-filter-paid">0</span>)</button>
+                </div>
+                <div class="orders-toolbar">
+                    <div><strong>Order view</strong><div style="font-size:12px;color:#76675b;margin-top:3px">Location ke hisaab se similar flats ke orders dekhein</div></div>
+                    <button id="orders-group-toggle" type="button" class="btn btn-secondary" onclick="toggleOrdersGrouping()">Group by Location</button>
+                </div>
+                <div id="orders-list"></div>
+            </div>
+
+            <!-- PURCHASE -->
+            <div id="purchase" class="view">
+                <h2>New Purchase</h2>
+                <div class="purchase-form">
+                    <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+                        <button type="button" class="btn btn-secondary btn-small" onclick="addPurchaseItemRow()">+ Add Manual Item</button>
+                        <button type="button" class="btn btn-ai-magic btn-small" onclick="openAIPurchaseModal()">✨ AI / Quick Paste List</button>
+                    </div>
+                    <div id="purchase-items-container"></div>
+                    <div style="margin-top: 20px; text-align: right; font-size: 18px;">
+                        <strong>Total Purchase: ₹<span id="purchase-total-amount">0</span></strong>
+                    </div>
+                    <button class="btn" onclick="savePurchase()" style="margin-top: 15px;">Save Purchase</button>
+                </div>
+            </div>
+
+            <!-- PURCHASE HISTORY -->
+            <div id="purchases" class="view">
+                <h2>Purchase History</h2>
+                <div id="purchase-history-list"></div>
+            </div>
+
+            <!-- MENU (accessible from More) -->
+            <div id="menu" class="view">
+                <h2>Menu Items</h2>
+                <div id="menu-list" class="card"></div>
+                <div class="card">
+                    <h3>Menu mein naya item jodein</h3>
+                    <label>Item Name</label>
+                    <input type="text" id="new-menu-name" placeholder="Jaise: Special Thali">
+                    <label>Full Details / Contents</label>
+                    <textarea id="new-menu-details" rows="3" placeholder="Item mein kya-kya hai? (Optional)"></textarea>
+                    <label>Price (₹)</label>
+                    <input type="number" id="new-menu-price" min="0" step="0.01" placeholder="Price">
+                    <button class="btn" onclick="addMenuItem()">Menu Item Save Karein</button>
+                </div>
+            </div>
+
+            <!-- MANAGE SOCIETY/TOWER -->
+            <div id="manage" class="view">
+                <h2>Society / Tower Setup</h2>
+                <div class="card">
+                    <h3>Add New Society</h3>
+                    <input type="text" id="new-society-name" placeholder="Society Name">
+                    <button class="btn" onclick="addSociety()">Add Society</button>
+                </div>
+                <div class="card">
+                    <h3>Add Tower to Society</h3>
+                    <select id="manage-society"></select>
+                    <input type="text" id="new-tower-name" placeholder="Tower Name (e.g. A, B, 1)">
+                    <button class="btn" onclick="addTower()">Add Tower</button>
+                </div>
+                <div class="card">
+                    <h3>Existing Societies aur unke Towers</h3>
+                    <div id="society-tower-list">Loading list…</div>
+                </div>
+            </div>
+
+            <!-- MORE (Images) -->
+            <div id="more" class="view">
+                <h2>More Settings</h2>
+                <div class="card">
+                    <div class="more-shortcuts">
+                        <button type="button" class="btn" onclick="switchTab('menu')">🍽️ Menu Items</button>
+                        <button type="button" class="btn" onclick="switchTab('manage')">🏢 Society / Tower</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="media-card-head"><h3>Payment QR Code</h3><div class="media-actions"><button id="qr-upload-first" type="button" class="btn btn-secondary media-upload-trigger" onclick="document.getElementById('qr-upload').click()">＋ Upload</button><button id="qr-edit" type="button" class="icon-btn hidden" aria-label="QR image edit" title="QR image change karein" onclick="document.getElementById('qr-upload').click()">✏️</button></div></div>
+                    <div id="qr-display" style="text-align:center"></div>
+                    <input type="file" id="qr-upload" class="hidden" accept="image/*" onchange="uploadImage(event, 'qr')">
+                </div>
+
+                <!-- Kitchen App Settings -->
+                <div class="card">
+                    <h3>App Settings & Preferences</h3>
+                    <div class="card-setting-field">
+                        <label>Aapka UPI ID (WhatsApp Bill mein bhejne ke liye)</label>
+                        <input type="text" id="setting-upi-id" placeholder="e.g. 9876543210@paytm ya yourname@okhdfcbank" onchange="saveSettingUPI(this.value)">
+                    </div>
+                    <div class="card-setting-field">
+                        <label>Google Gemini API Key (AI Features & OCR)</label>
+                        <input type="password" id="setting-gemini-key" placeholder="AIzaSy..." onchange="saveSettingGemini(this.value)">
+                        <div style="font-size:12px;color:#76675b;margin-top:-8px;line-height:1.4">
+                            100% Free at <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--brand-green);font-weight:700">Google AI Studio</a>. Unlocks bill photo / receipt scanner.
+                        </div>
+                    </div>
+                    <div style="margin-top:15px;padding-top:12px;border-top:1px solid rgba(104,75,49,.12)">
+                        <button type="button" id="btn-install-pwa" class="btn btn-secondary" onclick="triggerPWAInstall()">📲 Phone / Screen par Install Karein (PWA)</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Full-page edit form: opens as one sheet, updates preview fields/totals live. -->
+        <div id="edit-overlay" class="edit-overlay" onclick="if(event.target===this)closeRecordEditor()">
+            <section class="edit-dialog" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+                <div class="edit-head"><h2 id="edit-title">Edit record</h2><button type="button" class="icon-btn" aria-label="Close" onclick="closeRecordEditor()">✕</button></div>
+                <form id="edit-form" onsubmit="saveRecordEditor(event)">
+                    <div id="edit-body" class="edit-body"></div>
+                    <div id="edit-error" class="edit-error" role="alert"></div>
+                    <div class="edit-foot"><button type="button" class="btn btn-secondary" onclick="closeRecordEditor()">Cancel</button><button id="edit-save-btn" type="submit" class="btn">Save changes</button></div>
+                </form>
+            </section>
+        </div>
+
+        <!-- AI Purchase List Importer Modal -->
+        <div id="ai-purchase-overlay" class="edit-overlay" onclick="if(event.target===this)closeAIPurchaseModal()">
+            <section class="edit-dialog" role="dialog" aria-modal="true" aria-labelledby="ai-purchase-title">
+                <div class="edit-head">
+                    <h2 id="ai-purchase-title">✨ AI Purchase Importer</h2>
+                    <button type="button" class="icon-btn" aria-label="Close" onclick="closeAIPurchaseModal()">✕</button>
+                </div>
+                <div class="edit-body">
+                    <div class="ai-tab-bar">
+                        <button type="button" class="ai-tab-btn active" id="tab-btn-text" onclick="switchAITab('text')">📝 Paste Text / List</button>
+                        <button type="button" class="ai-tab-btn" id="tab-btn-image" onclick="switchAITab('image')">📷 Bill Photo / Screenshot</button>
+                    </div>
+
+                    <!-- Text Mode -->
+                    <div id="ai-pane-text">
+                        <label>List ya Invoice text paste karein (Blinkit, BigBasket, WhatsApp, etc.):</label>
+                        <textarea id="ai-text-input" rows="6" placeholder="Example:
+Aloo 50
+Tamatar 40
+Amul Dahi 80
+Sarso tel 203
+Chaumin, soya sos 140
+Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+                            <button type="button" class="btn btn-ai-magic btn-small" id="ai-parse-btn" onclick="parsePurchaseInput('text')">✨ Parse Items</button>
+                            <button type="button" class="btn btn-secondary btn-small" onclick="document.getElementById('ai-text-input').value='Milk 36\nKetchup 50\nAloo 100\nPyaz 60\nPaneer 50\nGhee 412'">Sample Text</button>
+                        </div>
+                    </div>
+
+                    <!-- Image Mode -->
+                    <div id="ai-pane-image" class="hidden">
+                        <label>Physical receipt ki photo ya grocery app ka screenshot select karein:</label>
+                        <input type="file" id="ai-image-file" accept="image/*" style="margin-bottom:10px">
+                        <button type="button" class="btn btn-ai-magic btn-small" id="ai-scan-btn" onclick="parsePurchaseInput('image')">🔍 Scan & Extract with AI</button>
+                        <p style="font-size:12px;color:#76675b;margin-top:8px">Photo scan karne ke liye free Gemini API key use hoti hai.</p>
+                    </div>
+
+                    <!-- API Key banner if not saved -->
+                    <div id="ai-key-banner" style="background:#fff8e6;border:1px solid #e6c875;padding:10px;border-radius:12px;margin:12px 0;font-size:12px;">
+                        <strong>🔑 AI Vision / Complex parsing:</strong> Free Google Gemini API Key use karein. <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--brand-green);font-weight:700">Google AI Studio se Free Key lein</a> (No credit card needed).
+                        <div style="display:flex;gap:6px;margin-top:6px;">
+                            <input type="password" id="modal-gemini-key" placeholder="AIzaSy..." style="margin:0;padding:6px 8px;font-size:13px;">
+                            <button type="button" class="btn btn-small" style="margin:0;min-height:36px;width:auto;" onclick="saveGeminiKeyFromModal()">Save</button>
+                        </div>
+                    </div>
+
+                    <!-- Parsed Items Result -->
+                    <div id="ai-results-container" class="hidden" style="margin-top:16px;">
+                        <h3 style="margin:0 0 8px;font-size:16px;color:var(--brand-green)">Parsed Items Preview (<span id="ai-item-count">0</span>):</h3>
+                        <table class="ai-parsed-table">
+                            <thead>
+                                <tr><th>Item Name</th><th style="width:90px">Price (₹)</th><th style="width:36px"></th></tr>
+                            </thead>
+                            <tbody id="ai-parsed-rows"></tbody>
+                        </table>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding:10px;background:#fff4dc;border-radius:10px;font-weight:700">
+                            <span>Total Extracted:</span>
+                            <span>₹<span id="ai-parsed-total">0</span></span>
+                        </div>
+                    </div>
+
+                    <div id="ai-msg" class="message" style="margin-top:10px;"></div>
+                </div>
+                <div class="edit-foot">
+                    <button type="button" class="btn btn-secondary" onclick="closeAIPurchaseModal()">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="ai-apply-btn" onclick="applyAIParsedItems()" disabled>Apply to Purchase</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="nav" aria-label="Main navigation">
+            <button class="nav-btn active" data-tab="home" onclick="switchTab('home')"><span class="nav-icon">⌂</span><span>Home</span></button>
+            <button class="nav-btn" data-tab="orders" onclick="switchTab('orders')"><span class="nav-icon">▤</span><span>Orders</span></button>
+            <button class="nav-btn" data-tab="purchases" onclick="switchTab('purchases')"><span class="nav-icon">🛒</span><span>Purchases</span></button>
+            <button class="nav-btn" data-tab="more" onclick="switchTab('more')"><span class="nav-icon">⋯</span><span>More</span></button>
+        </nav>
+    </div>
+
+    <script>
+        // CONFIGURATION
+        const CLIENT_ID = '91521766084-r2ekts6unmvvnh0ho640qh7vjvbem10v.apps.googleusercontent.com';
+        const SPREADSHEET_ID = '1kRoEzjDq2r9HCA58ehasg_6lFYeDJzo-ze4qlXrEggc';
+        const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+
+        let tokenClient;
+        let accessToken = null;
+        let sheetData = {
+            Societies: [],
+            Towers: [],
+            Menu: [],
+            Orders: [],
+            OrderItems: [],
+            Purchases: [],
+            PurchaseItems: []
+        };
+        let menuItemsData = [];
+        let ordersGroupedByLocation = false;
+        const selectedMenuItemIds = new Set();
+        let currentOrderFilter = 'all';
+        let aiParsedItems = [];
+        let deferredPWAInstallPrompt = null;
+
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => {
+                    console.log('SW registration skipped', err);
+                });
+            });
+        }
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPWAInstallPrompt = e;
+        });
+
+        // Store all app timestamps in the same readable India format as the existing sheet rows.
+        function formatDateTimeForSheet(date = new Date()) {
+            const parts = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric',
+                hour: 'numeric', minute: '2-digit', hour12: true
+            }).formatToParts(date);
+            const p = Object.fromEntries(parts.map(part => [part.type, part.value]));
+            const month = p.month.charAt(0).toUpperCase() + p.month.slice(1).toLowerCase();
+            return `${p.day}-${month}-${p.year} ${p.hour}:${p.minute} ${p.dayPeriod.toUpperCase()}`;
+        }
+
+        function formatDateTimeForDisplay(value) {
+            const date = parseSheetDate(value);
+            return date ? formatDateTimeForSheet(date) : String(value || '');
+        }
+
+        function parseSheetDate(value) {
+            if (!value) return null;
+            const text = String(value).trim();
+            const readable = text.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+            if (readable) {
+                const month = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 }[readable[2].toLowerCase()];
+                let hour = Number(readable[4]) % 12;
+                if (readable[6].toUpperCase() === 'PM') hour += 12;
+                const date = new Date(Number(readable[3]), month, Number(readable[1]), hour, Number(readable[5]));
+                return Number.isNaN(date.getTime()) ? null : date;
+            }
+            const date = new Date(text);
+            return Number.isNaN(date.getTime()) ? null : date;
+        }
+
+        // --- AUTHENTICATION ---
+        function onGoogleIdentityLoaded() {
+            if (!window.google?.accounts?.oauth2) return;
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                prompt: '',
+                login_hint: 'dwivedi.kitchen.92@gmail.com',
+                callback: (tokenResponse) => {
+                    if (tokenResponse && tokenResponse.access_token) {
+                        accessToken = tokenResponse.access_token;
+                        document.getElementById('login-view').classList.add('hidden');
+                        document.getElementById('app-view').classList.remove('hidden');
+                        loadAllData();
+                        loadSavedImages();
+                        loadSavedSettings();
+                    }
+                },
+            });
+        }
+
+        function initAuth() {
+            if (!tokenClient) {
+                document.getElementById('login-msg').innerText = 'Google sign-in load nahi hua. Page refresh karke dobara try karein.';
+                return;
+            }
+            tokenClient.requestAccessToken();
+        }
+
+        function showMessage(msg, isError = false) {
+            const el = document.getElementById('global-msg');
+            el.textContent = msg;
+            el.className = isError ? 'message msg-error' : 'message msg-success';
+            setTimeout(() => { el.className = 'message'; }, 4000);
+        }
+
+        // --- API CALLS ---
+        async function fetchSheetData(tabName) {
+            const range = encodeURIComponent(`'${tabName}'!A:Z`);
+            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}`, {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || `Could not read ${tabName}`);
+            return data.values || [];
+        }
+
+        async function appendSheetData(tabName, values) {
+            const range = encodeURIComponent(`'${tabName}'!A:Z`);
+            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}:append?valueInputOption=USER_ENTERED`, {
+                method: 'POST',
+                headers: { 
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ values: [values] })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || `Failed to save to ${tabName}`);
+            return data;
+        }
+
+        let spreadsheetSheetIds = null;
+        async function sheetIdFor(tabName) {
+            if (!spreadsheetSheetIds) {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?fields=sheets(properties(sheetId,title))`;
+                const res = await fetch(url, {headers: {Authorization: `Bearer ${accessToken}`}});
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error?.message || 'Sheet list load nahi hui');
+                spreadsheetSheetIds = Object.fromEntries((data.sheets || []).map(s => [s.properties.title, s.properties.sheetId]));
+            }
+            if (spreadsheetSheetIds[tabName] === undefined) throw new Error(`${tabName} tab nahi mila`);
+            return spreadsheetSheetIds[tabName];
+        }
+
+        async function updateDataRow(tabName, rowNumber, values) {
+            const lastColumn = String.fromCharCode(64 + values.length);
+            const range = encodeURIComponent(`'${tabName}'!A${rowNumber}:${lastColumn}${rowNumber}`);
+            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}?valueInputOption=USER_ENTERED`, {
+                method: 'PUT', headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
+                body: JSON.stringify({values: [values]})
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || `Edit ${tabName} mein save nahi hua`);
+            return data;
+        }
+
+        async function deleteDataRows(tabName, rowNumbers) {
+            const uniqueRows = [...new Set(rowNumbers)].sort((a, b) => b - a);
+            if (!uniqueRows.length) return;
+            const sheetId = await sheetIdFor(tabName);
+            const requests = uniqueRows.map(rowNumber => ({deleteDimension: {range: {sheetId, dimension: 'ROWS', startIndex: rowNumber - 1, endIndex: rowNumber}}}));
+            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`, {
+                method: 'POST', headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
+                body: JSON.stringify({requests})
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || `Delete ${tabName} mein nahi hua`);
+        }
+
+        function actionButtons(editHandler, deleteHandler, id) {
+            return `<div class="record-actions"><button type="button" class="icon-btn" aria-label="Edit" title="Edit" onclick="${editHandler}('${id}')">✏️</button><button type="button" class="icon-btn delete" aria-label="Delete" title="Delete" onclick="${deleteHandler}('${id}')">🗑️</button></div>`;
+        }
+
+        let recordEditorState = null;
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+        }
+        function editField(label, key, value, type = 'text', wide = false) {
+            return `<div class="${wide ? 'wide' : ''}"><label>${label}</label><input data-edit-field="${key}" type="${type}" value="${escapeHtml(value)}"></div>`;
+        }
+        function renderEditorItemRow(type, item = {}) {
+            if (type === 'purchase') return `<div class="edit-item-row purchase"><input data-item-name value="${escapeHtml(item.name)}" aria-label="Item name" placeholder="Purchase item"><input data-item-price type="number" min="0" step="0.01" value="${escapeHtml(item.price ?? '')}" aria-label="Price" placeholder="Price ₹"><button type="button" class="icon-btn delete" onclick="removeEditorItem(this)" aria-label="Remove item">×</button></div>`;
+            return `<div class="edit-item-row"><input data-item-name value="${escapeHtml(item.name)}" aria-label="Menu item" placeholder="Menu item"><input data-item-qty type="number" min="1" step="1" value="${escapeHtml(item.qty ?? 1)}" aria-label="Quantity" placeholder="Qty"><input data-item-price type="number" min="0" step="0.01" value="${escapeHtml(item.price ?? '')}" aria-label="Unit price" placeholder="Price ₹"><button type="button" class="icon-btn delete" onclick="removeEditorItem(this)" aria-label="Remove item">×</button></div>`;
+        }
+        function openRecordEditor(type, id) {
+            const groups = {order:'Orders', purchase:'Purchases', menu:'Menu', society:'Societies'};
+            const rows = sheetData[groups[type]] || [];
+            const index = rows.findIndex(row => row[0] === id);
+            if (index < 0) return;
+            const row = [...rows[index]];
+            let items = [];
+            if (type === 'order') items = sheetData.OrderItems.filter(item => item[1] === id).map(item => ({name:item[2],qty:item[3],price:item[4]}));
+            if (type === 'purchase') items = sheetData.PurchaseItems.filter(item => item[1] === id).map(item => ({name:item[3],price:item[4]}));
+            const titles = {order:'Edit order',purchase:'Edit purchase',menu:'Edit menu item',society:'Edit society & towers'};
+            document.getElementById('edit-title').textContent = titles[type];
+            recordEditorState = {type,id,index,row};
+            let body = '';
+            if (type === 'order') {
+                const status = row[12] || 'Paid';
+                const mode = row[13] || 'Cash';
+                body = `<div class="edit-grid">${editField('Date & time','dateTime',row[1],'text',true)}${editField('Society','society',row[2])}${editField('Tower','tower',row[3])}${editField('Flat number','flat',row[4])}${editField('Floor','floor',row[5])}${editField('Extra address','address',row[6],'text',true)}${editField('Customer name','customer',row[7])}${editField('Contact number','contact',row[8])}<div><label>Payment Status</label><select data-edit-field="paymentStatus"><option value="Paid" ${status === 'Paid' ? 'selected' : ''}>🟢 Paid</option><option value="Pending" ${status === 'Pending' ? 'selected' : ''}>🟡 Pending</option></select></div><div><label>Payment Mode</label><select data-edit-field="paymentMode"><option value="UPI" ${mode === 'UPI' ? 'selected' : ''}>UPI</option><option value="Cash" ${mode === 'Cash' ? 'selected' : ''}>Cash</option></select></div></div>
+                    <div class="edit-items"><strong>Order items</strong><div class="edit-item-head"><span>Item</span><span>Qty</span><span>Price ₹</span><span></span></div><div id="editor-item-list">${items.map(item => renderEditorItemRow('order',item)).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorItem('order')">＋ Add item</button><div class="edit-live-total"><span>Total Qty: <b id="editor-qty">0</b></span><span>Final Total: <b id="editor-total">₹0</b></span></div></div>`;
+            } else if (type === 'purchase') {
+                body = `${editField('Date & time','dateTime',row[1],'text',true)}<div class="edit-items"><strong>Purchase items</strong><div class="edit-item-head purchase"><span>Item</span><span>Amount ₹</span><span></span></div><div id="editor-item-list">${items.map(item => renderEditorItemRow('purchase',item)).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorItem('purchase')">＋ Add item</button><div class="edit-live-total"><span>Total items: <b id="editor-qty">0</b></span><span>Total purchase: <b id="editor-total">₹0</b></span></div></div>`;
+            } else if (type === 'menu') {
+                body = `<div class="edit-grid">${editField('Item name','name',row[1],'text',true)}<div class="wide"><label>Full details / contents</label><textarea data-edit-field="details" rows="3">${escapeHtml(row[2])}</textarea></div>${editField('Price (₹)','price',row[3],'number')}<div><label>Active</label><select data-edit-field="active"><option value="TRUE" ${String(row[4]).toUpperCase() !== 'FALSE' ? 'selected' : ''}>Active</option><option value="FALSE" ${String(row[4]).toUpperCase() === 'FALSE' ? 'selected' : ''}>Inactive</option></select></div></div>`;
+            } else {
+                const towers = sheetData.Towers.filter(tower => tower[1] === id);
+                body = `${editField('Society name','name',row[1],'text',true)}<div class="edit-items"><strong>Towers</strong><div id="editor-tower-list">${towers.map(tower => `<div class="edit-tower-row"><input data-tower-name value="${escapeHtml(tower[2])}" aria-label="Tower name"><button type="button" class="icon-btn delete" onclick="this.parentElement.remove()" aria-label="Remove tower">×</button></div>`).join('')}</div><button type="button" class="btn btn-secondary btn-small" onclick="addEditorTower()">＋ Add tower</button></div>`;
+            }
+            document.getElementById('edit-body').innerHTML = body;
+            document.getElementById('edit-error').classList.remove('show');
+            document.getElementById('edit-overlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('edit-body').oninput = updateEditorTotals;
+            updateEditorTotals();
+        }
+        function closeRecordEditor() {
+            document.getElementById('edit-overlay').classList.remove('open');
+            document.body.style.overflow = '';
+            recordEditorState = null;
+        }
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && document.getElementById('edit-overlay').classList.contains('open')) closeRecordEditor();
+        });
+        function addEditorItem(type) {
+            document.getElementById('editor-item-list').insertAdjacentHTML('beforeend', renderEditorItemRow(type));
+            updateEditorTotals();
+        }
+        function removeEditorItem(button) { button.closest('.edit-item-row').remove(); updateEditorTotals(); }
+        function addEditorTower() {
+            document.getElementById('editor-tower-list').insertAdjacentHTML('beforeend', `<div class="edit-tower-row"><input data-tower-name aria-label="Tower name" placeholder="Tower A"><button type="button" class="icon-btn delete" onclick="this.parentElement.remove()" aria-label="Remove tower">×</button></div>`);
+        }
+        function updateEditorTotals() {
+            if (!recordEditorState || !['order','purchase'].includes(recordEditorState.type)) return;
+            const rows = [...document.querySelectorAll('#editor-item-list .edit-item-row')];
+            const qty = rows.reduce((sum,item) => sum + (recordEditorState.type === 'order' ? (Number(item.querySelector('[data-item-qty]').value)||0) : 1),0);
+            const total = rows.reduce((sum,item) => sum + (Number(item.querySelector('[data-item-price]').value)||0) * (recordEditorState.type === 'order' ? (Number(item.querySelector('[data-item-qty]').value)||0) : 1),0);
+            document.getElementById('editor-qty').textContent = qty;
+            document.getElementById('editor-total').textContent = '₹' + total.toLocaleString('en-IN',{maximumFractionDigits:2});
+        }
+        function getEditorItems(type) {
+            return [...document.querySelectorAll('#editor-item-list .edit-item-row')].map(item => ({
+                name:item.querySelector('[data-item-name]').value.trim(),
+                qty:type === 'order' ? Number(item.querySelector('[data-item-qty]').value) : 1,
+                price:item.querySelector('[data-item-price]').value === '' ? NaN : Number(item.querySelector('[data-item-price]').value)
+            })).filter(item => item.name);
+        }
+        async function saveRecordEditor(event) {
+            event.preventDefault();
+            if (!recordEditorState) return;
+            const saveButton = document.getElementById('edit-save-btn');
+            saveButton.disabled = true; saveButton.textContent = 'Saving…';
+            try {
+                const {type,id,index,row} = recordEditorState;
+                if (type === 'order') {
+                    const items = getEditorItems(type);
+                    if (!items.length || items.some(item => !Number.isInteger(item.qty) || item.qty < 1 || !Number.isFinite(item.price) || item.price < 0)) throw new Error('Har item ka naam, valid quantity aur unit price bharein.');
+                    row[1]=document.querySelector('[data-edit-field="dateTime"]').value.trim();
+                    row[2]=document.querySelector('[data-edit-field="society"]').value.trim(); row[3]=document.querySelector('[data-edit-field="tower"]').value.trim();
+                    row[4]=document.querySelector('[data-edit-field="flat"]').value.trim(); row[5]=document.querySelector('[data-edit-field="floor"]').value.trim();
+                    row[6]=document.querySelector('[data-edit-field="address"]').value.trim(); row[7]=document.querySelector('[data-edit-field="customer"]').value.trim(); row[8]=document.querySelector('[data-edit-field="contact"]').value.trim();
+                    row[9]=items.map(item=>`${item.name} (x${item.qty})`).join(', '); row[10]=items.reduce((sum,item)=>sum+item.qty,0); row[11]=items.reduce((sum,item)=>sum+item.qty*item.price,0);
+                    row[12]=document.querySelector('[data-edit-field="paymentStatus"]')?.value || 'Paid';
+                    row[13]=document.querySelector('[data-edit-field="paymentMode"]')?.value || 'UPI';
+                    const oldRows=sheetData.OrderItems.map((item,i)=>item[1]===id?i+2:null).filter(Boolean); await deleteDataRows('OrderItems',oldRows);
+                    for (const [i,item] of items.entries()) await appendSheetData('OrderItems',['ITM-'+Date.now()+'-'+i,id,item.name,item.qty,item.price,item.qty*item.price]);
+                    await updateDataRow('Orders',index+2,row);
+                } else if (type === 'purchase') {
+                    const items=getEditorItems(type); if (!items.length || items.some(item=>!Number.isFinite(item.price)||item.price<0)) throw new Error('Har purchase item ka naam aur valid price bharein.');
+                    row[1]=document.querySelector('[data-edit-field="dateTime"]').value.trim(); row[2]=items.reduce((sum,item)=>sum+item.price,0);
+                    const oldRows=sheetData.PurchaseItems.map((item,i)=>item[1]===id?i+2:null).filter(Boolean); await deleteDataRows('PurchaseItems',oldRows);
+                    for (const [i,item] of items.entries()) await appendSheetData('PurchaseItems',['PITM-'+Date.now()+'-'+i,id,row[1],item.name,item.price]);
+                    await updateDataRow('Purchases',index+2,row);
+                } else if (type === 'menu') {
+                    const name=document.querySelector('[data-edit-field="name"]').value.trim(), details=document.querySelector('[data-edit-field="details"]').value.trim();
+                    const priceText=document.querySelector('[data-edit-field="price"]').value;
+                    const price=Number(priceText), active=document.querySelector('[data-edit-field="active"]').value;
+                    if (!name || priceText === '' || !Number.isFinite(price) || price<0) throw new Error('Naam aur valid price bharein.');
+                    row[1]=name; row[2]=details; row[3]=price; row[4]=active; await updateDataRow('Menu',index+2,row);
+                } else if (type === 'society') {
+                    const name=document.querySelector('[data-edit-field="name"]').value.trim();
+                    const names=[...document.querySelectorAll('[data-tower-name]')].map(input=>input.value.trim()).filter(Boolean);
+                    if (!name) throw new Error('Society ka naam bharein.');
+                    row[1]=name; await updateDataRow('Societies',index+2,row);
+                    const oldRows=sheetData.Towers.map((tower,i)=>tower[1]===id?i+2:null).filter(Boolean); await deleteDataRows('Towers',oldRows);
+                    for (const [i,towerName] of names.entries()) await appendSheetData('Towers',['TWR-'+Date.now()+'-'+i,id,towerName,'TRUE',formatDateTimeForSheet()]);
+                }
+                closeRecordEditor(); await loadAllData(); showMessage('Changes save ho gaye.');
+            } catch(err) {
+                const feedback=document.getElementById('edit-error');
+                feedback.textContent=err.message; feedback.classList.add('show');
+            } finally { saveButton.disabled=false; saveButton.textContent='Save changes'; }
+        }
+
+        // --- DATA LOADING ---
+        async function loadAllData() {
+            try {
+                const tabs = Object.keys(sheetData);
+                const promises = tabs.map(tab => fetchSheetData(tab));
+                const results = await Promise.all(promises);
+                
+                tabs.forEach((tab, index) => {
+                    // Skip header row if present
+                    let data = results[index];
+                    if (data.length > 0 && (data[0][0] === 'Society ID' || data[0][0] === 'Order ID' || data[0][0] === 'Item ID' || data[0][0] === 'Purchase ID' || data[0][0] === 'Tower ID' || data[0][0] === 'Order Item ID' || data[0][0] === 'Purchase Item ID')) {
+                        data = data.slice(1);
+                    }
+                    sheetData[tab] = data;
+                });
+
+                populateDropdowns();
+                renderMenu();
+                renderOrders();
+                renderPurchases();
+                renderSocietyTowerList();
+                renderDashboard();
+                calculateOrderTotals();
+                calculatePurchaseTotals();
+            } catch (err) {
+                showMessage('Data load failed: ' + err.message, true);
+            }
+        }
+
+        // --- HOME DASHBOARD ---
+        function renderDashboard() {
+            const now = new Date();
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            let todayOrders = 0, todaySales = 0, monthOrders = 0, monthSales = 0, monthPurchases = 0;
+            let pendingOrders = 0, pendingSales = 0;
+            sheetData.Orders.forEach(order => {
+                if (order.length < 12) return;
+                const date = parseSheetDate(order[1]);
+                if (!date) return;
+                const amount = Number(order[11]) || 0;
+                if (date >= todayStart) { todayOrders++; todaySales += amount; }
+                if (date >= monthStart) { monthOrders++; monthSales += amount; }
+                const status = String(order[12] || 'Paid').trim().toLowerCase();
+                if (status === 'pending') {
+                    pendingOrders++;
+                    pendingSales += amount;
+                }
+            });
+            sheetData.Purchases.forEach(purchase => {
+                const date = parseSheetDate(purchase[1]);
+                if (date && date >= monthStart) monthPurchases += Number(purchase[2]) || 0;
+            });
+            const money = value => '₹' + value.toLocaleString('en-IN', {maximumFractionDigits: 2});
+            document.getElementById('today-orders').innerText = todayOrders;
+            document.getElementById('today-sales').innerText = money(todaySales);
+            document.getElementById('month-orders').innerText = monthOrders;
+            document.getElementById('month-sales').innerText = money(monthSales);
+            document.getElementById('month-purchases').innerText = money(monthPurchases);
+            const monthNet = monthSales - monthPurchases;
+            document.getElementById('month-net').innerText = `${monthNet < 0 ? '−' : '+'}${money(Math.abs(monthNet))}`;
+            document.getElementById('month-net').parentElement.classList.toggle('loss', monthNet < 0);
+            const pendingEl = document.getElementById('pending-sales');
+            if (pendingEl) pendingEl.innerText = `${money(pendingSales)} (${pendingOrders} order${pendingOrders === 1 ? '' : 's'})`;
+        }
+
+                // --- NAVIGATION ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            const activeNavTab = ({purchase: 'purchases', menu: 'more', manage: 'more', 'new-order': 'home'})[tabId] || tabId;
+            document.querySelectorAll('.nav-btn').forEach(button => {
+                button.classList.toggle('active', button.dataset.tab === activeNavTab);
+            });
+        }
+
+        // --- POPULATE DROPDOWNS ---
+        function populateDropdowns() {
+            const socSelect = document.getElementById('order-society');
+            const manSocSelect = document.getElementById('manage-society');
+            socSelect.innerHTML = `<option value="">${sheetData.Societies.length ? 'Select Society' : 'No societies loaded'}</option>`;
+            manSocSelect.innerHTML = '<option value="">Select Society</option>';
+
+            sheetData.Societies.forEach(soc => {
+                if (!soc[2] || ['TRUE', 'ACTIVE'].includes(String(soc[2]).trim().toUpperCase())) {
+                    const opt = `<option value="${soc[0]}">${soc[1]}</option>`;
+                    socSelect.innerHTML += opt;
+                    manSocSelect.innerHTML += opt;
+                }
+            });
+
+            const itemSelectHTML = `<option value="">Choose item</option>` + sheetData.Menu.map(m => `<option value="${m[0]}" data-price="${m[3]}">${m[1]} — ₹${m[3]}</option>`).join('');
+            document.querySelectorAll('.order-item-select').forEach(sel => {
+                const val = sel.value;
+                sel.innerHTML = itemSelectHTML;
+                sel.value = val;
+                updateOrderRowPrice(sel);
+            });
+        }
+
+        function populateTowers() {
+            const societyId = document.getElementById('order-society').value;
+            const towerSelect = document.getElementById('order-tower');
+            towerSelect.innerHTML = '<option value="">Select Tower</option>';
+            if (!societyId) return;
+            sheetData.Towers.forEach(tower => {
+                const active = !tower[3] || ['TRUE', 'ACTIVE'].includes(String(tower[3]).trim().toUpperCase());
+                if (tower[1] === societyId && active) {
+                    const option = document.createElement('option');
+                    option.value = tower[0];
+                    option.textContent = tower[2];
+                    towerSelect.appendChild(option);
+                }
+            });
+        }
+
+        function autoCalcFloor() {
+            const flatDigits = document.getElementById('order-flat').value.replace(/\D/g, '');
+            const floorInput = document.getElementById('order-floor');
+            if (!flatDigits) { floorInput.value = ''; return; }
+            if (flatDigits.length >= 3) {
+                // Remove the last two digits: 101 -> floor 1, 303 -> 3, 1101 -> 11.
+                floorInput.value = String(Number(flatDigits.slice(0, -2)));
+            }
+        }
+
+        function autoFillCustomerByFlat() {
+            const towerSelect = document.getElementById('order-tower');
+            const towerName = towerSelect.options[towerSelect.selectedIndex]?.text?.trim();
+            const flat = document.getElementById('order-flat').value.trim();
+            if (!flat || !towerName) return;
+
+            const previousOrder = [...sheetData.Orders].reverse().find(order => {
+                const oTower = String(order[3] || '').trim().toLowerCase();
+                const oFlat = String(order[4] || '').trim().toLowerCase();
+                return oTower === towerName.toLowerCase() && oFlat === flat.toLowerCase() && (order[7] || order[8]);
+            });
+
+            if (previousOrder) {
+                const nameInput = document.getElementById('order-name');
+                const contactInput = document.getElementById('order-contact');
+                if (!nameInput.value && previousOrder[7]) nameInput.value = previousOrder[7];
+                if (!contactInput.value && previousOrder[8]) contactInput.value = previousOrder[8];
+            }
+        }
+
+        // --- NEW ORDER ---
+        function addOrderItemRow() {
+            const container = document.getElementById('order-items-container');
+            const row = document.createElement('div');
+            row.className = 'order-item-row';
+            row.innerHTML = `
+                <div><label>Menu item</label><select class="order-item-select" onchange="updateOrderRowPrice(this)">
+                    ${`<option value="">Choose item</option>` + sheetData.Menu.map(m => `<option value="${m[0]}" data-price="${m[3]}">${m[1]} — ₹${m[3]}</option>`).join('')}
+                </select></div>
+                <div><label>Price</label><div class="order-row-price-value">₹—</div></div>
+                <div><label>Qty</label><input type="number" class="order-item-qty" min="1" value="1" oninput="calculateOrderTotals()"></div>
+                <button type="button" class="icon-btn delete" aria-label="Remove item" title="Remove item" onclick="this.parentElement.remove(); calculateOrderTotals();">×</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function updateOrderRowPrice(select) {
+            const option = select.options[select.selectedIndex];
+            const price = select.value ? Number(option.getAttribute('data-price')) : NaN;
+            select.closest('.order-item-row').querySelector('.order-row-price-value').textContent = Number.isFinite(price) ? '₹' + price.toLocaleString('en-IN',{maximumFractionDigits:2}) : '₹—';
+            calculateOrderTotals();
+        }
+
+        function calculateOrderTotals() {
+            let totalQty = 0;
+            let totalAmount = 0;
+            document.querySelectorAll('#order-items-container .order-item-row').forEach(row => {
+                const select = row.querySelector('.order-item-select');
+                const qty = parseInt(row.querySelector('.order-item-qty').value) || 0;
+                if (select.value) {
+                    const price = parseFloat(select.options[select.selectedIndex].getAttribute('data-price')) || 0;
+                    totalQty += qty;
+                    totalAmount += (price * qty);
+                }
+            });
+            document.getElementById('order-total-qty').innerText = totalQty;
+            document.getElementById('order-total-amount').innerText = totalAmount;
+        }
+
+        async function saveOrder() {
+            const socId = document.getElementById('order-society').value;
+            const towerId = document.getElementById('order-tower').value;
+            const flat = document.getElementById('order-flat').value;
+            const floor = document.getElementById('order-floor').value;
+            const address = document.getElementById('order-address').value;
+            const name = document.getElementById('order-name').value;
+            const contact = document.getElementById('order-contact').value;
+            
+            if (!socId || !towerId || !flat) {
+                showMessage('Please fill Society, Tower, and Flat Number.', true);
+                return;
+            }
+
+            const items = [];
+            document.querySelectorAll('#order-items-container .order-item-row').forEach(row => {
+                const select = row.querySelector('.order-item-select');
+                const qty = parseInt(row.querySelector('.order-item-qty').value);
+                if (select.value && qty > 0) {
+                    items.push({
+                        id: select.value,
+                        name: (sheetData.Menu.find(menuItem => menuItem[0] === select.value) || [null, select.options[select.selectedIndex].text])[1],
+                        price: parseFloat(select.options[select.selectedIndex].getAttribute('data-price')),
+                        qty: qty
+                    });
+                }
+            });
+
+            if (items.length === 0) {
+                showMessage('Please add at least one item.', true);
+                return;
+            }
+
+            const totalQty = document.getElementById('order-total-qty').innerText;
+            const totalAmount = document.getElementById('order-total-amount').innerText;
+            const dateTime = formatDateTimeForSheet();
+            const orderId = 'ORD-' + Date.now();
+
+            const socName = document.getElementById('order-society').options[document.getElementById('order-society').selectedIndex].text;
+            const towerName = document.getElementById('order-tower').options[document.getElementById('order-tower').selectedIndex].text;
+            const paymentStatus = document.getElementById('order-payment-status')?.value || 'Paid';
+            const paymentMode = document.getElementById('order-payment-mode')?.value || 'UPI';
+
+            try {
+                // 1. Save to Orders (with Payment Status and Payment Mode in cols 12 & 13)
+                const orderRow = [orderId, dateTime, socName, towerName, flat, floor, address, name, contact, items.map(i => i.name + ' (x' + i.qty + ')').join(', '), totalQty, totalAmount, paymentStatus, paymentMode];
+                await appendSheetData('Orders', orderRow);
+
+                // 2. Save to OrderItems
+                for (const [index, item] of items.entries()) {
+                    const itemId = 'ITM-' + Date.now() + '-' + index;
+                    const itemTotal = item.price * item.qty;
+                    await appendSheetData('OrderItems', [itemId, orderId, item.name, item.qty, item.price, itemTotal]);
+                }
+
+                showMessage('Order saved successfully!');
+                
+                // Reset Form
+                document.getElementById('order-items-container').innerHTML = '';
+                document.getElementById('order-flat').value = '';
+                document.getElementById('order-tower').value = '';
+                document.getElementById('order-floor').value = '';
+                document.getElementById('order-name').value = '';
+                document.getElementById('order-contact').value = '';
+                calculateOrderTotals();
+                loadAllData(); // Reload to reflect changes
+
+            } catch (err) {
+                showMessage('Error saving order: ' + err.message, true);
+            }
+        }
+
+        // --- ORDERS LIST ---
+        function setOrderFilter(filter) {
+            currentOrderFilter = filter;
+            document.querySelectorAll('.order-filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+            renderOrders();
+        }
+
+        function toggleOrdersGrouping() {
+            ordersGroupedByLocation = !ordersGroupedByLocation;
+            renderOrders();
+        }
+
+        function renderSingleOrderCard(order) {
+            if (!order || order.length < 12) return '';
+            const orderId = order[0];
+            const lines = sheetData.OrderItems.filter(item => item[1] === orderId);
+            const lineHtml = lines.length
+                ? lines.map(item => `${escapeHtml(item[2])} × ${escapeHtml(item[3])} — ₹${escapeHtml(item[5])}`).join(', ')
+                : escapeHtml(order[9] || 'Item details nahi hain');
+            const contact = order[8] ? ` (${escapeHtml(order[8])})` : '';
+
+            const paymentStatus = String(order[12] || 'Paid').trim();
+            const paymentMode = String(order[13] || 'Cash').trim();
+            const isPending = paymentStatus.toLowerCase() === 'pending';
+
+            const paymentBadge = isPending
+                ? `<span class="badge badge-pending">🟡 Pending Payment</span> <button type="button" class="btn-mark-paid" onclick="quickMarkPaid('${escapeHtml(orderId)}')">✓ Mark as Paid</button>`
+                : `<span class="badge badge-paid">🟢 Paid</span> <span class="badge ${paymentMode.toUpperCase() === 'UPI' ? 'badge-upi' : 'badge-cash'}">${escapeHtml(paymentMode)}</span>`;
+
+            return `<div class="card">
+                <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
+                    <div><strong>${escapeHtml(orderId)}</strong><div style="color:gray;font-size:12px;margin-top:4px">${escapeHtml(formatDateTimeForDisplay(order[1]))}</div></div>
+                    ${actionButtons('editOrder', 'deleteOrder', orderId)}
+                </div>
+                <div class="order-card-meta">
+                    ${paymentBadge}
+                </div>
+                <div><strong>Location:</strong> ${escapeHtml(order[2])}, Tower ${escapeHtml(order[3])} - Flat ${escapeHtml(order[4])} (Floor ${escapeHtml(order[5])})</div>
+                <div><strong>Customer:</strong> ${escapeHtml(order[7] || '')}${contact}</div>
+                <div style="margin-top:10px;background:#f5f5f5;padding:10px;border-radius:10px">
+                    <strong>Items:</strong> ${lineHtml}<br>
+                    <strong>Qty:</strong> ${escapeHtml(order[10])} | <strong>Total:</strong> ₹${escapeHtml(order[11])}
+                </div>
+                <div class="order-card-actions">
+                    <button type="button" class="btn-whatsapp" onclick="sendWhatsAppBill('${escapeHtml(orderId)}')">💬 WhatsApp Bill</button>
+                </div>
+            </div>`;
+        }
+
+        async function quickMarkPaid(orderId) {
+            const orderIndex = sheetData.Orders.findIndex(row => row[0] === orderId);
+            if (orderIndex < 0) return;
+            const order = [...sheetData.Orders[orderIndex]];
+            const choice = prompt(`Order ${orderId} ko PAID mark karein:\n1 = UPI / Online\n2 = Cash`, '1');
+            if (choice === null) return;
+            const mode = (choice.trim() === '2' || choice.trim().toLowerCase() === 'cash') ? 'Cash' : 'UPI';
+            order[12] = 'Paid';
+            order[13] = mode;
+            showMessage('Payment status update ho raha hai…');
+            try {
+                await updateDataRow('Orders', orderIndex + 2, order);
+                await loadAllData();
+                showMessage(`Order ${orderId} marked as Paid (${mode})!`);
+            } catch (err) {
+                showMessage('Error updating payment: ' + err.message, true);
+            }
+        }
+
+        function sendWhatsAppBill(orderId) {
+            const order = sheetData.Orders.find(row => row[0] === orderId);
+            if (!order) return;
+            const lines = sheetData.OrderItems.filter(item => item[1] === orderId);
+            const itemsText = lines.length
+                ? lines.map(item => `• ${item[2]} × ${item[3]} — ₹${item[5]}`).join('\n')
+                : (order[9] || 'Items');
+
+            const paymentStatus = String(order[12] || 'Paid').trim();
+            const paymentMode = String(order[13] || 'Cash').trim();
+            const isPending = paymentStatus.toLowerCase() === 'pending';
+            const savedUPI = localStorage.getItem('dwivedi_kitchen_upi') || '';
+
+            let text = `🍲 *Dwivedi Kitchen*\n_Ghar jaisa swad, har roz_\n━━━━━━━━━━━━━━━━━━━\n` +
+                `📍 *Location:* ${order[2] || 'GLS Avenue'}, Tower ${order[3] || ''} - Flat ${order[4] || ''}\n` +
+                `📦 *Order ID:* ${order[0]}\n` +
+                `📅 *Date:* ${formatDateTimeForDisplay(order[1])}\n` +
+                `━━━━━━━━━━━━━━━━━━━\n` +
+                `*Items Ordered:*\n${itemsText}\n\n` +
+                `*Total Amount:* ₹${order[11]}\n` +
+                `*Payment Status:* ${isPending ? '⚠️ Pending (Baad mein de sakte hain)' : '✅ Paid (' + paymentMode + ')'}\n`;
+
+            if (isPending && savedUPI) {
+                text += `\n💳 *UPI Payment:* \`${savedUPI}\`\n`;
+            }
+
+            text += `━━━━━━━━━━━━━━━━━━━\nAapke order ke liye bohot dhanyawad! Swad kaisa laga zaroor batayein. 🙏`;
+
+            let contact = String(order[8] || '').replace(/\D/g, '');
+            if (contact.length === 10) contact = '91' + contact;
+
+            const waUrl = contact
+                ? `https://wa.me/${contact}?text=${encodeURIComponent(text)}`
+                : `https://wa.me/?text=${encodeURIComponent(text)}`;
+
+            window.open(waUrl, '_blank');
+        }
+
+        function renderOrders() {
+            const container = document.getElementById('orders-list');
+            const toggle = document.getElementById('orders-group-toggle');
+            if (toggle) {
+                toggle.textContent = ordersGroupedByLocation ? 'Show All Orders' : 'Group by Location';
+                toggle.setAttribute('aria-pressed', String(ordersGroupedByLocation));
+            }
+            const allValidOrders = sheetData.Orders
+                .map((order, index) => ({order, rowNumber:index + 2}))
+                .filter(entry => entry.order && entry.order.length >= 12);
+
+            const pendingCount = allValidOrders.filter(({order}) => String(order[12] || 'Paid').trim().toLowerCase() === 'pending').length;
+            const paidCount = allValidOrders.filter(({order}) => String(order[12] || 'Paid').trim().toLowerCase() !== 'pending').length;
+
+            const countAllEl = document.getElementById('count-filter-all');
+            const countPendingEl = document.getElementById('count-filter-pending');
+            const countPaidEl = document.getElementById('count-filter-paid');
+            if (countAllEl) countAllEl.textContent = allValidOrders.length;
+            if (countPendingEl) countPendingEl.textContent = pendingCount;
+            if (countPaidEl) countPaidEl.textContent = paidCount;
+
+            const filteredOrders = allValidOrders.filter(({order}) => {
+                const status = String(order[12] || 'Paid').trim().toLowerCase();
+                if (currentOrderFilter === 'pending') return status === 'pending';
+                if (currentOrderFilter === 'paid') return status !== 'pending';
+                return true;
+            }).reverse();
+
+            if (!filteredOrders.length) {
+                container.innerHTML = '<div class="card">Is filter mein koi order nahi mila.</div>';
+                return;
+            }
+
+            if (!ordersGroupedByLocation) {
+                container.innerHTML = filteredOrders.map(({order}) => renderSingleOrderCard(order)).join('');
+                return;
+            }
+
+            const groups = new Map();
+            filteredOrders.forEach(({order}) => {
+                const keyParts = [order[2] || 'Society missing', order[3] || 'Tower missing', order[4] || 'Flat missing'];
+                const key = JSON.stringify(keyParts);
+                if (!groups.has(key)) groups.set(key, {society:keyParts[0], tower:keyParts[1], flat:keyParts[2], orders:[], total:0});
+                const group = groups.get(key);
+                group.orders.push(order);
+                group.total += Number(order[11]) || 0;
+            });
+
+            const money = value => '₹' + value.toLocaleString('en-IN', {maximumFractionDigits:2});
+            container.innerHTML = [...groups.values()].map((group, index) => `
+                <details class="location-group" ${index === 0 ? 'open' : ''}>
+                    <summary>
+                        <span>
+                            <strong>${escapeHtml(group.society)} · Tower ${escapeHtml(group.tower)} · Flat ${escapeHtml(group.flat)}</strong>
+                            <span class="location-group-meta">${group.orders.length} order${group.orders.length === 1 ? '' : 's'} · Total sales ${money(group.total)}</span>
+                        </span>
+                    </summary>
+                    <div class="location-group-orders">${group.orders.map(renderSingleOrderCard).join('')}</div>
+                </details>
+            `).join('');
+        }
+
+        async function editOrder(orderId) {
+            openRecordEditor('order', orderId);
+        }
+
+        async function deleteOrder(orderId) {
+            if (!confirm(`Order ${orderId} aur uske saare item records delete kar dein?`)) return;
+            try {
+                const itemRows = sheetData.OrderItems.map((row, i) => row[1] === orderId ? i + 2 : null).filter(Boolean);
+                const orderIndex = sheetData.Orders.findIndex(row => row[0] === orderId);
+                await deleteDataRows('OrderItems', itemRows);
+                if (orderIndex >= 0) await deleteDataRows('Orders', [orderIndex + 2]);
+                await loadAllData(); showMessage('Order delete ho gaya.');
+            } catch (err) { showMessage(err.message, true); }
+        }
+
+        // --- MENU ---
+        function renderMenu() {
+            const container = document.getElementById('menu-list');
+            const validIds = new Set(sheetData.Menu.map(item => item[0]));
+            [...selectedMenuItemIds].forEach(id => { if (!validIds.has(id)) selectedMenuItemIds.delete(id); });
+
+            const selectedCount = selectedMenuItemIds.size;
+            const allSelected = sheetData.Menu.length > 0 && sheetData.Menu.every(item => selectedMenuItemIds.has(item[0]));
+            const rows = sheetData.Menu.map(item => {
+                const inactive = ['FALSE','INACTIVE'].includes(String(item[4]).toUpperCase());
+                return `<div class="menu-item-row">
+                    <input class="menu-item-select" type="checkbox" aria-label="Select ${escapeHtml(item[1])}"
+                        data-menu-item-id="${escapeHtml(item[0])}" ${selectedMenuItemIds.has(item[0]) ? 'checked' : ''}
+                        onchange="toggleMenuItemSelection(this)">
+                    <div class="menu-item-info">
+                        <strong>${escapeHtml(item[1])}</strong>
+                        <div class="menu-details">${escapeHtml(item[2] || 'No details added')}</div>
+                        <strong>₹${escapeHtml(item[3])}</strong>
+                        <div class="menu-status">${inactive ? 'Inactive' : 'Active'}</div>
+                    </div>
+                    ${actionButtons('editMenuItem','deleteMenuItem',item[0])}
+                </div>`;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="menu-selection-toolbar">
+                    <label class="menu-select-all"><input id="menu-select-all" type="checkbox" ${allSelected ? 'checked' : ''}
+                        onchange="toggleSelectAllMenuItems(this.checked)"> Select all</label>
+                    <span id="menu-selection-count" class="menu-selection-count">${selectedCount} selected</span>
+                    <button type="button" class="btn" onclick="copySelectedMenuItems()" ${selectedCount ? '' : 'disabled'}>Copy Selected</button>
+                </div>
+                ${rows || '<div style="padding:12px 0;color:#76675b">Abhi menu mein koi item nahi hai.</div>'}`;
+        }
+
+        function toggleMenuItemSelection(checkbox) {
+            const id = checkbox.dataset.menuItemId;
+            if (checkbox.checked) selectedMenuItemIds.add(id);
+            else selectedMenuItemIds.delete(id);
+            updateMenuSelectionToolbar();
+        }
+
+        function toggleSelectAllMenuItems(checked) {
+            if (checked) sheetData.Menu.forEach(item => selectedMenuItemIds.add(item[0]));
+            else selectedMenuItemIds.clear();
+            renderMenu();
+        }
+
+        function updateMenuSelectionToolbar() {
+            const count = selectedMenuItemIds.size;
+            const countEl = document.getElementById('menu-selection-count');
+            const copyButton = document.querySelector('#menu-list .menu-selection-toolbar button');
+            const selectAll = document.getElementById('menu-select-all');
+            if (countEl) countEl.textContent = `${count} selected`;
+            if (copyButton) copyButton.disabled = count === 0;
+            if (selectAll) {
+                selectAll.checked = sheetData.Menu.length > 0 && sheetData.Menu.every(item => selectedMenuItemIds.has(item[0]));
+                selectAll.indeterminate = count > 0 && !selectAll.checked;
+            }
+        }
+
+        async function copySelectedMenuItems() {
+            const selectedItems = sheetData.Menu.filter(item => selectedMenuItemIds.has(item[0]));
+            if (!selectedItems.length) {
+                showMessage('Pehle menu items select karein.', true);
+                return;
+            }
+            const text = selectedItems.map(item =>
+                `${item[1] || ''}\nDetails: ${item[2] || ''}\nPrice: ₹${item[3] ?? ''}`
+            ).join('\n\n');
+
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(text);
+                } else {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    textarea.setAttribute('readonly', '');
+                    textarea.style.position = 'fixed';
+                    textarea.style.opacity = '0';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    const copied = document.execCommand('copy');
+                    textarea.remove();
+                    if (!copied) throw new Error('Clipboard access nahi mila');
+                }
+                showMessage(`${selectedItems.length} menu item(s) copy ho gaye.`);
+            } catch (err) {
+                showMessage('Copy nahi ho paya. Browser clipboard permission check karein.', true);
+            }
+        }
+
+        async function editMenuItem(itemId) {
+            openRecordEditor('menu', itemId);
+        }
+
+        async function deleteMenuItem(itemId) {
+            const index = sheetData.Menu.findIndex(row => row[0] === itemId);
+            if (index < 0 || !confirm('Menu item delete kar dein? Purane orders ka record bana rahega.')) return;
+            try { await deleteDataRows('Menu', [index + 2]); await loadAllData(); showMessage('Menu item delete ho gaya.'); }
+            catch (err) { showMessage(err.message, true); }
+        }
+
+        async function addMenuItem() {
+            const name = document.getElementById('new-menu-name').value.trim();
+            const details = document.getElementById('new-menu-details').value.trim();
+            const priceText = document.getElementById('new-menu-price').value;
+            const price = Number(priceText);
+            if (!name || priceText === '' || !Number.isFinite(price) || price < 0) {
+                showMessage('Item ka naam aur valid price bharein.', true);
+                return;
+            }
+            const itemId = 'MENU-' + Date.now();
+            try {
+                await appendSheetData('Menu', [itemId, name, details, price, 'TRUE', formatDateTimeForSheet()]);
+                document.getElementById('new-menu-name').value = '';
+                document.getElementById('new-menu-details').value = '';
+                document.getElementById('new-menu-price').value = '';
+                await loadAllData();
+                showMessage('Menu item add ho gaya.');
+            } catch (err) {
+                showMessage('Menu item save nahi hua: ' + err.message, true);
+            }
+        }
+
+        // --- PURCHASE ---
+        function addPurchaseItemRow() {
+            const container = document.getElementById('purchase-items-container');
+            const row = document.createElement('div');
+            row.className = 'item-row purchase-entry-row';
+            const latestItems = new Map();
+            sheetData.PurchaseItems.forEach(item => { if (item[3]) latestItems.set(item[3], item[4]); });
+            const savedOptions = [...latestItems.entries()].map(([name, price]) => `<button type="button" class="purchase-saved-option" data-item-name="${escapeHtml(name)}" data-item-price="${escapeHtml(price)}" onclick="selectSavedPurchaseItem(this)"><span>${escapeHtml(name)}</span><span>₹${escapeHtml(price)}</span></button>`).join('');
+            row.innerHTML = `
+                <div class="purchase-name-control">
+                    <input type="text" class="purchase-item-name" placeholder="Type purchase item" aria-label="Purchase item name" oninput="calculatePurchaseTotals()">
+                    <button type="button" aria-label="Choose a previous purchase item" title="Choose previous item" onclick="toggleSavedPurchaseItems(this)">▾</button>
+                    <div class="purchase-saved-menu hidden">${savedOptions || '<div class="purchase-saved-empty">No previous purchase items yet</div>'}</div>
+                </div>
+                <input type="number" class="purchase-item-price purchase-entry-price" placeholder="Price ₹" aria-label="Purchase price" min="0" step="0.01" oninput="calculatePurchaseTotals()">
+                <button type="button" class="btn btn-secondary btn-small purchase-entry-remove" aria-label="Remove item" title="Remove item" onclick="this.parentElement.remove(); calculatePurchaseTotals();">×</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function toggleSavedPurchaseItems(button) {
+            const menu = button.parentElement.querySelector('.purchase-saved-menu');
+            document.querySelectorAll('.purchase-saved-menu').forEach(openMenu => {
+                if (openMenu !== menu) openMenu.classList.add('hidden');
+            });
+            menu.classList.toggle('hidden');
+        }
+
+        function selectSavedPurchaseItem(option) {
+            const row = option.closest('.purchase-entry-row');
+            row.querySelector('.purchase-item-name').value = option.dataset.itemName || '';
+            row.querySelector('.purchase-item-price').value = option.dataset.itemPrice || '';
+            row.querySelector('.purchase-saved-menu').classList.add('hidden');
+            calculatePurchaseTotals();
+        }
+
+        function getPurchaseItemName(row) {
+            return row.querySelector('.purchase-item-name').value.trim();
+        }
+
+        document.addEventListener('click', event => {
+            if (!event.target.closest('.purchase-name-control')) {
+                document.querySelectorAll('.purchase-saved-menu').forEach(menu => menu.classList.add('hidden'));
+            }
+        });
+
+        function calculatePurchaseTotals() {
+            let total = 0;
+            document.querySelectorAll('#purchase-items-container .item-row').forEach(row => {
+                const price = parseFloat(row.querySelector('.purchase-item-price').value) || 0;
+                total += price;
+            });
+            document.getElementById('purchase-total-amount').innerText = total;
+        }
+
+        async function savePurchase() {
+            const items = [];
+            document.querySelectorAll('#purchase-items-container .item-row').forEach(row => {
+                const name = getPurchaseItemName(row);
+                const price = parseFloat(row.querySelector('.purchase-item-price').value);
+                if (name && price >= 0) {
+                    items.push({ name, price });
+                }
+            });
+
+            if (items.length === 0) {
+                showMessage('Please add at least one purchase item.', true);
+                return;
+            }
+
+            const totalAmount = document.getElementById('purchase-total-amount').innerText;
+            const dateTime = formatDateTimeForSheet();
+            const purchaseId = 'PUR-' + Date.now();
+
+            try {
+                // 1. Save to Purchases
+                await appendSheetData('Purchases', [purchaseId, dateTime, totalAmount]);
+
+                // 2. Save to PurchaseItems
+                for (const [index, item] of items.entries()) {
+                    const itemId = 'PITM-' + Date.now() + '-' + index;
+                    await appendSheetData('PurchaseItems', [itemId, purchaseId, dateTime, item.name, item.price]);
+                }
+
+                showMessage('Purchase saved successfully!');
+                document.getElementById('purchase-items-container').innerHTML = '';
+                calculatePurchaseTotals();
+                loadAllData();
+
+            } catch (err) {
+                showMessage('Error saving purchase: ' + err.message, true);
+            }
+        }
+
+        function renderPurchases() {
+            const container = document.getElementById('purchase-history-list');
+            if (!container) return;
+            if (!sheetData.Purchases.length) { container.innerHTML = '<div class="card">Abhi koi purchase record nahi hai.</div>'; return; }
+            const rows = [...sheetData.Purchases].map((purchase, index) => ({purchase, rowNumber: index + 2})).reverse();
+            container.innerHTML = rows.map(({purchase}) => {
+                const purchaseId = purchase[0];
+                const items = sheetData.PurchaseItems.filter(item => item[1] === purchaseId);
+                const itemLines = items.length ? items.map(item => `${item[3] || 'Item'} — ₹${item[4] || 0}`).join(', ') : 'Is purchase ke item rows Sheet mein nahi mile.';
+                return `<div class="card">
+                    <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
+                        <div><strong>${purchaseId || 'Purchase'}</strong><div style="color:#666;font-size:13px;margin-top:4px">${formatDateTimeForDisplay(purchase[1])}</div></div>
+                        ${actionButtons('editPurchase','deletePurchase',purchaseId)}
+                    </div>
+                    <div style="margin-top:8px"><strong>Items:</strong> ${itemLines}</div>
+                    <div style="margin-top:8px"><strong>Total: ₹${purchase[2] || 0}</strong></div>
+                </div>`;
+            }).join('');
+        }
+
+        async function editPurchase(purchaseId) {
+            openRecordEditor('purchase', purchaseId);
+        }
+
+        async function deletePurchase(purchaseId) {
+            if (!confirm(`Purchase ${purchaseId} aur uske saare item records delete kar dein?`)) return;
+            try {
+                const itemRows = sheetData.PurchaseItems.map((row, i) => row[1] === purchaseId ? i + 2 : null).filter(Boolean);
+                const index = sheetData.Purchases.findIndex(row => row[0] === purchaseId);
+                await deleteDataRows('PurchaseItems', itemRows);
+                if (index >= 0) await deleteDataRows('Purchases', [index + 2]);
+                await loadAllData(); showMessage('Purchase delete ho gayi.');
+            } catch (err) { showMessage(err.message, true); }
+        }
+
+        function renderSocietyTowerList() {
+            const container = document.getElementById('society-tower-list');
+            if (!container) return;
+            container.replaceChildren();
+            if (!sheetData.Societies.length) { container.textContent = 'Koi society row nahi mili. Data load error ho to upar ka message dekhein.'; return; }
+            sheetData.Societies.forEach(society => {
+                const towers = sheetData.Towers.filter(tower => tower[1] === society[0]).map(tower => tower[2]).filter(Boolean);
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #eee';
+                const details = document.createElement('div');
+                const title = document.createElement('strong'); title.textContent = society[1] || '(Naam missing)';
+                const towerNames = document.createElement('div'); towerNames.style.cssText = 'margin-top:4px;color:#666';
+                towerNames.textContent = towers.length ? 'Towers: ' + towers.join(', ') : 'Abhi koi tower add nahi hai';
+                details.append(title, towerNames); row.appendChild(details);
+                row.insertAdjacentHTML('beforeend', actionButtons('editSociety','deleteSociety',society[0]));
+                container.appendChild(row);
+            });
+        }
+
+        async function editSociety(id) {
+            openRecordEditor('society', id);
+        }
+
+        async function deleteSociety(id) {
+            const index = sheetData.Societies.findIndex(row => row[0] === id); if (index < 0) return;
+            if (!confirm('Society aur uske towers delete kar dein? Purane orders ka saved address bana rahega.')) return;
+            try {
+                const towerRows = sheetData.Towers.map((row, i) => row[1] === id ? i + 2 : null).filter(Boolean);
+                await deleteDataRows('Towers', towerRows);
+                await deleteDataRows('Societies', [index + 2]);
+                await loadAllData(); showMessage('Society aur linked towers delete ho gaye.');
+            } catch (err) { showMessage(err.message, true); }
+        }
+
+        function toggleOrderAddForm(type) {
+            if (type === 'tower' && !document.getElementById('order-society').value) {
+                showMessage('Pehle Society select karein.', true);
+                return;
+            }
+            document.getElementById(`order-add-${type}-form`).classList.toggle('hidden');
+        }
+
+        async function addSocietyFromOrder() {
+            const name = document.getElementById('order-new-society-name').value.trim();
+            if (!name) { showMessage('Society name bharein.', true); return; }
+            const id = 'SOC-' + Date.now();
+            try {
+                await appendSheetData('Societies', [id, name, 'TRUE', formatDateTimeForSheet()]);
+                await loadAllData();
+                document.getElementById('order-society').value = id;
+                populateTowers();
+                document.getElementById('order-new-society-name').value = '';
+                document.getElementById('order-add-society-form').classList.add('hidden');
+                showMessage('Society add ho gayi. Ab Tower add kar sakte hain.');
+            } catch (err) { showMessage('Society add nahi hui: ' + err.message, true); }
+        }
+
+        async function addTowerFromOrder() {
+            const societyId = document.getElementById('order-society').value;
+            const name = document.getElementById('order-new-tower-name').value.trim();
+            if (!societyId || !name) { showMessage('Society select karein aur Tower name bharein.', true); return; }
+            const id = 'TWR-' + Date.now();
+            try {
+                await appendSheetData('Towers', [id, societyId, name, 'TRUE', formatDateTimeForSheet()]);
+                await loadAllData();
+                document.getElementById('order-society').value = societyId;
+                populateTowers();
+                document.getElementById('order-tower').value = id;
+                document.getElementById('order-new-tower-name').value = '';
+                document.getElementById('order-add-tower-form').classList.add('hidden');
+                showMessage('Tower add ho gaya aur select bhi ho gaya.');
+            } catch (err) { showMessage('Tower add nahi hua: ' + err.message, true); }
+        }
+
+        // --- MANAGE SOCIETY/TOWER ---
+        async function addSociety() {
+            const name = document.getElementById('new-society-name').value.trim();
+            if (!name) return;
+            
+            const socId = 'SOC-' + Date.now();
+            const createdAt = formatDateTimeForSheet();
+            try {
+                await appendSheetData('Societies', [socId, name, 'TRUE', createdAt]);
+                showMessage('Society added!');
+                document.getElementById('new-society-name').value = '';
+                loadAllData();
+            } catch (err) {
+                showMessage('Error adding society: ' + err.message, true);
+            }
+        }
+
+        async function addTower() {
+            const socId = document.getElementById('manage-society').value;
+            const name = document.getElementById('new-tower-name').value.trim();
+            if (!socId || !name) {
+                showMessage('Please select society and enter tower name.', true);
+                return;
+            }
+
+            const towerId = 'TWR-' + Date.now();
+            const createdAt = formatDateTimeForSheet();
+            try {
+                await appendSheetData('Towers', [towerId, socId, name, 'TRUE', createdAt]);
+                showMessage('Tower added!');
+                document.getElementById('new-tower-name').value = '';
+                loadAllData();
+            } catch (err) {
+                showMessage('Error adding tower: ' + err.message, true);
+            }
+        }
+
+        // --- DRIVE IMAGES: load latest uploaded QR/WhatsApp image on every visit ---
+        async function listSavedImages(type) {
+            const q = encodeURIComponent(`trashed = false and name contains '${type}_'`);
+            const fields = encodeURIComponent('files(id,name,mimeType,createdTime)');
+            const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=${fields}&pageSize=100&orderBy=createdTime%20desc`, {
+                headers: {Authorization: `Bearer ${accessToken}`}
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || 'Drive images load nahi hui');
+            return data.files || [];
+        }
+
+        const savedImageObjectUrls = {};
+        function setImageControls(type, hasImage) {
+            document.getElementById(`${type}-upload-first`).classList.toggle('hidden', hasImage);
+            document.getElementById(`${type}-edit`).classList.toggle('hidden', !hasImage);
+        }
+        async function showDriveImage(type, file) {
+            const display = document.getElementById(type === 'qr' ? 'qr-display' : 'wa-display');
+            display.replaceChildren();
+            if (savedImageObjectUrls[type]) { URL.revokeObjectURL(savedImageObjectUrls[type]); delete savedImageObjectUrls[type]; }
+            if (!file) { display.textContent = 'Abhi image upload nahi hai.'; setImageControls(type,false); return; }
+            setImageControls(type,true);
+            const img = document.createElement('img');
+            img.alt = type === 'qr' ? 'Payment QR code' : 'WhatsApp group image';
+            img.className = 'media-image';
+            display.textContent = 'Image load ho rahi hai…';
+            try {
+                const res = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?alt=media`, {
+                    headers: {Authorization: `Bearer ${accessToken}`}
+                });
+                if (!res.ok) { const error = await res.json(); throw new Error(error.error?.message || 'Image download nahi hui'); }
+                savedImageObjectUrls[type] = URL.createObjectURL(await res.blob());
+                img.src = savedImageObjectUrls[type];
+                display.replaceChildren(img);
+            } catch (err) {
+                // Public thumbnail fallback lets the image render even if Drive media API blocks this browser.
+                img.referrerPolicy = 'no-referrer';
+                img.src = `https://drive.google.com/thumbnail?id=${encodeURIComponent(file.id)}&sz=w1200`;
+                img.onerror = () => { display.textContent = 'Image load nahi hui. Drive mein image sharing “Anyone with the link” par check karein.'; };
+                display.replaceChildren(img);
+                console.warn(type + ' image download failed:', err.message);
+            }
+        }
+
+        async function loadSavedImages() {
+            for (const type of ['qr']) {
+                try { const files = await listSavedImages(type); await showDriveImage(type, files[0] || null); }
+                catch (err) { console.warn(type + ' image load failed:', err.message); }
+            }
+        }
+
+        async function uploadImage(event, type) {
+            const file = event.target.files?.[0]; if (!file) return;
+            showMessage('Image upload ho rahi hai…');
+            const previousFiles = await listSavedImages(type).catch(() => []);
+            const metadata = {name: `${type}_${Date.now()}_${file.name}`, mimeType: file.type};
+            const form = new FormData();
+            form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
+            form.append('file', file);
+            try {
+                const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name', {
+                    method: 'POST', headers: {Authorization: `Bearer ${accessToken}`}, body: form
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error?.message || 'Drive upload fail hua');
+                const permissionRes = await fetch(`https://www.googleapis.com/drive/v3/files/${data.id}/permissions`, {
+                    method: 'POST', headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
+                    body: JSON.stringify({role: 'reader', type: 'anyone'})
+                });
+                if (!permissionRes.ok) {
+                    const permissionError = await permissionRes.json();
+                    throw new Error(permissionError.error?.message || 'Image permission set nahi hui');
+                }
+                for (const oldFile of previousFiles) {
+                    try { await fetch(`https://www.googleapis.com/drive/v3/files/${oldFile.id}`, {method:'DELETE',headers:{Authorization:`Bearer ${accessToken}`}}); }
+                    catch (cleanupError) { console.warn('Old image cleanup skipped:', cleanupError.message); }
+                }
+                await loadSavedImages();
+                showMessage('Image upload ho gayi aur display mein load kar di.');
+            } catch (err) { showMessage('Upload error: ' + err.message, true); }
+            finally { event.target.value = ''; }
+        }
+
+        async function deleteSavedImage(type) {
+            if (!confirm(`${type === 'qr' ? 'QR' : 'WhatsApp'} ki saved image delete kar dein?`)) return;
+            try {
+                const files = await listSavedImages(type);
+                for (const file of files) {
+                    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}`, {method: 'DELETE', headers: {Authorization: `Bearer ${accessToken}`}});
+                    if (!res.ok) { const data = await res.json(); throw new Error(data.error?.message || 'Image delete nahi hui'); }
+                }
+                await showDriveImage(type, null);
+                showMessage('Image delete ho gayi.');
+            } catch (err) { showMessage(err.message, true); }
+        }
+
+        // --- SETTINGS & PWA ---
+        function saveSettingUPI(val) {
+            localStorage.setItem('dwivedi_kitchen_upi', val.trim());
+            showMessage('UPI ID save ho gaya.');
+        }
+
+        function saveSettingGemini(val) {
+            localStorage.setItem('gemini_api_key', val.trim());
+            const modalKey = document.getElementById('modal-gemini-key');
+            if (modalKey) modalKey.value = val.trim();
+            showMessage('Gemini API Key save ho gayi.');
+        }
+
+        function loadSavedSettings() {
+            const upi = localStorage.getItem('dwivedi_kitchen_upi') || '';
+            const gemini = localStorage.getItem('gemini_api_key') || '';
+            const upiInput = document.getElementById('setting-upi-id');
+            const geminiInput = document.getElementById('setting-gemini-key');
+            if (upiInput) upiInput.value = upi;
+            if (geminiInput) geminiInput.value = gemini;
+        }
+
+        function triggerPWAInstall() {
+            if (deferredPWAInstallPrompt) {
+                deferredPWAInstallPrompt.prompt();
+                deferredPWAInstallPrompt.userChoice.then((choice) => {
+                    if (choice.outcome === 'accepted') {
+                        showMessage('App successfully install ho gaya!');
+                    }
+                    deferredPWAInstallPrompt = null;
+                });
+            } else {
+                alert('App phone par install karne ke liye:\n\n• Android Chrome: Upar 3 dots (⋮) par click karein -> "Add to Home screen / Install app"\n• iPhone Safari: Niche Share icon (↑) par click karein -> "Add to Home Screen"');
+            }
+        }
+
+        // --- AI PURCHASE LIST IMPORTER ---
+        function openAIPurchaseModal() {
+            aiParsedItems = [];
+            const resultsContainer = document.getElementById('ai-results-container');
+            if (resultsContainer) resultsContainer.classList.add('hidden');
+            const applyBtn = document.getElementById('ai-apply-btn');
+            if (applyBtn) applyBtn.disabled = true;
+            const textInput = document.getElementById('ai-text-input');
+            if (textInput) textInput.value = '';
+            const fileInput = document.getElementById('ai-image-file');
+            if (fileInput) fileInput.value = '';
+            const key = localStorage.getItem('gemini_api_key') || '';
+            const modalKey = document.getElementById('modal-gemini-key');
+            if (modalKey) modalKey.value = key;
+            document.getElementById('ai-purchase-overlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAIPurchaseModal() {
+            document.getElementById('ai-purchase-overlay').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function switchAITab(tab) {
+            document.querySelectorAll('.ai-tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-btn-${tab}`).classList.add('active');
+            document.getElementById('ai-pane-text').classList.toggle('hidden', tab !== 'text');
+            document.getElementById('ai-pane-image').classList.toggle('hidden', tab !== 'image');
+        }
+
+        function saveGeminiKeyFromModal() {
+            const key = document.getElementById('modal-gemini-key').value.trim();
+            if (key) {
+                localStorage.setItem('gemini_api_key', key);
+                const settingInput = document.getElementById('setting-gemini-key');
+                if (settingInput) settingInput.value = key;
+                showAIMessage('Gemini API Key save ho gayi!');
+            }
+        }
+
+        function showAIMessage(msg, isError = false) {
+            const el = document.getElementById('ai-msg');
+            if (!el) return;
+            el.textContent = msg;
+            el.className = isError ? 'message msg-error' : 'message msg-success';
+            el.style.display = 'block';
+            setTimeout(() => { el.style.display = 'none'; }, 4000);
+        }
+
+        function cleanItemName(str) {
+            return String(str || '').replace(/^[,\s\-—:]+|[,\s\-—:]+$/g, '').trim();
+        }
+
+        // Built-in smart parser (100% free, works offline without API key)
+        function parsePurchaseTextSmart(rawText) {
+            const lines = rawText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            const items = [];
+            const junkPatterns = /^(total|subtotal|grand total|taxes|discount|delivery|platform fee|tip|bill details|savings|paid via|order id|item total|invoice|gst|coupon)/i;
+
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                if (junkPatterns.test(line)) continue;
+
+                // Strip leading numbering or bullets
+                line = line.replace(/^[\d]+[\.\)\-]\s*/, '').replace(/^[\*\-•]\s*/, '').trim();
+                if (!line) continue;
+
+                // Pattern 1: Price with ₹, Rs, INR
+                const priceMatch = line.match(/(?:₹|rs\.?|inr)\s*(\d+(?:\.\d+)?)/i) || line.match(/(\d+(?:\.\d+)?)\s*(?:₹|rs\.?|inr)/i);
+                if (priceMatch) {
+                    const price = parseFloat(priceMatch[1]);
+                    const name = cleanItemName(line.replace(priceMatch[0], ''));
+                    if (name && !isNaN(price) && price > 0) {
+                        items.push({ name, price });
+                        continue;
+                    }
+                }
+
+                // Pattern 2: Trailing number ("Aloo 50" or "Amul Milk 500ml 36")
+                const trailingMatch = line.match(/^(.+?)\s+[-—:]?\s*(\d+(?:\.\d+)?)$/);
+                if (trailingMatch) {
+                    const name = cleanItemName(trailingMatch[1]);
+                    const price = parseFloat(trailingMatch[2]);
+                    if (name && !junkPatterns.test(name) && !isNaN(price) && price > 0) {
+                        items.push({ name, price });
+                        continue;
+                    }
+                }
+
+                // Pattern 3: Multi-line invoice (e.g. Line 1: Item name, Line 2: Price)
+                if (i + 1 < lines.length) {
+                    const nextLine = lines[i + 1].trim();
+                    const nextPriceMatch = nextLine.match(/^(?:₹|rs\.?|inr)?\s*(\d+(?:\.\d+)?)$/i);
+                    if (nextPriceMatch && !junkPatterns.test(line)) {
+                        items.push({ name: cleanItemName(line), price: parseFloat(nextPriceMatch[1]) });
+                        i++;
+                        continue;
+                    }
+                }
+            }
+            return items;
+        }
+
+        async function parsePurchaseWithGemini(promptText, base64Image = null, mimeType = null) {
+            const key = localStorage.getItem('gemini_api_key');
+            if (!key) throw new Error('Gemini API Key missing. Box mein free key save karein.');
+
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`;
+            
+            const parts = [];
+            parts.push({
+                text: `You are an assistant for Dwivedi Kitchens (an Indian home food kitchen). Extract all grocery, vegetable, packaging, or kitchen expense line items and their prices in INR. Return strictly valid JSON array of objects with keys 'name' (string) and 'price' (number). Ignore taxes, discounts, delivery charges, and grand totals. Example output: [{"name":"Aloo","price":50},{"name":"Amul Milk 500ml","price":36}].`
+            });
+
+            if (promptText) {
+                parts.push({ text: `Extract from this purchase text / invoice:\n${promptText}` });
+            }
+
+            if (base64Image && mimeType) {
+                parts.push({
+                    inlineData: {
+                        mimeType: mimeType,
+                        data: base64Image
+                    }
+                });
+            }
+
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts }],
+                    generationConfig: { responseMimeType: 'application/json' }
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || 'Gemini API call failed');
+
+            const rawReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!rawReply) throw new Error('AI response khali aya');
+
+            return JSON.parse(rawReply);
+        }
+
+        async function parsePurchaseInput(mode) {
+            const parseBtn = document.getElementById(mode === 'text' ? 'ai-parse-btn' : 'ai-scan-btn');
+            parseBtn.disabled = true;
+            parseBtn.textContent = 'Processing…';
+
+            try {
+                let results = [];
+                const hasGeminiKey = Boolean(localStorage.getItem('gemini_api_key'));
+
+                if (mode === 'text') {
+                    const text = document.getElementById('ai-text-input').value.trim();
+                    if (!text) throw new Error('Pehle text ya invoice paste karein.');
+
+                    if (hasGeminiKey) {
+                        try {
+                            results = await parsePurchaseWithGemini(text);
+                        } catch (geminiErr) {
+                            console.warn('Gemini failed, using smart local parser:', geminiErr.message);
+                            results = parsePurchaseTextSmart(text);
+                        }
+                    } else {
+                        results = parsePurchaseTextSmart(text);
+                    }
+                } else {
+                    const fileInput = document.getElementById('ai-image-file');
+                    const file = fileInput?.files?.[0];
+                    if (!file) throw new Error('Pehle bill photo ya screenshot select karein.');
+                    if (!hasGeminiKey) throw new Error('Photo scan ke liye free Gemini API Key zaroori hai. Upar wale box mein key save karein.');
+
+                    const base64Data = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result.split(',')[1]);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+
+                    results = await parsePurchaseWithGemini(null, base64Data, file.type);
+                }
+
+                if (!Array.isArray(results) || !results.length) {
+                    throw new Error('Items detect nahi hue. Kripya check karein ya manual add karein.');
+                }
+
+                aiParsedItems = results.map(item => ({
+                    name: String(item.name || '').trim(),
+                    price: Number(item.price) || 0
+                })).filter(item => item.name);
+
+                renderAIParsedItems();
+                showAIMessage(`${aiParsedItems.length} items successfully extract ho gaye!`);
+
+            } catch (err) {
+                showAIMessage(err.message, true);
+            } finally {
+                parseBtn.disabled = false;
+                parseBtn.textContent = mode === 'text' ? '✨ Parse Items' : '🔍 Scan & Extract with AI';
+            }
+        }
+
+        function renderAIParsedItems() {
+            const tbody = document.getElementById('ai-parsed-rows');
+            tbody.innerHTML = '';
+            let total = 0;
+
+            aiParsedItems.forEach((item, index) => {
+                total += item.price;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><input type="text" value="${escapeHtml(item.name)}" oninput="updateAIParsedItem(${index}, 'name', this.value)"></td>
+                    <td><input type="number" min="0" step="0.01" value="${item.price}" oninput="updateAIParsedItem(${index}, 'price', this.value)"></td>
+                    <td><button type="button" class="icon-btn delete" style="width:32px;height:32px" onclick="removeAIParsedItem(${index})">×</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('ai-item-count').textContent = aiParsedItems.length;
+            document.getElementById('ai-parsed-total').textContent = total.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+            document.getElementById('ai-results-container').classList.remove('hidden');
+            document.getElementById('ai-apply-btn').disabled = aiParsedItems.length === 0;
+        }
+
+        function updateAIParsedItem(index, field, value) {
+            if (!aiParsedItems[index]) return;
+            if (field === 'price') aiParsedItems[index].price = parseFloat(value) || 0;
+            else aiParsedItems[index].name = value;
+            let total = aiParsedItems.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('ai-parsed-total').textContent = total.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+        }
+
+        function removeAIParsedItem(index) {
+            aiParsedItems.splice(index, 1);
+            renderAIParsedItems();
+        }
+
+        function applyAIParsedItems() {
+            if (!aiParsedItems.length) return;
+            const container = document.getElementById('purchase-items-container');
+            aiParsedItems.forEach(item => {
+                addPurchaseItemRow();
+                const rows = container.querySelectorAll('.purchase-entry-row');
+                const lastRow = rows[rows.length - 1];
+                if (lastRow) {
+                    lastRow.querySelector('.purchase-item-name').value = item.name;
+                    lastRow.querySelector('.purchase-item-price').value = item.price;
+                }
+            });
+            calculatePurchaseTotals();
+            closeAIPurchaseModal();
+            showMessage(`${aiParsedItems.length} items purchase form mein add ho gaye! "Save Purchase" par click karein.`);
+        }
+
+    </script>
+</body>
+</html>
