@@ -449,6 +449,272 @@
         .group-pill.active { background:#fff; color:var(--brand-green); box-shadow:0 2px 7px rgba(75,37,24,.1); }
         @keyframes spin { to { transform: rotate(360deg); } }
 
+    
+        /* Modern SVG Icon System & Navigation Enhancements */
+        .nav {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            height: 66px;
+            box-sizing: content-box;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            align-items: center;
+            padding: 4px 8px max(8px, env(safe-area-inset-bottom));
+            box-shadow: 0 -4px 20px rgba(28, 38, 58, 0.08);
+            border-top: 1px solid rgba(226, 232, 240, 0.9);
+            z-index: 100;
+        }
+        .nav-btn {
+            width: 100%;
+            min-width: 0;
+            min-height: 52px;
+            padding: 4px 2px;
+            border: 0;
+            border-radius: 12px;
+            background: transparent;
+            box-shadow: none !important;
+            outline: none;
+            color: #64748b;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .nav-btn .nav-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 28px;
+            border-radius: 999px;
+            transition: all 0.2s ease;
+        }
+        .nav-btn .nav-icon svg {
+            width: 22px;
+            height: 22px;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .nav-btn.active {
+            color: #d94f59;
+            font-weight: 750;
+        }
+        .nav-btn.active .nav-icon {
+            background: #fff0f0;
+            color: #d94f59;
+        }
+        .nav-btn.active .nav-icon svg {
+            transform: scale(1.1);
+        }
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            background: #fff;
+            color: #475569;
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            vertical-align: middle;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .icon-btn:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+        .icon-btn.delete {
+            color: #dc2626;
+            background: #fff;
+        }
+        .icon-btn.delete:hover {
+            background: #fef2f2;
+            border-color: #fca5a5;
+            color: #b91c1c;
+        }
+        .dot-indicator {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+        .dot-pending { background: #d97706; box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2); }
+        .dot-paid { background: #16a34a; box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2); }
+        .group-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .sheet-handle {
+            display: none;
+        }
+
+        /* Mobile Screen Optimizations (<= 640px) */
+        @media (max-width: 640px) {
+            body {
+                padding-bottom: calc(76px + env(safe-area-inset-bottom)) !important;
+                -webkit-font-smoothing: antialiased;
+                touch-action: manipulation;
+            }
+            .container {
+                padding: 10px 12px 16px !important;
+                max-width: 100vw;
+                box-sizing: border-box;
+            }
+            .card {
+                padding: 14px 13px !important;
+                border-radius: 16px !important;
+                margin-bottom: 12px !important;
+                box-shadow: 0 2px 8px rgba(75, 37, 24, 0.06) !important;
+            }
+            /* Crucial iOS fix: 16px font size prevents Safari from zooming into the viewport */
+            input, select, textarea {
+                font-size: 16px !important;
+                min-height: 44px !important;
+                border-radius: 10px !important;
+            }
+            .btn {
+                min-height: 46px !important;
+                font-size: 15px !important;
+                border-radius: 12px !important;
+                touch-action: manipulation;
+            }
+            /* Bottom Sheet Dialogs on Mobile */
+            .edit-overlay {
+                padding: 0 !important;
+                align-items: flex-end !important;
+                background: rgba(15, 23, 42, 0.6) !important;
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+            }
+            .edit-dialog {
+                width: 100% !important;
+                max-width: 100% !important;
+                height: auto !important;
+                max-height: 90vh !important;
+                max-height: 90dvh !important;
+                border-radius: 22px 22px 0 0 !important;
+                box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.25) !important;
+                animation: slideUpModal 0.26s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            }
+            .sheet-handle {
+                display: block !important;
+                width: 36px;
+                height: 4px;
+                border-radius: 999px;
+                background: #cbd5e1;
+                margin: 8px auto 0;
+            }
+            .edit-head {
+                padding: 10px 16px !important;
+            }
+            .edit-head h2 {
+                font-size: 18px !important;
+            }
+            .edit-body {
+                padding: 12px 14px !important;
+            }
+            .edit-foot {
+                padding: 10px 14px max(10px, env(safe-area-inset-bottom)) !important;
+            }
+            /* Responsive 2-tier order item row on mobile */
+            .order-item-row {
+                display: grid !important;
+                grid-template-columns: 1fr auto auto !important;
+                align-items: center !important;
+                gap: 7px !important;
+                padding: 10px !important;
+                background: #fbf9f5 !important;
+                border: 1px solid rgba(104, 75, 49, 0.16) !important;
+                border-radius: 12px !important;
+                margin-bottom: 9px !important;
+            }
+            .order-item-row > div:first-child {
+                grid-column: 1 / -1 !important;
+            }
+            .order-item-row select {
+                width: 100% !important;
+                min-height: 44px !important;
+                font-size: 15px !important;
+            }
+            .order-row-price-value {
+                height: 42px !important;
+                min-width: 78px !important;
+                padding: 0 8px !important;
+                font-size: 14px !important;
+            }
+            .order-item-qty {
+                width: 60px !important;
+                height: 42px !important;
+                text-align: center !important;
+                font-size: 16px !important;
+            }
+            .order-item-row .icon-btn {
+                width: 42px !important;
+                height: 42px !important;
+            }
+            /* Full-width thumb friendly WhatsApp bill button */
+            .btn-whatsapp {
+                width: 100% !important;
+                min-height: 44px !important;
+                font-size: 14px !important;
+                justify-content: center !important;
+            }
+            .btn-mark-paid {
+                min-height: 34px !important;
+                padding: 6px 12px !important;
+            }
+            /* Smooth horizontal scrolling for filters and group pills */
+            .order-filter-bar, .orders-group-bar {
+                margin-bottom: 10px !important;
+                scrollbar-width: none !important;
+                -ms-overflow-style: none !important;
+            }
+            .order-filter-bar::-webkit-scrollbar, .orders-group-bar::-webkit-scrollbar {
+                display: none !important;
+            }
+            .group-pill {
+                padding: 8px 10px !important;
+                font-size: 12px !important;
+                min-width: 70px !important;
+            }
+            .order-filter-btn {
+                padding: 8px 12px !important;
+                font-size: 12.5px !important;
+            }
+            /* Stats on mobile */
+            .grid-2 {
+                gap: 8px !important;
+            }
+            .stat-box {
+                padding: 11px 9px !important;
+                border-radius: 14px !important;
+            }
+        }
+        @keyframes slideUpModal {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
     </style>
 </head>
 <body>
@@ -522,8 +788,14 @@
                 <div class="card">
                     <h3>Quick Actions</h3>
                     <div class="quick-action-grid">
-                        <button class="btn btn-primary" onclick="switchTab('new-order')">＋ Naya Order</button>
-                        <button class="btn btn-purchase" onclick="switchTab('purchase')">＋ Naya Purchase</button>
+                        <button class="btn btn-primary" onclick="switchTab('new-order')">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            <span>Naya Order</span>
+                        </button>
+                        <button class="btn btn-purchase" onclick="switchTab('purchase')">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:5px"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+                            <span>Naya Purchase</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -608,10 +880,22 @@
                     <button type="button" class="order-filter-btn" data-filter="paid" onclick="setOrderFilter('paid')">🟢 Paid (<span id="count-filter-paid">0</span>)</button>
                 </div>
                 <div class="orders-group-bar">
-                    <button type="button" class="group-pill active" data-group="none" onclick="setOrderGrouping('none')">List</button>
-                    <button type="button" class="group-pill" data-group="date" onclick="setOrderGrouping('date')">📅 By Date</button>
-                    <button type="button" class="group-pill" data-group="location" onclick="setOrderGrouping('location')">📍 By Location</button>
-                    <button type="button" class="group-pill" data-group="items" onclick="setOrderGrouping('items')">🍽️ By Item</button>
+                    <button type="button" class="group-pill active" data-group="none" onclick="setOrderGrouping('none')">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                        <span>List</span>
+                    </button>
+                    <button type="button" class="group-pill" data-group="date" onclick="setOrderGrouping('date')">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <span>Date</span>
+                    </button>
+                    <button type="button" class="group-pill" data-group="location" onclick="setOrderGrouping('location')">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span>Location</span>
+                    </button>
+                    <button type="button" class="group-pill" data-group="items" onclick="setOrderGrouping('items')">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M3 12h18"/></svg>
+                        <span>Items</span>
+                    </button>
                 </div>
                 <div id="orders-list"></div>
             </div>
@@ -622,7 +906,7 @@
                 <div class="purchase-form">
                     <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
                         <button type="button" class="btn btn-secondary btn-small" onclick="addPurchaseItemRow()">+ Add Manual Item</button>
-                        <button type="button" class="btn btn-ai-magic btn-small" onclick="openAIPurchaseModal()">✨ AI / Quick Paste List</button>
+                        <button type="button" class="btn btn-ai-magic btn-small" onclick="openAIPurchaseModal()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg><span>AI / Quick Paste List</span></button>
                     </div>
                     <div id="purchase-items-container"></div>
                     <div style="margin-top: 20px; text-align: right; font-size: 18px;">
@@ -703,8 +987,15 @@
                             100% Free at <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--brand-green);font-weight:700">Google AI Studio</a>. Unlocks bill photo / receipt scanner.
                         </div>
                     </div>
-                    <div style="margin-top:15px;padding-top:12px;border-top:1px solid rgba(104,75,49,.12)">
+                    <div style="margin-top:15px;padding-top:12px;border-top:1px solid rgba(104,75,49,.12);display:flex;flex-direction:column;gap:10px;">
                         <button type="button" id="btn-install-pwa" class="btn btn-secondary" onclick="triggerPWAInstall()">📲 Phone / Screen par Install Karein (PWA)</button>
+                        <button type="button" class="btn btn-secondary" onclick="forceAppUpdate()" style="border-color:#cbd5e1;background:#fff;color:#334155;">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                            <span>Update App & Clear Cache</span>
+                        </button>
+                        <div style="text-align:center;font-size:11px;color:#78716c;margin-top:4px;">
+                            <span class="badge" style="background:#e0f2fe;color:#0369a1;border:1px solid #bae6fd;">v2.5 • Mobile Optimized</span> • Gemini 3.8 Flash Active
+                        </div>
                     </div>
                 </div>
             </div>
@@ -726,14 +1017,26 @@
         <!-- AI Purchase List Importer Modal -->
         <div id="ai-purchase-overlay" class="edit-overlay" onclick="if(event.target===this)closeAIPurchaseModal()">
             <section class="edit-dialog" role="dialog" aria-modal="true" aria-labelledby="ai-purchase-title">
+                <div class="sheet-handle" aria-hidden="true"></div>
                 <div class="edit-head">
-                    <h2 id="ai-purchase-title">✨ AI Purchase Importer</h2>
-                    <button type="button" class="icon-btn" aria-label="Close" onclick="closeAIPurchaseModal()">✕</button>
+                    <div style="display:flex;align-items:center;gap:8px">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#7c3aed" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                        <h2 id="ai-purchase-title">AI Purchase Importer</h2>
+                    </div>
+                    <button type="button" class="icon-btn" aria-label="Close" onclick="closeAIPurchaseModal()">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
                 </div>
                 <div class="edit-body">
                     <div class="ai-tab-bar">
-                        <button type="button" class="ai-tab-btn active" id="tab-btn-text" onclick="switchAITab('text')">📝 Paste Text / List</button>
-                        <button type="button" class="ai-tab-btn" id="tab-btn-image" onclick="switchAITab('image')">📷 Bill Photo / Screenshot</button>
+                        <button type="button" class="ai-tab-btn active" id="tab-btn-text" onclick="switchAITab('text')">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            <span>Paste Text</span>
+                        </button>
+                        <button type="button" class="ai-tab-btn" id="tab-btn-image" onclick="switchAITab('image')">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:4px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                            <span>Bill Photo</span>
+                        </button>
                     </div>
 
                     <!-- Text Mode -->
@@ -799,10 +1102,30 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
 
         <!-- Navigation -->
         <nav class="nav" aria-label="Main navigation">
-            <button class="nav-btn active" data-tab="home" onclick="switchTab('home')"><span class="nav-icon">⌂</span><span>Home</span></button>
-            <button class="nav-btn" data-tab="orders" onclick="switchTab('orders')"><span class="nav-icon">▤</span><span>Orders</span></button>
-            <button class="nav-btn" data-tab="purchases" onclick="switchTab('purchases')"><span class="nav-icon">🛒</span><span>Purchases</span></button>
-            <button class="nav-btn" data-tab="more" onclick="switchTab('more')"><span class="nav-icon">⋯</span><span>More</span></button>
+            <button class="nav-btn active" data-tab="home" onclick="switchTab('home')">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 20V9.5z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </span>
+                <span>Home</span>
+            </button>
+            <button class="nav-btn" data-tab="orders" onclick="switchTab('orders')">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6"/><path d="M9 16h4"/></svg>
+                </span>
+                <span>Orders</span>
+            </button>
+            <button class="nav-btn" data-tab="purchases" onclick="switchTab('purchases')">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                </span>
+                <span>Purchases</span>
+            </button>
+            <button class="nav-btn" data-tab="more" onclick="switchTab('more')">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </span>
+                <span>More</span>
+            </button>
         </nav>
     </div>
 
@@ -865,12 +1188,50 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
             }
         })();
 
-        // Register Service Worker for PWA
+        // Self-healing App Updater & Cache Purger
+        async function forceAppUpdate() {
+            try {
+                showMessage('App update ho rahi hai aur fresh version load ho raha hai…');
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (const r of registrations) await r.unregister();
+                }
+                if ('caches' in window) {
+                    const keys = await caches.keys();
+                    for (const k of keys) await caches.delete(k);
+                }
+            } catch (e) {
+                console.warn('Update purge note:', e);
+            }
+            window.location.href = window.location.pathname + '?v=' + Date.now();
+        }
+
+        // Register Service Worker for PWA with auto-update
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(err => {
+                navigator.serviceWorker.register('./sw.js?v=2.5').then(reg => {
+                    reg.update();
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        if (newWorker) {
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('App updated, refreshing...');
+                                    window.location.reload();
+                                }
+                            });
+                        }
+                    });
+                }).catch(err => {
                     console.log('SW registration skipped', err);
                 });
+            });
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    refreshing = true;
+                    window.location.reload();
+                }
             });
         }
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -1071,8 +1432,27 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
             if (!res.ok) throw new Error(data.error?.message || `Delete ${tabName} mein nahi hua`);
         }
 
+        const ICONS = {
+            home: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 20V9.5z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+            orders: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6"/><path d="M9 16h4"/></svg>`,
+            purchases: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`,
+            more: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+            edit: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>`,
+            delete: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`,
+            close: `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+            whatsapp: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.24 8.24-1.45 0-2.88-.38-4.13-1.11l-.3-.18-3.07.81.82-2.99-.19-.31a8.17 8.17 0 0 1-1.25-4.47c0-4.54 3.7-8.24 8.24-8.24zm4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.4-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.37-.44.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.49-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1s.9 2.44 1.03 2.61c.12.17 1.77 2.7 4.29 3.78.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.07-.1-.23-.17-.48-.29z"/></svg>`,
+            check: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+            plus: `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,
+            sparkle: `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>`,
+            scan: `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
+            refresh: `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>`
+        };
+
         function actionButtons(editHandler, deleteHandler, id) {
-            return `<div class="record-actions"><button type="button" class="icon-btn" aria-label="Edit" title="Edit" onclick="${editHandler}('${id}')">✏️</button><button type="button" class="icon-btn delete" aria-label="Delete" title="Delete" onclick="${deleteHandler}('${id}')">🗑️</button></div>`;
+            return `<div class="record-actions">
+                <button type="button" class="icon-btn" aria-label="Edit" title="Edit" onclick="${editHandler}('${id}')">${ICONS.edit}</button>
+                <button type="button" class="icon-btn delete" aria-label="Delete" title="Delete" onclick="${deleteHandler}('${id}')">${ICONS.delete}</button>
+            </div>`;
         }
 
         let recordEditorState = null;
@@ -1354,7 +1734,7 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
                 </select></div>
                 <div><label>Price</label><div class="order-row-price-value">₹—</div></div>
                 <div><label>Qty</label><input type="number" class="order-item-qty" min="1" value="1" oninput="calculateOrderTotals()"></div>
-                <button type="button" class="icon-btn delete" aria-label="Remove item" title="Remove item" onclick="this.parentElement.remove(); calculateOrderTotals();">×</button>
+                <button type="button" class="icon-btn delete" aria-label="Remove item" title="Remove item" onclick="this.parentElement.remove(); calculateOrderTotals();">${ICONS.close}</button>
             `;
             container.appendChild(row);
         }
@@ -1482,8 +1862,8 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
             const isPending = paymentStatus.toLowerCase() === 'pending';
 
             const paymentBadge = isPending
-                ? `<span class="badge badge-pending">🟡 Pending Payment</span> <button type="button" class="btn-mark-paid" onclick="quickMarkPaid('${escapeHtml(orderId)}')">✓ Mark as Paid</button>`
-                : `<span class="badge badge-paid">🟢 Paid</span> <span class="badge ${paymentMode.toUpperCase() === 'UPI' ? 'badge-upi' : 'badge-cash'}">${escapeHtml(paymentMode)}</span>`;
+                ? `<span class="badge badge-pending"><span class="dot-indicator dot-pending"></span> Pending Payment</span> <button type="button" class="btn-mark-paid" onclick="quickMarkPaid('${escapeHtml(orderId)}')">${ICONS.check} Mark as Paid</button>`
+                : `<span class="badge badge-paid"><span class="dot-indicator dot-paid"></span> Paid</span> <span class="badge ${paymentMode.toUpperCase() === 'UPI' ? 'badge-upi' : 'badge-cash'}">${escapeHtml(paymentMode)}</span>`;
 
             return `<div class="card">
                 <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
@@ -1500,7 +1880,7 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
                     <strong>Qty:</strong> ${escapeHtml(order[10])} | <strong>Total:</strong> ₹${escapeHtml(order[11])}
                 </div>
                 <div class="order-card-actions">
-                    <button type="button" class="btn-whatsapp" onclick="sendWhatsAppBill('${escapeHtml(orderId)}')">💬 WhatsApp Bill</button>
+                    <button type="button" class="btn-whatsapp" onclick="sendWhatsAppBill('${escapeHtml(orderId)}')">${ICONS.whatsapp}<span>WhatsApp Bill</span></button>
                 </div>
             </div>`;
         }
@@ -1866,7 +2246,7 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
                     <div class="purchase-saved-menu hidden">${savedOptions || '<div class="purchase-saved-empty">No previous purchase items yet</div>'}</div>
                 </div>
                 <input type="number" class="purchase-item-price purchase-entry-price" placeholder="Price ₹" aria-label="Purchase price" min="0" step="0.01" oninput="calculatePurchaseTotals()">
-                <button type="button" class="btn btn-secondary btn-small purchase-entry-remove" aria-label="Remove item" title="Remove item" onclick="this.parentElement.remove(); calculatePurchaseTotals();">×</button>
+                <button type="button" class="btn btn-secondary btn-small purchase-entry-remove" aria-label="Remove item" title="Remove item" onclick="this.parentElement.remove(); calculatePurchaseTotals();">${ICONS.close}</button>
             `;
             container.appendChild(row);
         }
@@ -2284,10 +2664,14 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
         function showAIMessage(msg, isError = false) {
             const el = document.getElementById('ai-msg');
             if (!el) return;
-            el.textContent = msg;
+            if (isError && (msg.includes('no longer available') || msg.includes('gemini-2.5') || msg.includes('model'))) {
+                el.innerHTML = `<div>${escapeHtml(msg)}</div><div style="margin-top:8px;padding-top:6px;border-top:1px solid rgba(220,38,38,0.25);"><span style="font-size:12px;display:block;margin-bottom:6px;color:#991b1b;font-weight:600;">⚠️ Browser cache mein purana version tha. Naye version (Gemini 3.8) par switch karein:</span><button type="button" class="btn btn-small" style="background:#dc2626;color:#fff;border:none;padding:7px 14px;font-size:12px;width:auto;border-radius:8px;" onclick="forceAppUpdate()">${ICONS.refresh} Update App & Reload Now</button></div>`;
+            } else {
+                el.textContent = msg;
+            }
             el.className = isError ? 'message msg-error' : 'message msg-success';
             el.style.display = 'block';
-            setTimeout(() => { el.style.display = 'none'; }, 4000);
+            if (!isError) setTimeout(() => { el.style.display = 'none'; }, 4000);
         }
 
         function cleanItemName(str) {
@@ -2463,7 +2847,9 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
                 showAIMessage(err.message, true);
             } finally {
                 parseBtn.disabled = false;
-                parseBtn.textContent = mode === 'text' ? '✨ Parse Items' : '🔍 Scan & Extract with AI';
+                parseBtn.innerHTML = mode === 'text'
+                    ? `${ICONS.sparkle} <span>Parse Items</span>`
+                    : `${ICONS.scan} <span>Scan & Extract with AI</span>`;
             }
         }
 
