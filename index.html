@@ -1,0 +1,3210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Dwivedi Kitchen Sales</title>
+    <link rel="icon" type="image/png" href="static/logo.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#12683f">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Dwivedi Kitchen">
+    <link rel="apple-touch-icon" href="static/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script id="google-identity-script" src="https://accounts.google.com/gsi/client" defer onload="onGoogleIdentityLoaded()" onerror="onGoogleIdentityLoadFailed()"></script>
+    <style>
+        :root {
+            --brand-green: #12683f;
+            --brand-green-hover: #0c5231;
+            --brand-green-light: #ecf7f1;
+            --brand-green-glow: rgba(18, 104, 63, 0.14);
+            
+            --brand-gold: #c67d0a;
+            --brand-gold-light: #fef7ec;
+            --brand-red: #d13d32;
+            --brand-red-light: #fdf2f1;
+            --brand-blue: #2563eb;
+            --brand-blue-light: #eff6ff;
+
+            --bg: #f5f7f5;
+            --surface: #ffffff;
+            --surface-elevated: #ffffff;
+            --surface-subtle: #f8faf8;
+            --line: #e3e8e3;
+            --line-strong: #cbd5cb;
+
+            --text-main: #19241c;
+            --text-secondary: #526054;
+            --text-muted: #7c8a7e;
+
+            --shadow-xs: 0 1px 2px rgba(16, 32, 20, 0.04);
+            --shadow-sm: 0 2px 8px rgba(16, 32, 20, 0.05);
+            --shadow-md: 0 6px 20px rgba(16, 32, 20, 0.07);
+            --shadow-lg: 0 16px 40px rgba(16, 32, 20, 0.12);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 22px;
+            --radius-full: 9999px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            min-height: 100%;
+            background: var(--bg);
+            font-size: 15px;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0 0 calc(84px + env(safe-area-inset-bottom));
+            background: var(--bg);
+            color: var(--text-main);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 16px 14px 24px;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--text-main);
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        h2 { font-size: 1.45rem; line-height: 1.25; }
+        h3 { font-size: 1.05rem; margin-bottom: 12px; }
+
+        .page-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 4px 0 16px;
+        }
+
+        .section-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin: 22px 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .view { display: none; }
+        .view.active { display: block; animation: viewFadeIn 0.2s ease-out; }
+        @keyframes viewFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+        .hidden { display: none !important; }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Dashboard Header with Logo */
+        .dashboard-greeting {
+            background: linear-gradient(135deg, #12683f 0%, #0d5231 100%);
+            border-radius: var(--radius-xl);
+            padding: 16px 18px;
+            margin: 0 0 18px;
+            color: #ffffff;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+        .dashboard-brand-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1;
+        }
+        .dashboard-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: #fff;
+            object-fit: cover;
+            border: 1.5px solid rgba(255,255,255,0.4);
+            box-shadow: var(--shadow-xs);
+        }
+        .dashboard-greeting span {
+            display: block;
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+        .dashboard-greeting small {
+            display: block;
+            margin-top: 2px;
+            font-size: 0.78rem;
+            opacity: 0.85;
+            font-weight: 500;
+        }
+
+        /* Stats Grid */
+        .prototype-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .stat-box {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 14px 14px 12px;
+            box-shadow: var(--shadow-xs);
+            position: relative;
+            overflow: hidden;
+            border-top: 3.5px solid transparent;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .stat-box h3 {
+            font-size: 0.76rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin: 0 0 4px;
+        }
+        .stat-box p {
+            margin: 0;
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+        }
+        .stat-box.metric-orders { border-top-color: var(--brand-blue); }
+        .stat-box.metric-sales { border-top-color: var(--brand-green); }
+        .stat-box.metric-purchases { border-top-color: var(--brand-gold); }
+        .stat-box.metric-net { border-top-color: var(--brand-green); }
+        .stat-box.metric-net.loss { border-top-color: var(--brand-red); }
+        .stat-box.metric-net.loss p { color: var(--brand-red); }
+
+        .prototype-quick {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 52px;
+            padding: 12px 14px;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s ease;
+        }
+        .action.primary {
+            background: var(--brand-green);
+            color: #ffffff;
+            box-shadow: 0 3px 12px var(--brand-green-glow);
+        }
+        .action.primary:hover { background: var(--brand-green-hover); }
+        .action.primary:active { transform: scale(0.98); }
+        .action.secondary {
+            background: var(--surface);
+            color: var(--brand-green);
+            border: 1px solid var(--line-strong);
+            box-shadow: var(--shadow-xs);
+        }
+        .action.secondary:hover { background: var(--surface-subtle); border-color: var(--brand-green); }
+        .action.secondary:active { transform: scale(0.98); }
+
+        /* Modern Segmented Tab Bars */
+        .order-filter-bar, 
+        .orders-group-bar, 
+        .purchase-group-bar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: #e9ede9;
+            padding: 4px;
+            border-radius: var(--radius-md);
+            margin: 0 0 14px;
+            border: 1px solid var(--line);
+            overflow-x: auto;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        .order-filter-bar::-webkit-scrollbar,
+        .orders-group-bar::-webkit-scrollbar,
+        .purchase-group-bar::-webkit-scrollbar { display: none; }
+
+        .order-filter-btn, 
+        .group-pill {
+            flex: 1;
+            min-width: max-content;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 38px;
+            padding: 6px 14px;
+            border-radius: calc(var(--radius-md) - 3px);
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: none;
+        }
+
+        .order-filter-btn.active, 
+        .group-pill.active {
+            background: var(--surface) !important;
+            color: var(--brand-green) !important;
+            box-shadow: 0 2px 8px rgba(16, 32, 20, 0.08) !important;
+        }
+
+        .filter-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #e1e7e1;
+            color: var(--text-main);
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: var(--radius-full);
+            margin-left: 2px;
+        }
+        .order-filter-btn.active .filter-badge {
+            background: var(--brand-green-light);
+            color: var(--brand-green);
+        }
+
+        /* Modernized Accordion Chevron Replacement */
+        .modern-chevron {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #eef2ee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: transform 0.22s ease, background 0.15s ease, color 0.15s ease;
+            flex: none;
+        }
+        .modern-chevron svg {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2.4;
+        }
+        details[open] > summary .modern-chevron {
+            transform: rotate(180deg);
+            background: var(--brand-green-light);
+            color: var(--brand-green);
+        }
+
+        .location-group {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-xs);
+            overflow: hidden;
+            transition: border-color 0.15s ease;
+        }
+        .location-group[open] {
+            border-color: var(--line-strong);
+        }
+        .location-group summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 15px;
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+        }
+        .location-group summary::-webkit-details-marker { display: none; }
+        .location-group summary::marker { content: ""; }
+        .location-group-meta {
+            display: block;
+            margin-top: 3px;
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .location-group-orders {
+            padding: 0 10px 10px;
+            background: var(--surface-subtle);
+            border-top: 1px solid var(--line);
+        }
+
+        /* Modern Clean Menu Items */
+        .menu-list-v5 {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            padding: 4px 14px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-xs);
+        }
+        .menu-item-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 0;
+            border-bottom: 1px solid var(--line);
+        }
+        .menu-item-row:last-child { border-bottom: none; }
+        .menu-item-select {
+            width: 19px;
+            height: 19px;
+            accent-color: var(--brand-green);
+            cursor: pointer;
+            margin: 0;
+            flex: none;
+        }
+        .menu-item-info { flex: 1; min-width: 0; }
+        .menu-item-info strong {
+            display: block;
+            font-size: 0.92rem;
+            color: var(--text-main);
+            font-weight: 700;
+        }
+        .menu-details {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin: 2px 0 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.35;
+        }
+        .menu-price-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            background: var(--brand-green-light);
+            color: var(--brand-green);
+            border-radius: var(--radius-full);
+            font-size: 0.78rem;
+            font-weight: 800;
+        }
+        .menu-status-badge {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-left: 6px;
+        }
+
+        /* Collapsible Society / Tower Drawer Card */
+        .collapsible-header-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: transparent;
+            border: none;
+            padding: 2px 0;
+            cursor: pointer;
+            color: var(--text-main);
+        }
+        .collapsible-header-btn h3 { margin: 0; }
+        .collapsible-content {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px dashed var(--line);
+            animation: viewFadeIn 0.2s ease-out;
+        }
+
+        /* Inputs, Buttons, & General Elements */
+        label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin: 10px 0 5px;
+        }
+        input[type="text"], input[type="number"], input[type="password"], select, textarea {
+            width: 100%;
+            min-height: 46px;
+            padding: 10px 14px;
+            background: var(--surface);
+            border: 1.5px solid var(--line);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            box-sizing: border-box;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--brand-green);
+            box-shadow: 0 0 0 3px var(--brand-green-glow);
+        }
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23526054' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            padding-right: 42px;
+            cursor: pointer;
+        }
+        .flex-row { display: flex; gap: 10px; }
+        .flex-row > * { flex: 1; min-width: 0; }
+
+        .select-with-action { display: flex; align-items: center; gap: 8px; }
+        .select-with-action select { flex: 1; min-width: 0; margin: 0; }
+        .select-with-action .btn-small { flex: 0 0 auto; margin: 0; min-height: 46px; padding: 0 14px; border-radius: var(--radius-md); }
+
+        .btn {
+            background: var(--brand-green);
+            color: #ffffff;
+            border: none;
+            min-height: 48px;
+            padding: 12px 18px;
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 6px rgba(18, 104, 63, 0.15);
+        }
+        .btn:hover { background: var(--brand-green-hover); }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { opacity: 0.6; cursor: wait; }
+
+        .btn-secondary {
+            background: #edf2ed;
+            color: var(--brand-green);
+            border: 1px solid var(--line-strong);
+            box-shadow: none;
+        }
+        .btn-secondary:hover { background: #e2e8e2; border-color: var(--brand-green); }
+
+        .btn-small { width: auto; min-height: 38px; padding: 6px 12px; font-size: 0.85rem; border-radius: var(--radius-sm); }
+
+        .v5-add-button, .v5-text-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 36px;
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid var(--line-strong);
+            background: var(--surface);
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+        }
+        .v5-add-button span { font-size: 1.1rem; line-height: 1; }
+        .v5-add-button:hover, .v5-text-button:hover { background: var(--surface-subtle); color: var(--text-main); }
+        .v5-text-button.green {
+            background: var(--brand-green-light);
+            border-color: rgba(18, 104, 63, 0.25);
+            color: var(--brand-green);
+        }
+
+        .tab-segmented-control {
+            display: flex;
+            background: #e9ede9;
+            padding: 4px;
+            border-radius: var(--radius-md);
+            gap: 4px;
+            border: 1px solid var(--line);
+        }
+        .tab-segmented-btn {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 40px;
+            padding: 8px 12px;
+            border-radius: calc(var(--radius-md) - 3px);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.18s ease;
+        }
+        .tab-segmented-btn.active {
+            background: #ffffff;
+            color: var(--brand-green);
+            box-shadow: 0 2px 8px rgba(16, 32, 20, 0.08);
+        }
+        .tab-segmented-btn.status-pending.active { color: var(--brand-gold); background: #ffffff; }
+
+        .order-item-row {
+            display: grid;
+            grid-template-columns: 1fr 88px 108px 40px;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface-subtle);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            margin-bottom: 9px;
+        }
+        .order-item-row label {
+            margin: 0 0 4px;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .order-item-row select { min-height: 40px; padding: 6px 32px 6px 10px; font-size: 0.88rem; margin: 0; }
+        .order-row-price-value {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface);
+            border: 1.5px solid var(--line);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--brand-green);
+        }
+
+        .qty-stepper {
+            display: flex;
+            align-items: center;
+            height: 40px;
+            background: var(--surface);
+            border: 1.5px solid var(--line);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        .qty-stepper button {
+            width: 32px;
+            height: 100%;
+            border: none;
+            background: transparent;
+            color: var(--brand-green);
+            font-size: 1.15rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qty-stepper button:hover { background: var(--brand-green-light); }
+        .qty-stepper input.order-item-qty {
+            width: 44px;
+            height: 100%;
+            min-height: 0;
+            border: none;
+            border-left: 1px solid var(--line);
+            border-right: 1px solid var(--line);
+            border-radius: 0;
+            padding: 0;
+            text-align: center;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-main);
+            background: transparent;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            background: var(--surface);
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .icon-btn:hover { border-color: var(--line-strong); color: var(--text-main); background: var(--surface-subtle); }
+        .icon-btn.delete { color: var(--brand-red); background: var(--brand-red-light); border-color: rgba(209, 61, 50, 0.2); }
+
+        .order-total-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #eef6f1;
+            border: 1.5px solid rgba(18, 104, 63, 0.2);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            margin: 16px 0;
+            font-size: 0.95rem;
+            color: var(--brand-green);
+        }
+        .order-total-bar strong { font-size: 1.25rem; font-weight: 800; }
+
+        .order-record {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-lg);
+            margin: 0 0 10px;
+            box-shadow: var(--shadow-xs);
+            overflow: hidden;
+        }
+        .record-summary-v5 { list-style: none; padding: 13px 15px; cursor: pointer; user-select: none; }
+        .record-summary-v5::-webkit-details-marker { display: none; }
+        .record-summary-v5::marker { content: ""; }
+
+        .record-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .record-id { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); }
+        .record-date { font-size: 0.78rem; color: var(--text-muted); margin-left: 8px; }
+        .amount { font-size: 1.15rem; font-weight: 800; color: var(--text-main); }
+        .record-customer-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .customer { display: block; font-size: 0.95rem; font-weight: 700; color: var(--text-main); }
+        .location { display: block; font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+
+        .tap-hint {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            color: var(--brand-green);
+            font-weight: 600;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed var(--line);
+        }
+        .tap-hint span { font-size: 0.9rem; line-height: 1; transition: transform 0.2s ease; }
+        .order-record[open] .tap-hint span { transform: rotate(45deg); }
+
+        .order-record .details {
+            border-top: 1px solid var(--line);
+            padding: 14px 16px;
+            background: var(--surface-subtle);
+        }
+        .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .detail-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 2px; }
+        .detail-value { font-size: 0.88rem; font-weight: 600; color: var(--text-main); word-break: break-word; }
+        .item-lines { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); padding: 10px 12px; margin: 10px 0; }
+        .item-line { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 0.88rem; border-bottom: 1px solid var(--line); }
+        .item-line:last-child { border-bottom: none; }
+        .record-actions { display: flex; align-items: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 9px;
+            border-radius: var(--radius-full);
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+        .badge.paid { background: var(--brand-green-light); color: var(--brand-green); border: 1px solid rgba(18, 104, 63, 0.2); }
+        .badge.pending { background: var(--brand-gold-light); color: var(--brand-gold); border: 1px solid rgba(198, 125, 10, 0.2); }
+        .dot-indicator { width: 6px; height: 6px; border-radius: 50%; }
+        .dot-paid { background: var(--brand-green); }
+        .dot-pending { background: var(--brand-gold); }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: #ffffff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            font-size: 0.82rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(37, 211, 102, 0.25);
+        }
+        .btn-mark-paid {
+            background: var(--brand-green-light);
+            color: var(--brand-green);
+            border: 1.5px solid var(--brand-green);
+            padding: 7px 12px;
+            border-radius: var(--radius-md);
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .purchase-quick-entry { display: grid; grid-template-columns: 1fr 100px 48px; gap: 8px; align-items: center; }
+        .purchase-quick-entry input { margin: 0; }
+        .purchase-add-icon {
+            height: 46px;
+            border: none;
+            border-radius: var(--radius-md);
+            background: var(--brand-green);
+            color: #ffffff;
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .recent-purchase-shortcuts { display: flex; gap: 7px; overflow-x: auto; padding: 4px 0 10px; scrollbar-width: none; }
+        .recent-purchase-shortcuts::-webkit-scrollbar { display: none; }
+        .recent-purchase-chip {
+            flex: none;
+            border: 1px solid var(--line);
+            background: var(--surface);
+            border-radius: var(--radius-full);
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .recent-purchase-chip small { font-weight: 700; color: var(--text-main); }
+
+        .purchase-entry-row {
+            display: grid;
+            grid-template-columns: 1fr 94px 40px;
+            gap: 8px;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--line);
+        }
+        .purchase-name-control { position: relative; display: flex; gap: 4px; }
+        .purchase-name-control input { margin: 0; }
+        .purchase-name-control button { width: 40px; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface-subtle); cursor: pointer; }
+        .purchase-saved-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 4px;
+            padding: 4px;
+        }
+        .purchase-saved-option {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border: none;
+            background: transparent;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .purchase-total-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 0;
+            margin-top: 10px;
+            border-top: 1px solid var(--line);
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        .purchase-total-row strong { font-size: 1.3rem; color: var(--brand-green); }
+
+        .society-manage-block {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: var(--radius-md);
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .society-manage-head, .tower-manage-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+        .tower-manage-row { padding: 8px 0 0 14px; margin-top: 6px; border-top: 1px solid var(--line); font-size: 0.88rem; }
+
+        .prototype-more-list { display: flex; flex-direction: column; }
+        .prototype-more-row {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 4px;
+            border: none;
+            border-bottom: 1px solid var(--line);
+            background: transparent;
+            text-align: left;
+            cursor: pointer;
+        }
+        .prototype-more-row:last-child { border-bottom: none; }
+        .prototype-more-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-md);
+            background: var(--brand-green-light);
+            color: var(--brand-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex: none;
+        }
+        .prototype-more-row > span:nth-child(2) { flex: 1; }
+        .prototype-more-row strong { display: block; font-size: 0.95rem; color: var(--text-main); }
+        .prototype-more-row small { display: block; font-size: 0.78rem; color: var(--text-muted); }
+        .prototype-more-row b { font-size: 1.2rem; color: var(--text-muted); font-weight: 400; }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid var(--line);
+            box-shadow: 0 -4px 16px rgba(16, 32, 20, 0.05);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 4px 10px max(6px, env(safe-area-inset-bottom));
+        }
+        .nav-btn {
+            flex: 1;
+            max-width: 90px;
+            height: 52px;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .nav-btn .nav-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 26px;
+            border-radius: var(--radius-full);
+        }
+        .nav-btn .nav-icon svg { width: 21px; height: 21px; }
+        .nav-btn.active { color: var(--brand-green); font-weight: 800; }
+        .nav-btn.active .nav-icon { background: var(--brand-green-light); color: var(--brand-green); }
+
+        /* Editor Modal */
+        .edit-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 25, 18, 0.55);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .edit-overlay.open { display: flex; }
+        .edit-dialog {
+            background: var(--surface);
+            width: min(100%, 580px);
+            max-height: 85vh;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes modalPop { from { transform: scale(0.96); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .edit-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+        .edit-head h2 { font-size: 1.15rem; }
+        .edit-body { padding: 18px 20px; overflow-y: auto; flex: 1; }
+        .edit-foot { padding: 14px 20px; border-top: 1px solid var(--line); display: flex; gap: 10px; justify-content: flex-end; }
+        .edit-foot .btn { width: auto; min-width: 100px; }
+        .edit-error { display: none; margin: 0 20px 10px; padding: 10px 14px; border-radius: var(--radius-md); background: var(--brand-red-light); color: var(--brand-red); font-size: 0.85rem; }
+        .edit-error.show { display: block; }
+
+        .message {
+            position: fixed;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 300;
+            display: none;
+            padding: 10px 18px;
+            border-radius: var(--radius-full);
+            font-size: 0.88rem;
+            font-weight: 700;
+            box-shadow: var(--shadow-md);
+            animation: toastIn 0.2s ease-out;
+            max-width: 90vw;
+            text-align: center;
+        }
+        @keyframes toastIn { from { transform: translate(-50%, -10px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+        .msg-success { display: block; background: #0f5132; color: #ffffff; }
+        .msg-error { display: block; background: #842029; color: #ffffff; }
+
+        @media (max-width: 480px) {
+            .order-item-row { grid-template-columns: 1fr 78px 96px 36px; gap: 6px; padding: 8px 10px; }
+            .qty-stepper button { width: 28px; }
+            .qty-stepper input.order-item-qty { width: 38px; }
+            .edit-overlay { padding: 0; align-items: flex-end; }
+            .edit-dialog { width: 100%; max-height: 90vh; border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Toast Notification -->
+    <div id="global-msg" class="message"></div>
+
+    <!-- Login Screen -->
+    <div id="login-view" class="container" style="max-width:440px; margin-top:8vh;">
+        <div class="card" style="text-align:center; padding:32px 24px;">
+            <div style="width:74px; height:74px; border-radius:20px; background:#fff; border:1px solid #e3e8e3; margin:0 auto 16px; display:grid; place-items:center; overflow:hidden; box-shadow:var(--shadow-sm);">
+                <img class="brand-logo" src="static/logo.png" alt="Dwivedi Kitchen Logo" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ctext y=\'.9em\' font-size=\'90\'%3E🍲%3C/text%3E%3C/svg%3E';">
+            </div>
+            <h2 style="font-size:1.4rem; margin-bottom:4px;">Dwivedi Kitchen</h2>
+            <p style="color:var(--text-secondary); font-size:0.9rem; margin:0 0 20px;">Ghar jaisa swad, har roz</p>
+            
+            <div id="login-connecting" style="padding:16px 0;">
+                <p style="margin:0; color:var(--text-secondary); font-size:0.9rem; font-weight:600;">Connecting to kitchen database…</p>
+                <div style="margin:16px auto 0; width:26px; height:26px; border:3px solid var(--brand-green-light); border-top-color:var(--brand-green); border-radius:50%; animation:spin 1s linear infinite;"></div>
+            </div>
+            
+            <div id="login-manual" class="hidden" style="margin-top:10px;">
+                <p style="color:var(--text-secondary); font-size:0.88rem; line-height:1.4;">Google account se sign in karke kitchen manage karein.</p>
+                <p id="login-msg" style="color:var(--brand-red); margin-top:10px; font-size:0.82rem;">Google sign-in connect nahi ho pa raha. Internet check karke retry karein.</p>
+                <button id="auth-btn" class="btn" onclick="initAuth()" style="margin-top:15px;">Retry Google Sign-in</button>
+            </div>
+        </div>
+    </div>
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+
+    <!-- Main App Container -->
+    <div id="app-view" class="hidden">
+        <div class="container">
+
+            <!-- HOME VIEW -->
+            <div id="home" class="view active">
+                <div class="dashboard-greeting">
+                    <div class="dashboard-brand-left">
+                        <img src="static/logo.png" alt="Logo" class="dashboard-logo" onerror="this.style.display='none';">
+                        <div>
+                            <span id="dashboard-greeting">Good morning</span>
+                            <small id="dashboard-greeting-date"></small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="prototype-stats">
+                    <div class="stat-box metric-orders">
+                        <h3>Aaj Orders</h3>
+                        <p id="today-orders">0</p>
+                    </div>
+                    <div class="stat-box metric-sales">
+                        <h3>Aaj Sales</h3>
+                        <p id="today-sales">₹0</p>
+                    </div>
+                    <div class="stat-box metric-purchases">
+                        <h3>Mahine Purchases</h3>
+                        <p id="month-purchases">₹0</p>
+                    </div>
+                    <div class="stat-box metric-net">
+                        <h3>Net Balance</h3>
+                        <p id="pending-sales">₹0</p>
+                    </div>
+                </div>
+
+                <div class="prototype-hidden-metrics" aria-hidden="true" style="display:none;">
+                    <span id="month-orders">0</span>
+                    <span id="month-sales">₹0</span>
+                    <span id="month-net">₹0</span>
+                </div>
+
+                <div class="section-label">Quick Actions</div>
+                <div class="prototype-quick">
+                    <button class="action primary" onclick="switchTab('new-order')">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <span>New Order</span>
+                    </button>
+                    <button class="action secondary" onclick="switchTab('purchase')">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <span>New Purchase</span>
+                    </button>
+                </div>
+
+                <div class="section-label">
+                    <span>Recent Activity</span>
+                    <button type="button" onclick="switchTab('orders')" style="border:none; background:transparent; color:var(--brand-green); font-size:0.82rem; font-weight:700; cursor:pointer;">View all →</button>
+                </div>
+                <div id="recent-orders-list"></div>
+            </div>
+
+            <!-- NEW ORDER VIEW -->
+            <div id="new-order" class="view">
+                <div class="page-head">
+                    <h2>New Order</h2>
+                </div>
+                <div class="card">
+                    <label>Society</label>
+                    <div class="select-with-action">
+                        <select id="order-society" onchange="populateTowers()"></select>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleOrderAddForm('society')">+ Society</button>
+                    </div>
+                    <div id="order-add-society-form" class="hidden" style="margin:8px 0 14px; background:var(--surface-subtle); padding:10px; border-radius:var(--radius-md);">
+                        <input type="text" id="order-new-society-name" placeholder="Nayi society ka naam">
+                        <button type="button" class="btn btn-small" onclick="addSocietyFromOrder()" style="margin-top:8px;">Society Save Karein</button>
+                    </div>
+
+                    <label>Tower</label>
+                    <div class="select-with-action">
+                        <select id="order-tower"></select>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="toggleOrderAddForm('tower')">+ Tower</button>
+                    </div>
+                    <div id="order-add-tower-form" class="hidden" style="margin:8px 0 14px; background:var(--surface-subtle); padding:10px; border-radius:var(--radius-md);">
+                        <input type="text" id="order-new-tower-name" placeholder="Tower jaise A, B, 1">
+                        <button type="button" class="btn btn-small" onclick="addTowerFromOrder()" style="margin-top:8px;">Tower Save Karein</button>
+                    </div>
+
+                    <div class="flex-row">
+                        <div>
+                            <label>Flat Number</label>
+                            <input type="text" id="order-flat" oninput="autoCalcFloor(); autoFillCustomerByFlat();" placeholder="e.g. 101">
+                        </div>
+                        <div>
+                            <label>Floor</label>
+                            <input type="text" id="order-floor" placeholder="Auto">
+                        </div>
+                    </div>
+
+                    <label>Extra Address (Optional)</label>
+                    <input type="text" id="order-address" placeholder="Near lift, opposite park, etc.">
+
+                    <div class="flex-row">
+                        <div>
+                            <label>Customer Name</label>
+                            <input type="text" id="order-name" placeholder="Optional">
+                        </div>
+                        <div>
+                            <label>Contact No.</label>
+                            <input type="text" id="order-contact" placeholder="Optional">
+                        </div>
+                    </div>
+
+                    <div class="flex-row" style="margin-top:6px;">
+                        <div>
+                            <label>Payment Status</label>
+                            <div class="tab-segmented-control">
+                                <button type="button" class="tab-segmented-btn active" data-status-val="Paid" onclick="selectPaymentStatusTab('Paid')">🟢 Paid</button>
+                                <button type="button" class="tab-segmented-btn status-pending" data-status-val="Pending" onclick="selectPaymentStatusTab('Pending')">🟡 Pending</button>
+                            </div>
+                            <select id="order-payment-status" class="hidden">
+                                <option value="Paid" selected>Paid</option>
+                                <option value="Pending">Pending</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Payment Mode</label>
+                            <div class="tab-segmented-control">
+                                <button type="button" class="tab-segmented-btn active" data-mode-val="UPI" onclick="selectPaymentModeTab('UPI')">UPI</button>
+                                <button type="button" class="tab-segmented-btn" data-mode-val="Cash" onclick="selectPaymentModeTab('Cash')">Cash</button>
+                            </div>
+                            <select id="order-payment-mode" class="hidden">
+                                <option value="UPI" selected>UPI</option>
+                                <option value="Cash">Cash</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <hr style="border:0; border-top:1px solid var(--line); margin:18px 0 14px;">
+
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                        <h3 style="margin:0;">Order Items</h3>
+                        <button type="button" class="v5-text-button green" onclick="addOrderItemRow()">+ Add Item</button>
+                    </div>
+
+                    <div id="order-items-container"></div>
+                    
+                    <div class="order-total-bar">
+                        <span>Total Items: <strong id="order-total-qty">0</strong></span>
+                        <span>Bill Amount: <strong>₹<span id="order-total-amount">0</span></strong></span>
+                    </div>
+
+                    <button class="btn" onclick="saveOrder()" style="margin-top:4px;">Save & Place Order</button>
+                </div>
+            </div>
+
+            <!-- ORDERS VIEW -->
+            <div id="orders" class="view">
+                <div class="page-head">
+                    <h2>Orders</h2>
+                    <button type="button" class="v5-add-button" onclick="switchTab('new-order')">
+                        <span>＋</span> Add
+                    </button>
+                </div>
+
+                <!-- Modern Segmented Tabs for Orders Filtering -->
+                <div class="order-filter-bar">
+                    <button type="button" class="order-filter-btn active" data-filter="all" onclick="setOrderFilter('all')">
+                        <span>All</span>
+                        <span class="filter-badge" id="count-filter-all">0</span>
+                    </button>
+                    <button type="button" class="order-filter-btn" data-filter="pending" onclick="setOrderFilter('pending')">
+                        <span>🟡 Pending</span>
+                        <span class="filter-badge" id="count-filter-pending">0</span>
+                    </button>
+                    <button type="button" class="order-filter-btn" data-filter="paid" onclick="setOrderFilter('paid')">
+                        <span>🟢 Paid</span>
+                        <span class="filter-badge" id="count-filter-paid">0</span>
+                    </button>
+                </div>
+
+                <!-- Grouping Tabs -->
+                <div class="orders-group-bar">
+                    <button type="button" class="group-pill active" data-group="none" onclick="setOrderGrouping('none')">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                        <span>List</span>
+                    </button>
+                    <button type="button" class="group-pill" data-group="date" onclick="setOrderGrouping('date')">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <span>Date</span>
+                    </button>
+                    <button type="button" class="group-pill" data-group="month" onclick="setOrderGrouping('month')">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                        <span>Month</span>
+                    </button>
+                    <button type="button" class="group-pill" data-group="location" onclick="setOrderGrouping('location')">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span>Location</span>
+                    </button>
+                    <button type="button" class="group-pill" data-group="items" onclick="setOrderGrouping('items')">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18"/><path d="M3 12h18"/></svg>
+                        <span>Items</span>
+                    </button>
+                </div>
+
+                <div id="orders-list"></div>
+            </div>
+
+            <!-- NEW PURCHASE VIEW -->
+            <div id="purchase" class="view">
+                <div class="page-head">
+                    <h2>New Purchase</h2>
+                </div>
+                <div class="card">
+                    <label>Add Item Quickly</label>
+                    <div class="purchase-quick-entry">
+                        <input type="text" id="quick-purchase-name" placeholder="Item name (e.g. Atta, Oil)">
+                        <input type="number" id="quick-purchase-price" min="0" step="0.01" placeholder="Price ₹">
+                        <button type="button" class="purchase-add-icon" aria-label="Add item" title="Add item" onclick="addQuickPurchaseEntry()">＋</button>
+                    </div>
+
+                    <div class="section-label" style="margin-top:16px;">
+                        <span>Recently Purchased</span>
+                        <span style="font-size:0.75rem; text-transform:none; color:var(--text-muted);">Tap to add</span>
+                    </div>
+                    <div id="recent-purchase-shortcuts" class="recent-purchase-shortcuts"></div>
+
+                    <div style="display:flex; justify-content:flex-end; margin:10px 0;">
+                        <button type="button" class="v5-text-button green" onclick="addPurchaseItemRow()">＋ Add Another Row</button>
+                    </div>
+
+                    <div id="purchase-items-container"></div>
+
+                    <div class="purchase-total-row">
+                        <span>Total Expense</span>
+                        <strong>₹<span id="purchase-total-amount">0</span></strong>
+                    </div>
+
+                    <button class="btn" onclick="savePurchase()" style="margin-top:6px;">Save Purchase Entry</button>
+                </div>
+            </div>
+
+            <!-- PURCHASES HISTORY VIEW -->
+            <div id="purchases" class="view">
+                <div class="page-head">
+                    <h2>Purchases</h2>
+                    <button type="button" class="v5-add-button" onclick="switchTab('purchase')">
+                        <span>＋</span> Add
+                    </button>
+                </div>
+
+                <div class="purchase-group-bar">
+                    <button type="button" class="group-pill active" data-purchase-group="none" onclick="setPurchaseGrouping('none')">List View</button>
+                    <button type="button" class="group-pill" data-purchase-group="date" onclick="setPurchaseGrouping('date')">By Date</button>
+                    <button type="button" class="group-pill" data-purchase-group="month" onclick="setPurchaseGrouping('month')">By Month</button>
+                </div>
+
+                <div id="purchase-history-list"></div>
+            </div>
+
+            <!-- MENU VIEW -->
+            <div id="menu" class="view">
+                <div class="page-head">
+                    <h2>Menu Management</h2>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
+                    <button type="button" class="v5-text-button green" onclick="toggleMenuAddForm()">＋ Add Item</button>
+                    <button type="button" class="v5-text-button" onclick="copySelectedMenuItems()">Copy Selected</button>
+                    <button type="button" class="v5-text-button" onclick="toggleSelectAllMenuItems(true)">Select All</button>
+                    <button type="button" class="v5-text-button" onclick="toggleSelectAllMenuItems(false)">Clear</button>
+                </div>
+                
+                <div id="menu-list" class="menu-list-v5"></div>
+
+                <!-- Collapsible Menu Add Form -->
+                <div id="menu-add-card" class="card hidden">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                        <h3 style="margin:0;">Naya Menu Item Jodein</h3>
+                        <button type="button" class="icon-btn" onclick="toggleMenuAddForm()">✕</button>
+                    </div>
+                    <label>Item Name</label>
+                    <input type="text" id="new-menu-name" placeholder="e.g. Special Deluxe Thali">
+                    <label>Full Details / Contents</label>
+                    <textarea id="new-menu-details" rows="3" placeholder="4 Roti, Dal Fry, Paneer, Rice, Salad..."></textarea>
+                    <label>Price (₹)</label>
+                    <input type="number" id="new-menu-price" min="0" step="0.01" placeholder="Price">
+                    <button class="btn" onclick="addMenuItem()" style="margin-top:14px;">Save Menu Item</button>
+                </div>
+            </div>
+
+            <!-- SOCIETY / TOWER MANAGEMENT VIEW -->
+            <div id="manage" class="view">
+                <div class="page-head">
+                    <h2>Society & Towers</h2>
+                </div>
+
+                <!-- Add Society (Collapsible) -->
+                <div class="card">
+                    <button type="button" class="collapsible-header-btn" onclick="toggleCollapsible('society-add-content', 'society-chevron')">
+                        <h3>＋ Add New Society</h3>
+                        <div id="society-chevron" class="modern-chevron">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </button>
+                    <div id="society-add-content" class="collapsible-content hidden">
+                        <input type="text" id="new-society-name" placeholder="Society Name (e.g. GLS Avenue 81)">
+                        <button class="btn" onclick="addSociety()" style="margin-top:10px;">Save Society</button>
+                    </div>
+                </div>
+
+                <!-- Add Tower to Society (Collapsible) -->
+                <div class="card">
+                    <button type="button" class="collapsible-header-btn" onclick="toggleCollapsible('tower-add-content', 'tower-chevron')">
+                        <h3>＋ Add Tower to Society</h3>
+                        <div id="tower-chevron" class="modern-chevron">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </div>
+                    </button>
+                    <div id="tower-add-content" class="collapsible-content hidden">
+                        <label>Society Select Karein</label>
+                        <select id="manage-society"></select>
+                        <label>Tower Name</label>
+                        <input type="text" id="new-tower-name" placeholder="Tower Name (e.g. Tower A, Block 2)">
+                        <button class="btn" onclick="addTower()" style="margin-top:10px;">Save Tower</button>
+                    </div>
+                </div>
+
+                <!-- Registered Societies & Towers List -->
+                <div class="card">
+                    <h3 style="margin-bottom:10px;">Registered Societies & Towers</h3>
+                    <div id="society-tower-list">Loading list…</div>
+                </div>
+            </div>
+
+            <!-- MORE SETTINGS VIEW -->
+            <div id="more" class="view">
+                <div class="page-head">
+                    <h2>Settings & Shortcuts</h2>
+                </div>
+                <div class="card" style="padding:4px 14px;">
+                    <div class="prototype-more-list">
+                        <button type="button" class="prototype-more-row" onclick="switchTab('menu')">
+                            <span class="prototype-more-icon">🍱</span>
+                            <span><strong>Menu Items</strong><small>Prices, description & availability</small></span>
+                            <b>›</b>
+                        </button>
+                        <button type="button" class="prototype-more-row" onclick="switchTab('manage')">
+                            <span class="prototype-more-icon">🏢</span>
+                            <span><strong>Societies & Towers</strong><small>Flats and delivery destinations</small></span>
+                            <b>›</b>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+                        <h3 style="margin:0;">Payment QR Code</h3>
+                        <div>
+                            <button id="qr-upload-first" type="button" class="v5-text-button green" onclick="document.getElementById('qr-upload').click()">＋ Upload</button>
+                            <button id="qr-edit" type="button" class="icon-btn hidden" aria-label="Edit QR code" onclick="document.getElementById('qr-upload').click()">✏️</button>
+                        </div>
+                    </div>
+                    <div id="qr-display" style="text-align:center; min-height:80px; display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:0.85rem;"></div>
+                    <input type="file" id="qr-upload" class="hidden" accept="image/*" onchange="uploadImage(event, 'qr')">
+                </div>
+
+                <div class="card">
+                    <h3>App Settings</h3>
+                    <label>Aapka UPI ID (WhatsApp bills ke liye)</label>
+                    <input type="text" id="setting-upi-id" placeholder="e.g. 9876543210@paytm" onchange="saveSettingUPI(this.value)">
+
+                    <label style="margin-top:14px;">Google Gemini API Key (OCR Bill Scanning)</label>
+                    <input type="password" id="setting-gemini-key" placeholder="AIzaSy..." onchange="saveSettingGemini(this.value)">
+                    <small style="display:block; color:var(--text-muted); margin-top:4px; font-size:0.78rem;">
+                        Free at <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--brand-green); font-weight:700;">Google AI Studio</a>.
+                    </small>
+
+                    <div style="margin-top:20px; display:flex; flex-direction:column; gap:8px;">
+                        <button type="button" id="btn-install-pwa" class="btn btn-secondary" onclick="triggerPWAInstall()">📲 Add to Home Screen (PWA)</button>
+                        <button type="button" class="btn btn-secondary" onclick="forceAppUpdate()">🔄 Update App & Refresh Cache</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Full-Page Record Editor (Bottom-Sheet / Modal) -->
+        <div id="edit-overlay" class="edit-overlay" onclick="if(event.target===this)closeRecordEditor()">
+            <section class="edit-dialog" role="dialog" aria-modal="true" aria-labelledby="edit-title">
+                <div class="edit-head">
+                    <h2 id="edit-title">Edit Record</h2>
+                    <button type="button" class="icon-btn" aria-label="Close" onclick="closeRecordEditor()">✕</button>
+                </div>
+                <form id="edit-form" onsubmit="saveRecordEditor(event)">
+                    <div id="edit-body" class="edit-body"></div>
+                    <div id="edit-error" class="edit-error" role="alert"></div>
+                    <div class="edit-foot">
+                        <button type="button" class="btn btn-secondary" onclick="closeRecordEditor()">Cancel</button>
+                        <button id="edit-save-btn" type="submit" class="btn">Save Changes</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+
+        <!-- Fixed Bottom App Navigation -->
+        <nav class="nav" aria-label="Main Navigation">
+            <button class="nav-btn active" data-tab="home" onclick="switchTab('home')">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 20V9.5z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </span>
+                <span>Home</span>
+            </button>
+            <button class="nav-btn" data-tab="orders" onclick="switchTab('orders')">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6"/><path d="M9 16h4"/></svg>
+                </span>
+                <span>Orders</span>
+            </button>
+            <button class="nav-btn" data-tab="purchases" onclick="switchTab('purchases')">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                </span>
+                <span>Purchases</span>
+            </button>
+            <button class="nav-btn" data-tab="more" onclick="switchTab('more')">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </span>
+                <span>More</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Application JavaScript Engine -->
+    <script>
+        const CLIENT_ID = '91521766084-r2ekts6unmvvnh0ho640qh7vjvbem10v.apps.googleusercontent.com';
+        const SPREADSHEET_ID = '1kRoEzjDq2r9HCA58ehasg_6lFYeDJzo-ze4qlXrEggc';
+        const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+        const DEFAULT_GEMINI_KEY = '';
+
+        let tokenClient;
+        let accessToken = null;
+        let sheetData = {
+            Societies: [],
+            Towers: [],
+            Menu: [],
+            Orders: [],
+            OrderItems: [],
+            Purchases: [],
+            PurchaseItems: []
+        };
+        let currentOrderGrouping = 'none';
+        let currentPurchaseGrouping = 'none';
+        let currentOrderFilter = 'all';
+        let deferredPWAInstallPrompt = null;
+        const selectedMenuItemIds = new Set();
+
+        function getGeminiApiKey() {
+            return (typeof DEFAULT_GEMINI_KEY !== 'undefined' && DEFAULT_GEMINI_KEY) ? DEFAULT_GEMINI_KEY : (localStorage.getItem('gemini_api_key') || '');
+        }
+
+        function getSavedValidOAuthToken() {
+            const token = localStorage.getItem('dwivedi_access_token');
+            const expiresAt = Number(localStorage.getItem('dwivedi_token_expires_at')) || 0;
+            if (token && Date.now() < expiresAt) return token;
+            return null;
+        }
+
+        function saveOAuthToken(token, expiresInSec = 3500) {
+            accessToken = token;
+            localStorage.setItem('dwivedi_access_token', token);
+            localStorage.setItem('dwivedi_token_expires_at', String(Date.now() + (expiresInSec - 120) * 1000));
+        }
+
+        (function checkInstantCachedLogin() {
+            const cachedToken = getSavedValidOAuthToken();
+            if (cachedToken) {
+                accessToken = cachedToken;
+                const hideLogin = () => {
+                    document.getElementById('login-view')?.classList.add('hidden');
+                    document.getElementById('app-view')?.classList.remove('hidden');
+                };
+                if (document.readyState === 'loading') {
+                    window.addEventListener('DOMContentLoaded', hideLogin);
+                } else {
+                    hideLogin();
+                }
+            }
+        })();
+
+        async function forceAppUpdate() {
+            try {
+                showMessage('Updating app & refreshing cache…');
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    for (const r of registrations) await r.unregister();
+                }
+                if ('caches' in window) {
+                    const keys = await caches.keys();
+                    for (const k of keys) await caches.delete(k);
+                }
+            } catch (e) {
+                console.warn('Update note:', e);
+            }
+            window.location.href = window.location.pathname + '?v=' + Date.now();
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js?v=2.6').then(reg => {
+                    reg.update();
+                }).catch(err => {
+                    console.log('SW registration skipped', err);
+                });
+            });
+        }
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPWAInstallPrompt = e;
+        });
+
+        function formatDateTimeForSheet(date = new Date()) {
+            const parts = new Intl.DateTimeFormat('en-GB', {
+                timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric',
+                hour: 'numeric', minute: '2-digit', hour12: true
+            }).formatToParts(date);
+            const p = Object.fromEntries(parts.map(part => [part.type, part.value]));
+            const month = p.month.charAt(0).toUpperCase() + p.month.slice(1).toLowerCase();
+            return `${p.day}-${month}-${p.year} ${p.hour}:${p.minute} ${p.dayPeriod.toUpperCase()}`;
+        }
+
+        function formatDateTimeForDisplay(value) {
+            const date = parseSheetDate(value);
+            return date ? formatDateTimeForSheet(date) : String(value || '');
+        }
+
+        function parseSheetDate(value) {
+            if (!value) return null;
+            const text = String(value).trim();
+            const readable = text.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})\s+(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+            if (readable) {
+                const month = { jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11 }[readable[2].toLowerCase()];
+                let hour = Number(readable[4]) % 12;
+                if (readable[6].toUpperCase() === 'PM') hour += 12;
+                const date = new Date(Number(readable[3]), month, Number(readable[1]), hour, Number(readable[5]));
+                return Number.isNaN(date.getTime()) ? null : date;
+            }
+            const date = new Date(text);
+            return Number.isNaN(date.getTime()) ? null : date;
+        }
+
+        function showManualLoginPrompt(message) {
+            const conn = document.getElementById('login-connecting');
+            const manual = document.getElementById('login-manual');
+            const msg = document.getElementById('login-msg');
+            const btn = document.getElementById('auth-btn');
+            if (conn) conn.classList.add('hidden');
+            if (manual) manual.classList.remove('hidden');
+            if (msg && message) msg.textContent = message;
+            if (btn) btn.textContent = tokenClient ? 'Sign in with Google' : 'Retry Google Sign-in';
+        }
+
+        function onGoogleIdentityLoadFailed() {
+            showManualLoginPrompt('Google sign-in library load nahi hui. Internet connection check karke Retry karein.');
+        }
+
+        function onGoogleIdentityLoaded() {
+            if (!window.google?.accounts?.oauth2) {
+                showManualLoginPrompt('Google sign-in service available nahi hai. Retry karke dobara connect karein.');
+                return;
+            }
+
+            try {
+                tokenClient = google.accounts.oauth2.initTokenClient({
+                    client_id: CLIENT_ID,
+                    scope: SCOPES,
+                    prompt: '',
+                    login_hint: 'dwivedi.kitchen.92@gmail.com',
+                    callback: async (tokenResponse) => {
+                        if (tokenResponse && tokenResponse.access_token) {
+                            saveOAuthToken(tokenResponse.access_token, Number(tokenResponse.expires_in) || 3500);
+                            document.getElementById('login-view').classList.add('hidden');
+                            document.getElementById('app-view').classList.remove('hidden');
+                            loadSavedSettings();
+                            await loadAllData();
+                            loadSavedImages();
+                        } else {
+                            showManualLoginPrompt('Google se access token nahi mila. Dobara sign in karein.');
+                        }
+                    },
+                    error_callback: (error) => {
+                        console.error('Google OAuth error:', error);
+                        showManualLoginPrompt('Google sign-in cancel ya fail hua. Button dabakar dobara try karein.');
+                    }
+                });
+            } catch (error) {
+                console.error('Google token client init failed:', error);
+                showManualLoginPrompt('Google sign-in initialize nahi hua: ' + (error.message || 'Unknown error'));
+                return;
+            }
+
+            const validToken = getSavedValidOAuthToken();
+            if (validToken) {
+                accessToken = validToken;
+                document.getElementById('login-view').classList.add('hidden');
+                document.getElementById('app-view').classList.remove('hidden');
+                loadSavedSettings();
+                loadAllData();
+                loadSavedImages();
+            } else {
+                try {
+                    tokenClient.requestAccessToken({ prompt: '' });
+                    window.setTimeout(() => {
+                        if (!accessToken && !document.getElementById('login-view')?.classList.contains('hidden')) {
+                            showManualLoginPrompt('Google account approval ka wait ho raha hai. Sign in button dabakar continue karein.');
+                        }
+                    }, 9000);
+                } catch (error) {
+                    console.error('Google token request failed:', error);
+                    showManualLoginPrompt('Google sign-in start nahi hua: ' + (error.message || 'Please retry.'));
+                }
+            }
+        }
+
+        function initAuth() {
+            const msg = document.getElementById('login-msg');
+            if (window.google?.accounts?.oauth2) {
+                if (!tokenClient) {
+                    onGoogleIdentityLoaded();
+                    if (!tokenClient) return;
+                }
+                try {
+                    tokenClient.requestAccessToken({ prompt: 'select_account' });
+                } catch (error) {
+                    console.error('Google sign-in retry failed:', error);
+                    showManualLoginPrompt('Sign-in retry failed: ' + (error.message || 'Please reload and try again.'));
+                }
+                return;
+            }
+
+            if (msg) msg.textContent = 'Google sign-in library dobara load kar rahe hain…';
+            const oldScript = document.getElementById('google-identity-script');
+            if (oldScript) oldScript.remove();
+            const script = document.createElement('script');
+            script.id = 'google-identity-script';
+            script.src = 'https://accounts.google.com/gsi/client';
+            script.async = true;
+            script.onload = onGoogleIdentityLoaded;
+            script.onerror = onGoogleIdentityLoadFailed;
+            document.head.appendChild(script);
+        }
+
+        // Never leave the user on an endless "Connecting to kitchen database" screen.
+        window.setTimeout(() => {
+            const login = document.getElementById('login-view');
+            if (login && !login.classList.contains('hidden') && !tokenClient) {
+                showManualLoginPrompt('Connection abhi tak establish nahi hua. Internet check karke Retry Google Sign-in dabayein.');
+            }
+        }, 8000);
+
+
+        async function fetchSheetData(tabName) {
+            const range = encodeURIComponent(`'${tabName}'!A:Z`);
+            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}`, {
+                headers: { Authorization: `Bearer ${accessToken}` }
+            });
+            if (res.status === 401) {
+                localStorage.removeItem('dwivedi_access_token');
+                localStorage.removeItem('dwivedi_token_expires_at');
+                if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+                throw new Error('Session auto-refresh ho raha hai. Thodi der mein retry karein.');
+            }
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || `Could not read ${tabName}`);
+            return data.values || [];
+        }
+
+        async function appendSheetData(tabName, values) {
+            const range = encodeURIComponent(`'${tabName}'!A:Z`);
+            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}:append?valueInputOption=USER_ENTERED`, {
+                method: 'POST',
+                headers: { 
+                    Authorization: `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ values: [values] })
+            });
+            if (res.status === 401) {
+                localStorage.removeItem('dwivedi_access_token');
+                localStorage.removeItem('dwivedi_token_expires_at');
+                if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+                throw new Error('Session auto-refresh ho raha hai. Dobara save karein.');
+            }
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || `Failed to save to ${tabName}`);
+            return data;
+        }
+
+        let spreadsheetSheetIds = null;
+        async function sheetIdFor(tabName) {
+            if (!spreadsheetSheetIds) {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?fields=sheets(properties(sheetId,title))`;
+                const res = await fetch(url, {headers: {Authorization: `Bearer ${accessToken}`}});
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error?.message || 'Sheet list load nahi hui');
+                spreadsheetSheetIds = Object.fromEntries((data.sheets || []).map(s => [s.properties.title, s.properties.sheetId]));
+            }
+            if (spreadsheetSheetIds[tabName] === undefined) throw new Error(`${tabName} tab nahi mila`);
+            return spreadsheetSheetIds[tabName];
+        }
+
+        async function updateDataRow(tabName, rowNumber, values) {
+            const lastColumn = String.fromCharCode(64 + values.length);
+            const range = encodeURIComponent(`'${tabName}'!A${rowNumber}:${lastColumn}${rowNumber}`);
+            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}?valueInputOption=USER_ENTERED`, {
+                method: 'PUT', headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
+                body: JSON.stringify({values: [values]})
+            });
+            if (res.status === 401) {
+                localStorage.removeItem('dwivedi_access_token');
+                localStorage.removeItem('dwivedi_token_expires_at');
+                if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+                throw new Error('Session auto-refresh ho raha hai. Dobara try karein.');
+            }
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || `Edit ${tabName} mein save nahi hua`);
+            return data;
+        }
+
+        async function deleteDataRows(tabName, rowNumbers) {
+            const uniqueRows = [...new Set(rowNumbers)].sort((a, b) => b - a);
+            if (!uniqueRows.length) return;
+            const sheetId = await sheetIdFor(tabName);
+            const requests = uniqueRows.map(rowNumber => ({deleteDimension: {range: {sheetId, dimension: 'ROWS', startIndex: rowNumber - 1, endIndex: rowNumber}}}));
+            const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}:batchUpdate`, {
+                method: 'POST', headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
+                body: JSON.stringify({requests})
+            });
+            if (res.status === 401) {
+                localStorage.removeItem('dwivedi_access_token');
+                localStorage.removeItem('dwivedi_token_expires_at');
+                if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+                throw new Error('Session auto-refresh ho raha hai. Thodi der mein retry karein.');
+            }
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || `Delete ${tabName} mein nahi hua`);
+        }
+
+        const ICONS = {
+            edit: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>`,
+            delete: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`,
+            close: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+            whatsapp: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm.01 1.67c2.2 0 4.26.86 5.82 2.42a8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.24 8.24-1.45 0-2.88-.38-4.13-1.11l-.3-.18-3.07.81.82-2.99-.19-.31a8.17 8.17 0 0 1-1.25-4.47c0-4.54 3.7-8.24 8.24-8.24zm4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.02-1.25-.75-.67-1.26-1.5-1.4-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.37-.44.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.44-.06-.13-.56-1.35-.77-1.85-.2-.49-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1s.9 2.44 1.03 2.61c.12.17 1.77 2.7 4.29 3.78.6.26 1.07.41 1.44.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.08.15-1.18-.07-.1-.23-.17-.48-.29z"/></svg>`,
+            check: `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+            chevronSvg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`
+        };
+
+        function actionButtons(editHandler, deleteHandler, id) {
+            return `<div class="record-actions" style="margin:0 0 0 auto;">
+                <button type="button" class="icon-btn" aria-label="Edit" title="Edit" onclick="${editHandler}('${id}')">${ICONS.edit}</button>
+                <button type="button" class="icon-btn delete" aria-label="Delete" title="Delete" onclick="${deleteHandler}('${id}')">${ICONS.delete}</button>
+            </div>`;
+        }
+
+        let recordEditorState = null;
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+        }
+
+        function editField(label, key, value, type = 'text', wide = false) {
+            return `<div style="${wide ? 'grid-column:1/-1;' : ''} margin-bottom:12px;">
+                <label>${label}</label>
+                <input data-edit-field="${key}" type="${type}" value="${escapeHtml(value)}">
+            </div>`;
+        }
+
+        function renderEditorItemRow(type, item = {}) {
+            if (type === 'purchase') {
+                return `<div class="edit-item-row" style="display:grid; grid-template-columns:1fr 100px 38px; gap:8px; margin-bottom:8px;">
+                    <input data-item-name value="${escapeHtml(item.name)}" aria-label="Item name" placeholder="Purchase item">
+                    <input data-item-price type="number" min="0" step="0.01" value="${escapeHtml(item.price ?? '')}" aria-label="Price" placeholder="Price ₹">
+                    <button type="button" class="icon-btn delete" onclick="removeEditorItem(this)" aria-label="Remove item">×</button>
+                </div>`;
+            }
+            return `<div class="edit-item-row" style="display:grid; grid-template-columns:1fr 70px 90px 38px; gap:8px; margin-bottom:8px;">
+                <input data-item-name value="${escapeHtml(item.name)}" aria-label="Menu item" placeholder="Menu item">
+                <input data-item-qty type="number" min="1" step="1" value="${escapeHtml(item.qty ?? 1)}" aria-label="Quantity" placeholder="Qty">
+                <input data-item-price type="number" min="0" step="0.01" value="${escapeHtml(item.price ?? '')}" aria-label="Unit price" placeholder="Price ₹">
+                <button type="button" class="icon-btn delete" onclick="removeEditorItem(this)" aria-label="Remove item">×</button>
+            </div>`;
+        }
+
+        function openRecordEditor(type, id) {
+            const groups = {order:'Orders', purchase:'Purchases', menu:'Menu', society:'Societies'};
+            const rows = sheetData[groups[type]] || [];
+            const index = rows.findIndex(row => row[0] === id);
+            if (index < 0) return;
+            const row = [...rows[index]];
+            let items = [];
+            if (type === 'order') items = sheetData.OrderItems.filter(item => item[1] === id).map(item => ({name:item[2],qty:item[3],price:item[4]}));
+            if (type === 'purchase') items = sheetData.PurchaseItems.filter(item => item[1] === id).map(item => ({name:item[3],price:item[4]}));
+            
+            const titles = {order:'Edit Order', purchase:'Edit Purchase', menu:'Edit Menu Item', society:'Edit Society & Towers'};
+            document.getElementById('edit-title').textContent = titles[type];
+            recordEditorState = {type, id, index, row};
+            let body = '';
+
+            if (type === 'order') {
+                const status = row[12] || 'Paid';
+                const mode = row[13] || 'Cash';
+                body = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    ${editField('Date & time','dateTime',row[1],'text',true)}
+                    ${editField('Society','society',row[2])}
+                    ${editField('Tower','tower',row[3])}
+                    ${editField('Flat number','flat',row[4])}
+                    ${editField('Floor','floor',row[5])}
+                    ${editField('Extra address','address',row[6],'text',true)}
+                    ${editField('Customer name','customer',row[7])}
+                    ${editField('Contact number','contact',row[8])}
+                    <div>
+                        <label>Payment Status</label>
+                        <select data-edit-field="paymentStatus">
+                            <option value="Paid" ${status === 'Paid' ? 'selected' : ''}>🟢 Paid</option>
+                            <option value="Pending" ${status === 'Pending' ? 'selected' : ''}>🟡 Pending</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Payment Mode</label>
+                        <select data-edit-field="paymentMode">
+                            <option value="UPI" ${mode === 'UPI' ? 'selected' : ''}>UPI</option>
+                            <option value="Cash" ${mode === 'Cash' ? 'selected' : ''}>Cash</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="background:var(--surface-subtle); border:1px solid var(--line); border-radius:var(--radius-md); padding:12px; margin-top:14px;">
+                    <div style="font-weight:700; margin-bottom:8px; font-size:0.88rem;">Order Items</div>
+                    <div id="editor-item-list">${items.map(item => renderEditorItemRow('order',item)).join('')}</div>
+                    <button type="button" class="v5-text-button green" onclick="addEditorItem('order')" style="margin-top:6px;">＋ Add Item</button>
+                    <div style="display:flex; justify-content:space-between; margin-top:10px; padding-top:10px; border-top:1px solid var(--line); font-weight:700;">
+                        <span>Total Qty: <b id="editor-qty">0</b></span>
+                        <span>Total: <b id="editor-total">₹0</b></span>
+                    </div>
+                </div>`;
+            } else if (type === 'purchase') {
+                body = `${editField('Date & time','dateTime',row[1],'text',true)}
+                <div style="background:var(--surface-subtle); border:1px solid var(--line); border-radius:var(--radius-md); padding:12px; margin-top:14px;">
+                    <div style="font-weight:700; margin-bottom:8px; font-size:0.88rem;">Purchase Items</div>
+                    <div id="editor-item-list">${items.map(item => renderEditorItemRow('purchase',item)).join('')}</div>
+                    <button type="button" class="v5-text-button green" onclick="addEditorItem('purchase')" style="margin-top:6px;">＋ Add Item</button>
+                    <div style="display:flex; justify-content:space-between; margin-top:10px; padding-top:10px; border-top:1px solid var(--line); font-weight:700;">
+                        <span>Total Items: <b id="editor-qty">0</b></span>
+                        <span>Total Amount: <b id="editor-total">₹0</b></span>
+                    </div>
+                </div>`;
+            } else if (type === 'menu') {
+                body = `${editField('Item name','name',row[1],'text',true)}
+                <div style="margin-bottom:12px;">
+                    <label>Full details / contents</label>
+                    <textarea data-edit-field="details" rows="3">${escapeHtml(row[2])}</textarea>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    ${editField('Price (₹)','price',row[3],'number')}
+                    <div>
+                        <label>Active Status</label>
+                        <select data-edit-field="active">
+                            <option value="TRUE" ${String(row[4]).toUpperCase() !== 'FALSE' ? 'selected' : ''}>Active</option>
+                            <option value="FALSE" ${String(row[4]).toUpperCase() === 'FALSE' ? 'selected' : ''}>Inactive</option>
+                        </select>
+                    </div>
+                </div>`;
+            } else {
+                const towers = sheetData.Towers.filter(tower => tower[1] === id);
+                body = `${editField('Society name','name',row[1],'text',true)}
+                <div style="background:var(--surface-subtle); border:1px solid var(--line); border-radius:var(--radius-md); padding:12px; margin-top:14px;">
+                    <div style="font-weight:700; margin-bottom:8px; font-size:0.88rem;">Registered Towers</div>
+                    <div id="editor-tower-list">${towers.map(tower => `<div style="display:flex; gap:8px; margin-bottom:8px;"><input data-tower-name value="${escapeHtml(tower[2])}" aria-label="Tower name"><button type="button" class="icon-btn delete" onclick="this.parentElement.remove()" aria-label="Remove tower">×</button></div>`).join('')}</div>
+                    <button type="button" class="v5-text-button green" onclick="addEditorTower()" style="margin-top:6px;">＋ Add Tower</button>
+                </div>`;
+            }
+
+            document.getElementById('edit-body').innerHTML = body;
+            document.getElementById('edit-error').classList.remove('show');
+            document.getElementById('edit-overlay').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('edit-body').oninput = updateEditorTotals;
+            updateEditorTotals();
+        }
+
+        function closeRecordEditor() {
+            document.getElementById('edit-overlay').classList.remove('open');
+            document.body.style.overflow = '';
+            recordEditorState = null;
+        }
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && document.getElementById('edit-overlay').classList.contains('open')) closeRecordEditor();
+        });
+
+        function addEditorItem(type) {
+            document.getElementById('editor-item-list').insertAdjacentHTML('beforeend', renderEditorItemRow(type));
+            updateEditorTotals();
+        }
+
+        function removeEditorItem(button) { button.closest('.edit-item-row').remove(); updateEditorTotals(); }
+
+        function addEditorTower() {
+            document.getElementById('editor-tower-list').insertAdjacentHTML('beforeend', `<div style="display:flex; gap:8px; margin-bottom:8px;"><input data-tower-name aria-label="Tower name" placeholder="Tower A"><button type="button" class="icon-btn delete" onclick="this.parentElement.remove()" aria-label="Remove tower">×</button></div>`);
+        }
+
+        function updateEditorTotals() {
+            if (!recordEditorState || !['order','purchase'].includes(recordEditorState.type)) return;
+            const rows = [...document.querySelectorAll('#editor-item-list .edit-item-row')];
+            const qty = rows.reduce((sum,item) => sum + (recordEditorState.type === 'order' ? (Number(item.querySelector('[data-item-qty]').value)||0) : 1),0);
+            const total = rows.reduce((sum,item) => sum + (Number(item.querySelector('[data-item-price]').value)||0) * (recordEditorState.type === 'order' ? (Number(item.querySelector('[data-item-qty]').value)||0) : 1),0);
+            document.getElementById('editor-qty').textContent = qty;
+            document.getElementById('editor-total').textContent = '₹' + total.toLocaleString('en-IN',{maximumFractionDigits:2});
+        }
+
+        function getEditorItems(type) {
+            return [...document.querySelectorAll('#editor-item-list .edit-item-row')].map(item => ({
+                name:item.querySelector('[data-item-name]').value.trim(),
+                qty:type === 'order' ? Number(item.querySelector('[data-item-qty]').value) : 1,
+                price:item.querySelector('[data-item-price]').value === '' ? NaN : Number(item.querySelector('[data-item-price]').value)
+            })).filter(item => item.name);
+        }
+
+        async function saveRecordEditor(event) {
+            event.preventDefault();
+            if (!recordEditorState) return;
+            const saveButton = document.getElementById('edit-save-btn');
+            saveButton.disabled = true; saveButton.textContent = 'Saving…';
+            try {
+                const {type,id,index,row} = recordEditorState;
+                if (type === 'order') {
+                    const items = getEditorItems(type);
+                    if (!items.length || items.some(item => !Number.isInteger(item.qty) || item.qty < 1 || !Number.isFinite(item.price) || item.price < 0)) throw new Error('Har item ka naam, quantity aur price bharein.');
+                    row[1]=document.querySelector('[data-edit-field="dateTime"]').value.trim();
+                    row[2]=document.querySelector('[data-edit-field="society"]').value.trim(); row[3]=document.querySelector('[data-edit-field="tower"]').value.trim();
+                    row[4]=document.querySelector('[data-edit-field="flat"]').value.trim(); row[5]=document.querySelector('[data-edit-field="floor"]').value.trim();
+                    row[6]=document.querySelector('[data-edit-field="address"]').value.trim(); row[7]=document.querySelector('[data-edit-field="customer"]').value.trim(); row[8]=document.querySelector('[data-edit-field="contact"]').value.trim();
+                    row[9]=items.map(item=>`${item.name} (x${item.qty})`).join(', '); row[10]=items.reduce((sum,item)=>sum+item.qty,0); row[11]=items.reduce((sum,item)=>sum+item.qty*item.price,0);
+                    row[12]=document.querySelector('[data-edit-field="paymentStatus"]')?.value || 'Paid';
+                    row[13]=document.querySelector('[data-edit-field="paymentMode"]')?.value || 'UPI';
+                    const oldRows=sheetData.OrderItems.map((item,i)=>item[1]===id?i+2:null).filter(Boolean); await deleteDataRows('OrderItems',oldRows);
+                    for (const [i,item] of items.entries()) await appendSheetData('OrderItems',['ITM-'+Date.now()+'-'+i,id,item.name,item.qty,item.price,item.qty*item.price]);
+                    await updateDataRow('Orders',index+2,row);
+                } else if (type === 'purchase') {
+                    const items=getEditorItems(type); if (!items.length || items.some(item=>!Number.isFinite(item.price)||item.price<0)) throw new Error('Har purchase item ka naam aur valid price bharein.');
+                    row[1]=document.querySelector('[data-edit-field="dateTime"]').value.trim(); row[2]=items.reduce((sum,item)=>sum+item.price,0);
+                    const oldRows=sheetData.PurchaseItems.map((item,i)=>item[1]===id?i+2:null).filter(Boolean); await deleteDataRows('PurchaseItems',oldRows);
+                    for (const [i,item] of items.entries()) await appendSheetData('PurchaseItems',['PITM-'+Date.now()+'-'+i,id,row[1],item.name,item.price]);
+                    await updateDataRow('Purchases',index+2,row);
+                } else if (type === 'menu') {
+                    const name=document.querySelector('[data-edit-field="name"]').value.trim(), details=document.querySelector('[data-edit-field="details"]').value.trim();
+                    const priceText=document.querySelector('[data-edit-field="price"]').value;
+                    const price=Number(priceText), active=document.querySelector('[data-edit-field="active"]').value;
+                    if (!name || priceText === '' || !Number.isFinite(price) || price<0) throw new Error('Naam aur valid price bharein.');
+                    row[1]=name; row[2]=details; row[3]=price; row[4]=active; await updateDataRow('Menu',index+2,row);
+                } else if (type === 'society') {
+                    const name=document.querySelector('[data-edit-field="name"]').value.trim();
+                    const names=[...document.querySelectorAll('[data-tower-name]')].map(input=>input.value.trim()).filter(Boolean);
+                    if (!name) throw new Error('Society ka naam bharein.');
+                    row[1]=name; await updateDataRow('Societies',index+2,row);
+                    const oldRows=sheetData.Towers.map((tower,i)=>tower[1]===id?i+2:null).filter(Boolean); await deleteDataRows('Towers',oldRows);
+                    for (const [i,towerName] of names.entries()) await appendSheetData('Towers',['TWR-'+Date.now()+'-'+i,id,towerName,'TRUE',formatDateTimeForSheet()]);
+                }
+                closeRecordEditor(); await loadAllData(); showMessage('Changes successfully save ho gaye.');
+            } catch(err) {
+                const feedback=document.getElementById('edit-error');
+                feedback.textContent=err.message; feedback.classList.add('show');
+            } finally { saveButton.disabled=false; saveButton.textContent='Save Changes'; }
+        }
+
+        async function loadAllData() {
+            try {
+                const tabs = Object.keys(sheetData);
+                const promises = tabs.map(tab => fetchSheetData(tab));
+                const results = await Promise.all(promises);
+                
+                tabs.forEach((tab, index) => {
+                    let data = results[index];
+                    if (data.length > 0 && (data[0][0] === 'Society ID' || data[0][0] === 'Order ID' || data[0][0] === 'Item ID' || data[0][0] === 'Purchase ID' || data[0][0] === 'Tower ID' || data[0][0] === 'Order Item ID' || data[0][0] === 'Purchase Item ID')) {
+                        data = data.slice(1);
+                    }
+                    sheetData[tab] = data;
+                });
+
+                populateDropdowns();
+                renderMenu();
+                renderOrders();
+                renderPurchases();
+                renderSocietyTowerList();
+                renderDashboard();
+                calculateOrderTotals();
+                calculatePurchaseTotals();
+            } catch (err) {
+                showMessage('Data load failed: ' + err.message, true);
+            }
+        }
+
+        function renderDashboard() {
+            const now = new Date();
+            const hour = now.getHours();
+            const greeting = hour < 12 ? 'Good morning' : (hour < 17 ? 'Good afternoon' : (hour < 21 ? 'Good evening' : 'Good night'));
+            const greetingEl = document.getElementById('dashboard-greeting');
+            const greetingDateEl = document.getElementById('dashboard-greeting-date');
+            if (greetingEl) greetingEl.textContent = greeting;
+            if (greetingDateEl) greetingDateEl.textContent = now.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long'});
+
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            let todayOrders = 0, todaySales = 0, monthOrders = 0, monthSales = 0, monthPurchases = 0;
+            let lifetimeSales = 0, lifetimePurchases = 0;
+            sheetData.Orders.forEach(order => {
+                if (order.length < 12) return;
+                const date = parseSheetDate(order[1]);
+                if (!date) return;
+                const amount = Number(order[11]) || 0;
+                lifetimeSales += amount;
+                if (date >= todayStart) { todayOrders++; todaySales += amount; }
+                if (date >= monthStart) { monthOrders++; monthSales += amount; }
+            });
+            sheetData.Purchases.forEach(purchase => {
+                const purchaseAmount = Number(purchase[2]) || 0;
+                lifetimePurchases += purchaseAmount;
+                const date = parseSheetDate(purchase[1]);
+                if (date && date >= monthStart) monthPurchases += purchaseAmount;
+            });
+            const money = value => '₹' + value.toLocaleString('en-IN', {maximumFractionDigits: 2});
+            document.getElementById('today-orders').innerText = todayOrders;
+            document.getElementById('today-sales').innerText = money(todaySales);
+            document.getElementById('month-orders').innerText = monthOrders;
+            document.getElementById('month-sales').innerText = money(monthSales);
+            document.getElementById('month-purchases').innerText = money(monthPurchases);
+            const monthNet = monthSales - monthPurchases;
+            document.getElementById('month-net').innerText = `${monthNet < 0 ? '−' : '+'}${money(Math.abs(monthNet))}`;
+            document.getElementById('month-net').parentElement.classList.toggle('loss', monthNet < 0);
+            const pendingEl = document.getElementById('pending-sales');
+            const netBalance = lifetimeSales - lifetimePurchases;
+            if (pendingEl) {
+                pendingEl.innerText = `${netBalance < 0 ? '−' : '+'}${money(Math.abs(netBalance))}`;
+                pendingEl.parentElement.classList.toggle('loss', netBalance < 0);
+            }
+            renderRecentOrders();
+            renderRecentPurchaseShortcuts();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            const activeNavTab = ({purchase: 'purchases', menu: 'more', manage: 'more', 'new-order': 'orders'})[tabId] || tabId;
+            document.querySelectorAll('.nav-btn').forEach(button => {
+                button.classList.toggle('active', button.dataset.tab === activeNavTab);
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function populateDropdowns() {
+            const socSelect = document.getElementById('order-society');
+            const manSocSelect = document.getElementById('manage-society');
+            socSelect.innerHTML = `<option value="">${sheetData.Societies.length ? 'Select Society' : 'No societies loaded'}</option>`;
+            manSocSelect.innerHTML = '<option value="">Select Society</option>';
+
+            sheetData.Societies.forEach(soc => {
+                if (!soc[2] || ['TRUE', 'ACTIVE'].includes(String(soc[2]).trim().toUpperCase())) {
+                    const opt = `<option value="${soc[0]}">${soc[1]}</option>`;
+                    socSelect.innerHTML += opt;
+                    manSocSelect.innerHTML += opt;
+                }
+            });
+
+            const itemSelectHTML = `<option value="">Choose item</option>` + sheetData.Menu.map(m => `<option value="${m[0]}" data-price="${m[3]}">${m[1]} — ₹${m[3]}</option>`).join('');
+            document.querySelectorAll('.order-item-select').forEach(sel => {
+                const val = sel.value;
+                sel.innerHTML = itemSelectHTML;
+                sel.value = val;
+                updateOrderRowPrice(sel);
+            });
+        }
+
+        function populateTowers() {
+            const societyId = document.getElementById('order-society').value;
+            const towerSelect = document.getElementById('order-tower');
+            towerSelect.innerHTML = '<option value="">Select Tower</option>';
+            if (!societyId) return;
+            sheetData.Towers.forEach(tower => {
+                const active = !tower[3] || ['TRUE', 'ACTIVE'].includes(String(tower[3]).trim().toUpperCase());
+                if (tower[1] === societyId && active) {
+                    const option = document.createElement('option');
+                    option.value = tower[0];
+                    option.textContent = tower[2];
+                    towerSelect.appendChild(option);
+                }
+            });
+        }
+
+        function autoCalcFloor() {
+            const flatDigits = document.getElementById('order-flat').value.replace(/\D/g, '');
+            const floorInput = document.getElementById('order-floor');
+            if (!flatDigits) { floorInput.value = ''; return; }
+            if (flatDigits.length >= 3) {
+                const floor = Number(flatDigits.slice(0, -2));
+                const mod100 = floor % 100;
+                const suffix = (mod100 >= 11 && mod100 <= 13) ? 'th' : ({1:'st',2:'nd',3:'rd'}[floor % 10] || 'th');
+                floorInput.value = floor === 0 ? 'Ground Floor' : `${floor}${suffix} Floor`;
+            }
+        }
+
+        function autoFillCustomerByFlat() {
+            const towerSelect = document.getElementById('order-tower');
+            const towerName = towerSelect.options[towerSelect.selectedIndex]?.text?.trim();
+            const flat = document.getElementById('order-flat').value.trim();
+            if (!flat || !towerName) return;
+
+            const previousOrder = [...sheetData.Orders].reverse().find(order => {
+                const oTower = String(order[3] || '').trim().toLowerCase();
+                const oFlat = String(order[4] || '').trim().toLowerCase();
+                return oTower === towerName.toLowerCase() && oFlat === flat.toLowerCase() && (order[7] || order[8]);
+            });
+
+            if (previousOrder) {
+                const nameInput = document.getElementById('order-name');
+                const contactInput = document.getElementById('order-contact');
+                if (!nameInput.value && previousOrder[7]) nameInput.value = previousOrder[7];
+                if (!contactInput.value && previousOrder[8]) contactInput.value = previousOrder[8];
+            }
+        }
+
+        function selectPaymentStatusTab(val) {
+            const sel = document.getElementById('order-payment-status');
+            if (sel) { sel.value = val; sel.dispatchEvent(new Event('change')); }
+            document.querySelectorAll('[data-status-val]').forEach(btn => btn.classList.toggle('active', btn.dataset.statusVal === val));
+        }
+
+        function selectPaymentModeTab(val) {
+            const sel = document.getElementById('order-payment-mode');
+            if (sel) { sel.value = val; sel.dispatchEvent(new Event('change')); }
+            document.querySelectorAll('[data-mode-val]').forEach(btn => btn.classList.toggle('active', btn.dataset.modeVal === val));
+        }
+
+        function addOrderItemRow() {
+            const container = document.getElementById('order-items-container');
+            const row = document.createElement('div');
+            row.className = 'order-item-row';
+            row.innerHTML = `
+                <div>
+                    <label>Menu Item</label>
+                    <select class="order-item-select" onchange="updateOrderRowPrice(this)">
+                        ${`<option value="">Choose item</option>` + sheetData.Menu.map(m => `<option value="${m[0]}" data-price="${m[3]}">${m[1]} — ₹${m[3]}</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label>Price</label>
+                    <div class="order-row-price-value">₹—</div>
+                </div>
+                <div>
+                    <label>Qty</label>
+                    <div class="qty-stepper">
+                        <button type="button" aria-label="Decrease quantity" onclick="changeOrderQty(this,-1)">−</button>
+                        <input type="number" class="order-item-qty" min="1" value="1" oninput="calculateOrderTotals()">
+                        <button type="button" aria-label="Increase quantity" onclick="changeOrderQty(this,1)">+</button>
+                    </div>
+                </div>
+                <button type="button" class="icon-btn delete" aria-label="Remove item" title="Remove item" onclick="this.parentElement.remove(); calculateOrderTotals();" style="align-self:end; margin-bottom:2px;">${ICONS.close}</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function changeOrderQty(button, delta) {
+            const input = button.parentElement.querySelector('.order-item-qty');
+            const current = Math.max(1, Number(input.value) || 1);
+            input.value = Math.max(1, current + delta);
+            calculateOrderTotals();
+        }
+
+        function updateOrderRowPrice(select) {
+            const option = select.options[select.selectedIndex];
+            const price = select.value ? Number(option.getAttribute('data-price')) : NaN;
+            select.closest('.order-item-row').querySelector('.order-row-price-value').textContent = Number.isFinite(price) ? '₹' + price.toLocaleString('en-IN',{maximumFractionDigits:2}) : '₹—';
+            calculateOrderTotals();
+        }
+
+        function calculateOrderTotals() {
+            let totalQty = 0;
+            let totalAmount = 0;
+            document.querySelectorAll('#order-items-container .order-item-row').forEach(row => {
+                const select = row.querySelector('.order-item-select');
+                const qty = parseInt(row.querySelector('.order-item-qty').value) || 0;
+                if (select.value) {
+                    const price = parseFloat(select.options[select.selectedIndex].getAttribute('data-price')) || 0;
+                    totalQty += qty;
+                    totalAmount += (price * qty);
+                }
+            });
+            document.getElementById('order-total-qty').innerText = totalQty;
+            document.getElementById('order-total-amount').innerText = totalAmount;
+        }
+
+        async function saveOrder() {
+            const socId = document.getElementById('order-society').value;
+            const towerId = document.getElementById('order-tower').value;
+            const flat = document.getElementById('order-flat').value;
+            const floor = document.getElementById('order-floor').value;
+            const address = document.getElementById('order-address').value;
+            const name = document.getElementById('order-name').value;
+            const contact = document.getElementById('order-contact').value;
+            
+            if (!socId || !towerId || !flat) {
+                showMessage('Society, Tower aur Flat Number zaroori hai.', true);
+                return;
+            }
+
+            const items = [];
+            document.querySelectorAll('#order-items-container .order-item-row').forEach(row => {
+                const select = row.querySelector('.order-item-select');
+                const qty = parseInt(row.querySelector('.order-item-qty').value);
+                if (select.value && qty > 0) {
+                    items.push({
+                        id: select.value,
+                        name: (sheetData.Menu.find(menuItem => menuItem[0] === select.value) || [null, select.options[select.selectedIndex].text])[1],
+                        price: parseFloat(select.options[select.selectedIndex].getAttribute('data-price')),
+                        qty: qty
+                    });
+                }
+            });
+
+            if (items.length === 0) {
+                showMessage('Kam se kam ek item add karein.', true);
+                return;
+            }
+
+            const totalQty = document.getElementById('order-total-qty').innerText;
+            const totalAmount = document.getElementById('order-total-amount').innerText;
+            const dateTime = formatDateTimeForSheet();
+            const orderId = 'ORD-' + Date.now();
+
+            const socName = document.getElementById('order-society').options[document.getElementById('order-society').selectedIndex].text;
+            const towerName = document.getElementById('order-tower').options[document.getElementById('order-tower').selectedIndex].text;
+            const paymentStatus = document.getElementById('order-payment-status')?.value || 'Paid';
+            const paymentMode = document.getElementById('order-payment-mode')?.value || 'UPI';
+
+            try {
+                const orderRow = [orderId, dateTime, socName, towerName, flat, floor, address, name, contact, items.map(i => i.name + ' (x' + i.qty + ')').join(', '), totalQty, totalAmount, paymentStatus, paymentMode];
+                await appendSheetData('Orders', orderRow);
+
+                for (const [index, item] of items.entries()) {
+                    const itemId = 'ITM-' + Date.now() + '-' + index;
+                    const itemTotal = item.price * item.qty;
+                    await appendSheetData('OrderItems', [itemId, orderId, item.name, item.qty, item.price, itemTotal]);
+                }
+
+                showMessage('Order successfully save ho gaya!');
+                document.getElementById('order-items-container').innerHTML = '';
+                document.getElementById('order-flat').value = '';
+                document.getElementById('order-tower').value = '';
+                document.getElementById('order-floor').value = '';
+                document.getElementById('order-name').value = '';
+                document.getElementById('order-contact').value = '';
+                calculateOrderTotals();
+                loadAllData();
+            } catch (err) {
+                showMessage('Error saving order: ' + err.message, true);
+            }
+        }
+
+        function setOrderFilter(filter) {
+            currentOrderFilter = filter;
+            document.querySelectorAll('.order-filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === filter);
+            });
+            renderOrders();
+        }
+
+        function renderSingleOrderCard(order) {
+            if (!order || order.length < 12) return '';
+            const orderId = order[0];
+            const lines = sheetData.OrderItems.filter(item => item[1] === orderId);
+            const lineHtml = lines.length
+                ? lines.map(item => `<div class="item-line"><span>${escapeHtml(item[2])} × ${escapeHtml(item[3])}</span><strong>₹${escapeHtml(item[5])}</strong></div>`).join('')
+                : (order[9] ? `<div class="item-line">${escapeHtml(order[9])}</div>` : '');
+            const paymentStatus = String(order[12] || 'Paid').trim();
+            const paymentMode = String(order[13] || 'Cash').trim();
+            const isPending = paymentStatus.toLowerCase() === 'pending';
+            const paymentBadge = isPending
+                ? `<span class="badge pending"><span class="dot-indicator dot-pending"></span> Pending</span>`
+                : `<span class="badge paid"><span class="dot-indicator dot-paid"></span> Paid</span>`;
+            const location = [order[2], order[3] ? `Tower ${order[3]}` : '', order[4] ? `Flat ${order[4]}` : ''].filter(Boolean).join(' · ');
+            const customer = order[7] ? escapeHtml(order[7]) : '';
+            const phone = order[8] ? escapeHtml(order[8]) : '';
+            const address = order[6] ? escapeHtml(order[6]) : '—';
+            const detailCells = [
+                customer ? `<div><div class="detail-label">Customer</div><div class="detail-value">${customer}</div></div>` : '',
+                phone ? `<div><div class="detail-label">Phone</div><div class="detail-value">${phone}</div></div>` : '',
+                (location || order[6]) ? `<div style="grid-column:1/-1;"><div class="detail-label">Delivery Location</div><div class="detail-value">${escapeHtml(location)}${order[6] ? `, ${address}` : ''}</div></div>` : '',
+                `<div><div class="detail-label">Payment Mode</div><div class="detail-value">${paymentStatus} · ${escapeHtml(paymentMode)}</div></div>`
+            ].filter(Boolean).join('');
+            const detailRows = detailCells ? `<div class="details-grid">${detailCells}</div>` : '';
+            const itemsHtml = `<div class="item-lines"><div class="detail-label" style="margin-bottom:6px;">Items Summary</div>${lineHtml}<div class="item-line" style="margin-top:6px; padding-top:8px; border-top:1.5px solid var(--line); font-weight:700;"><span>Total Quantity: ${escapeHtml(order[10] || '')}</span><strong style="color:var(--brand-green);">₹${Number(order[11] || 0).toLocaleString('en-IN', {maximumFractionDigits:2})}</strong></div></div>`;
+            return `<details class="order-record">
+                <summary class="record-summary-v5">
+                    <span class="record-main-v5" style="display:block;">
+                        <span class="record-top">
+                            <span><strong class="record-id">${escapeHtml(orderId)}</strong><span class="record-date">${escapeHtml(formatDateTimeForDisplay(order[1]))}</span></span>
+                            <strong class="amount">₹${Number(order[11] || 0).toLocaleString('en-IN', {maximumFractionDigits:2})}</strong>
+                        </span>
+                        <span class="record-customer-row">
+                            <span>
+                                ${customer ? `<strong class="customer">${customer}</strong>` : ''}
+                                <span class="location">${escapeHtml(location || 'Local Delivery')}</span>
+                            </span>
+                            ${paymentBadge}
+                        </span>
+                        <span class="tap-hint"><span>＋</span> View details & actions</span>
+                    </span>
+                </summary>
+                <div class="details">
+                    ${detailRows}${itemsHtml}
+                    <div class="record-actions">
+                        ${isPending ? `<button type="button" class="btn-mark-paid" onclick="quickMarkPaid('${escapeHtml(orderId)}')">${ICONS.check} Mark as Paid</button>` : ''}
+                        <button type="button" class="btn-whatsapp" onclick="sendWhatsAppBill('${escapeHtml(orderId)}')">${ICONS.whatsapp}<span>WhatsApp Bill</span></button>
+                        ${actionButtons('editOrder','deleteOrder',orderId)}
+                    </div>
+                </div>
+            </details>`;
+        }
+
+        async function quickMarkPaid(orderId) {
+            const orderIndex = sheetData.Orders.findIndex(row => row[0] === orderId);
+            if (orderIndex < 0) return;
+            const order = [...sheetData.Orders[orderIndex]];
+            const choice = prompt(`Order ${orderId} ko PAID mark karein:
+1 = UPI / Online
+2 = Cash`, '1');
+            if (choice === null) return;
+            const mode = (choice.trim() === '2' || choice.trim().toLowerCase() === 'cash') ? 'Cash' : 'UPI';
+            order[12] = 'Paid';
+            order[13] = mode;
+            showMessage('Payment status update ho raha hai…');
+            try {
+                await updateDataRow('Orders', orderIndex + 2, order);
+                await loadAllData();
+                showMessage(`Order ${orderId} marked as Paid (${mode})!`);
+            } catch (err) {
+                showMessage('Error updating payment: ' + err.message, true);
+            }
+        }
+
+        function sendWhatsAppBill(orderId) {
+            const order = sheetData.Orders.find(row => row[0] === orderId);
+            if (!order) return;
+            const lines = sheetData.OrderItems.filter(item => item[1] === orderId);
+            const itemsText = lines.length
+                ? lines.map(item => `• ${item[2]} × ${item[3]} — ₹${item[5]}`).join('\\n')
+                : (order[9] || 'Items');
+
+            const paymentStatus = String(order[12] || 'Paid').trim();
+            const paymentMode = String(order[13] || 'Cash').trim();
+            const isPending = paymentStatus.toLowerCase() === 'pending';
+            const savedUPI = localStorage.getItem('dwivedi_kitchen_upi') || '';
+
+            let text = `🍲 *Dwivedi Kitchen*\n_Ghar jaisa swad, har roz_\n━━━━━━━━━━━━━━━━━━━\n` +
+                `📍 *Location:* ${order[2] || 'GLS Avenue'}, Tower ${order[3] || ''} - Flat ${order[4] || ''}\n` +
+                `📦 *Order ID:* ${order[0]}\n` +
+                `📅 *Date:* ${formatDateTimeForDisplay(order[1])}\n` +
+                `━━━━━━━━━━━━━━━━━━━\n` +
+                `*Items Ordered:*\n${itemsText}\n\n` +
+                `*Total Amount:* ₹${order[11]}\n` +
+                `*Payment Status:* ${isPending ? '⚠️ Pending (Baad mein de sakte hain)' : '✅ Paid (' + paymentMode + ')'}\n`;
+
+            if (isPending && savedUPI) {
+                text += `\n💳 *UPI Payment:* \`${savedUPI}\`\n`;
+            }
+
+            text += `━━━━━━━━━━━━━━━━━━━\nAapke order ke liye bohot dhanyawad! Swad kaisa laga zaroor batayein. 🙏`;
+
+            let contact = String(order[8] || '').replace(/\D/g, '');
+            if (contact.length === 10) contact = '91' + contact;
+
+            const waUrl = contact
+                ? `https://wa.me/${contact}?text=${encodeURIComponent(text)}`
+                : `https://wa.me/?text=${encodeURIComponent(text)}`;
+
+            window.open(waUrl, '_blank');
+        }
+
+        function setOrderGrouping(mode) {
+            currentOrderGrouping = mode;
+            document.querySelectorAll('.orders-group-bar .group-pill').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.group === mode);
+            });
+            renderOrders();
+        }
+
+        function renderRecentOrders() {
+            const container = document.getElementById('recent-orders-list');
+            if (!container) return;
+            const recent = sheetData.Orders
+                .filter(order => order && order.length >= 12)
+                .slice(-4).reverse();
+            if (!recent.length) {
+                container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem; padding:12px 0;">Abhi koi recent order nahi hai.</p>';
+                return;
+            }
+            container.innerHTML = recent.map(order => renderSingleOrderCard(order)).join('');
+        }
+
+        function renderOrders() {
+            const container = document.getElementById('orders-list');
+            const allValidOrders = sheetData.Orders
+                .map((order, index) => ({order, rowNumber:index + 2}))
+                .filter(entry => entry.order && entry.order.length >= 12);
+
+            const pendingCount = allValidOrders.filter(({order}) => String(order[12] || 'Paid').trim().toLowerCase() === 'pending').length;
+            const paidCount = allValidOrders.filter(({order}) => String(order[12] || 'Paid').trim().toLowerCase() !== 'pending').length;
+
+            const countAllEl = document.getElementById('count-filter-all');
+            const countPendingEl = document.getElementById('count-filter-pending');
+            const countPaidEl = document.getElementById('count-filter-paid');
+            if (countAllEl) countAllEl.textContent = allValidOrders.length;
+            if (countPendingEl) countPendingEl.textContent = pendingCount;
+            if (countPaidEl) countPaidEl.textContent = paidCount;
+
+            const filteredOrders = allValidOrders.filter(({order}) => {
+                const status = String(order[12] || 'Paid').trim().toLowerCase();
+                if (currentOrderFilter === 'pending') return status === 'pending';
+                if (currentOrderFilter === 'paid') return status !== 'pending';
+                return true;
+            }).reverse();
+
+            if (!filteredOrders.length) {
+                container.innerHTML = '<div class="card" style="text-align:center; padding:28px 16px; color:var(--text-muted);">Is category mein koi order nahi mila.</div>';
+                return;
+            }
+
+            const money = value => '₹' + value.toLocaleString('en-IN', {maximumFractionDigits:2});
+
+            if (currentOrderGrouping === 'none') {
+                container.innerHTML = filteredOrders.map(({order}) => renderSingleOrderCard(order)).join('');
+                return;
+            }
+
+            if (currentOrderGrouping === 'date') {
+                const dateGroups = new Map();
+                filteredOrders.forEach(({order}) => {
+                    const parsed = parseSheetDate(order[1]);
+                    let dateKey = 'Other Dates';
+                    if (parsed) {
+                        const now = new Date();
+                        const orderDay = new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate()).getTime();
+                        const todayDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+                        const diffDays = Math.round((todayDay - orderDay) / (1000 * 60 * 60 * 24));
+                        const dateLabel = parsed.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                        if (diffDays === 0) dateKey = `Aaj (Today) · ${dateLabel}`;
+                        else if (diffDays === 1) dateKey = `Kal (Yesterday) · ${dateLabel}`;
+                        else dateKey = dateLabel;
+                    }
+                    if (!dateGroups.has(dateKey)) {
+                        dateGroups.set(dateKey, { key: dateKey, orders: [], total: 0 });
+                    }
+                    const g = dateGroups.get(dateKey);
+                    g.orders.push(order);
+                    g.total += Number(order[11]) || 0;
+                });
+
+                container.innerHTML = [...dateGroups.values()].map((group) => `
+                    <details class="location-group">
+                        <summary>
+                            <span>
+                                <strong>📅 ${escapeHtml(group.key)}</strong>
+                                <span class="location-group-meta">${group.orders.length} order${group.orders.length === 1 ? '' : 's'} · Total sales ${money(group.total)}</span>
+                            </span>
+                            <div class="modern-chevron">${ICONS.chevronSvg}</div>
+                        </summary>
+                        <div class="location-group-orders">${group.orders.map(renderSingleOrderCard).join('')}</div>
+                    </details>
+                `).join('');
+                return;
+            }
+
+            if (currentOrderGrouping === 'month') {
+                const monthGroups = new Map();
+                filteredOrders.forEach(({order}) => {
+                    const parsed = parseSheetDate(order[1]);
+                    const key = parsed ? parsed.toLocaleDateString('en-GB', {month:'long', year:'numeric'}) : 'Unknown month';
+                    if (!monthGroups.has(key)) monthGroups.set(key, {key, orders:[], total:0});
+                    const group = monthGroups.get(key);
+                    group.orders.push(order);
+                    group.total += Number(order[11]) || 0;
+                });
+                container.innerHTML = [...monthGroups.values()].map(group => `
+                    <details class="location-group">
+                        <summary>
+                            <span>
+                                <strong>🗓️ ${escapeHtml(group.key)}</strong>
+                                <span class="location-group-meta">${group.orders.length} orders · Total sales ${money(group.total)}</span>
+                            </span>
+                            <div class="modern-chevron">${ICONS.chevronSvg}</div>
+                        </summary>
+                        <div class="location-group-orders">${group.orders.map(renderSingleOrderCard).join('')}</div>
+                    </details>`).join('');
+                return;
+            }
+
+            if (currentOrderGrouping === 'location') {
+                const groups = new Map();
+                filteredOrders.forEach(({order}) => {
+                    const keyParts = [order[2] || 'Society missing', order[3] || 'Tower missing', order[4] || 'Flat missing'];
+                    const key = JSON.stringify(keyParts);
+                    if (!groups.has(key)) groups.set(key, {society:keyParts[0], tower:keyParts[1], flat:keyParts[2], orders:[], total:0});
+                    const group = groups.get(key);
+                    group.orders.push(order);
+                    group.total += Number(order[11]) || 0;
+                });
+
+                container.innerHTML = [...groups.values()].map((group) => `
+                    <details class="location-group">
+                        <summary>
+                            <span>
+                                <strong>📍 ${escapeHtml(group.society)} · Tower ${escapeHtml(group.tower)} · Flat ${escapeHtml(group.flat)}</strong>
+                                <span class="location-group-meta">${group.orders.length} order${group.orders.length === 1 ? '' : 's'} · Total sales ${money(group.total)}</span>
+                            </span>
+                            <div class="modern-chevron">${ICONS.chevronSvg}</div>
+                        </summary>
+                        <div class="location-group-orders">${group.orders.map(renderSingleOrderCard).join('')}</div>
+                    </details>
+                `).join('');
+                return;
+            }
+
+            if (currentOrderGrouping === 'items') {
+                const itemMap = new Map();
+                filteredOrders.forEach(({order}) => {
+                    const orderId = order[0];
+                    const lines = sheetData.OrderItems.filter(item => item[1] === orderId);
+                    if (lines.length) {
+                        lines.forEach(it => {
+                            const itName = it[2] || 'Item';
+                            if (!itemMap.has(itName)) itemMap.set(itName, { name: itName, orders: [], totalQty: 0, totalAmount: 0 });
+                            const entry = itemMap.get(itName);
+                            if (!entry.orders.some(o => o[0] === orderId)) entry.orders.push(order);
+                            entry.totalQty += Number(it[3]) || 1;
+                            entry.totalAmount += Number(it[5]) || 0;
+                        });
+                    } else {
+                        const rawName = order[9] || 'Other Item';
+                        if (!itemMap.has(rawName)) itemMap.set(rawName, { name: rawName, orders: [], totalQty: Number(order[10]) || 1, totalAmount: Number(order[11]) || 0 });
+                        const entry = itemMap.get(rawName);
+                        if (!entry.orders.some(o => o[0] === orderId)) entry.orders.push(order);
+                    }
+                });
+
+                const sortedItems = [...itemMap.values()].sort((a, b) => b.totalQty - a.totalQty);
+                container.innerHTML = sortedItems.map((group) => `
+                    <details class="location-group">
+                        <summary>
+                            <span>
+                                <strong>🍽️ ${escapeHtml(group.name)}</strong>
+                                <span class="location-group-meta">${group.totalQty} plates sold across ${group.orders.length} orders · Revenue: ${money(group.totalAmount)}</span>
+                            </span>
+                            <div class="modern-chevron">${ICONS.chevronSvg}</div>
+                        </summary>
+                        <div class="location-group-orders">${group.orders.map(renderSingleOrderCard).join('')}</div>
+                    </details>
+                `).join('');
+            }
+        }
+
+        async function editOrder(orderId) {
+            openRecordEditor('order', orderId);
+        }
+
+        async function deleteOrder(orderId) {
+            if (!confirm(`Order ${orderId} delete kar dein?`)) return;
+            try {
+                const itemRows = sheetData.OrderItems.map((row, i) => row[1] === orderId ? i + 2 : null).filter(Boolean);
+                const orderIndex = sheetData.Orders.findIndex(row => row[0] === orderId);
+                await deleteDataRows('OrderItems', itemRows);
+                if (orderIndex >= 0) await deleteDataRows('Orders', [orderIndex + 2]);
+                await loadAllData(); showMessage('Order delete ho gaya.');
+            } catch (err) { showMessage(err.message, true); }
+        }
+
+        function toggleMenuAddForm() {
+            const card = document.getElementById('menu-add-card');
+            card.classList.toggle('hidden');
+            if (!card.classList.contains('hidden')) {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                document.getElementById('new-menu-name').focus();
+            }
+        }
+
+        function toggleCollapsible(contentId, chevronId) {
+            const content = document.getElementById(contentId);
+            const chevron = document.getElementById(chevronId);
+            if (!content) return;
+            content.classList.toggle('hidden');
+            if (chevron) {
+                if (!content.classList.contains('hidden')) {
+                    chevron.style.transform = 'rotate(180deg)';
+                    chevron.style.background = 'var(--brand-green-light)';
+                    chevron.style.color = 'var(--brand-green)';
+                } else {
+                    chevron.style.transform = 'rotate(0deg)';
+                    chevron.style.background = '#eef2ee';
+                    chevron.style.color = 'var(--text-secondary)';
+                }
+            }
+        }
+
+        function renderMenu() {
+            const container = document.getElementById('menu-list');
+            const validIds = new Set(sheetData.Menu.map(item => item[0]));
+            [...selectedMenuItemIds].forEach(id => { if (!validIds.has(id)) selectedMenuItemIds.delete(id); });
+
+            const rows = sheetData.Menu.map(item => {
+                const inactive = ['FALSE','INACTIVE'].includes(String(item[4]).toUpperCase());
+                return `<div class="menu-item-row">
+                    <input class="menu-item-select" type="checkbox" aria-label="Select ${escapeHtml(item[1])}"
+                        data-menu-item-id="${escapeHtml(item[0])}" ${selectedMenuItemIds.has(item[0]) ? 'checked' : ''}
+                        onchange="toggleMenuItemSelection(this)">
+                    <div class="menu-item-info">
+                        <strong>${escapeHtml(item[1])}</strong>
+                        <div class="menu-details">${escapeHtml(item[2] || 'Ghar ka bana swadisht khana')}</div>
+                        <div style="display:flex; align-items:center; margin-top:3px;">
+                            <span class="menu-price-pill">₹${escapeHtml(item[3])}</span>
+                            <span class="menu-status-badge">${inactive ? '⚠️ Inactive' : 'Active'}</span>
+                        </div>
+                    </div>
+                    ${actionButtons('editMenuItem','deleteMenuItem',item[0])}
+                </div>`;
+            }).join('');
+
+            container.innerHTML = rows || '<div style="padding:14px 0; color:var(--text-muted); font-size:0.85rem;">Abhi menu mein koi item nahi hai.</div>';
+        }
+
+        function toggleMenuItemSelection(checkbox) {
+            const id = checkbox.dataset.menuItemId;
+            if (checkbox.checked) selectedMenuItemIds.add(id);
+            else selectedMenuItemIds.delete(id);
+        }
+
+        function toggleSelectAllMenuItems(checked) {
+            if (checked) sheetData.Menu.forEach(item => selectedMenuItemIds.add(item[0]));
+            else selectedMenuItemIds.clear();
+            renderMenu();
+        }
+
+        async function copySelectedMenuItems() {
+            const selectedItems = sheetData.Menu.filter(item => selectedMenuItemIds.has(item[0]));
+            if (!selectedItems.length) {
+                showMessage('Pehle menu items select karein.', true);
+                return;
+            }
+            const text = selectedItems.map(item =>
+                `🍲 *${item[1] || ''}*\n${item[2] ? item[2] + '\n' : ''}Price: ₹${item[3] ?? ''}`
+            ).join('\n\n');
+
+            try {
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(text);
+                } else {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    textarea.setAttribute('readonly', '');
+                    textarea.style.position = 'fixed';
+                    textarea.style.opacity = '0';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    textarea.remove();
+                }
+                showMessage(`${selectedItems.length} menu items copied to clipboard!`);
+            } catch (err) {
+                showMessage('Copy nahi ho paya. Permissions check karein.', true);
+            }
+        }
+
+        async function editMenuItem(itemId) {
+            openRecordEditor('menu', itemId);
+        }
+
+        async function deleteMenuItem(itemId) {
+            const index = sheetData.Menu.findIndex(row => row[0] === itemId);
+            if (index < 0 || !confirm('Menu item delete kar dein? Purane orders ka record safe rahega.')) return;
+            try { await deleteDataRows('Menu', [index + 2]); await loadAllData(); showMessage('Menu item delete ho gaya.'); }
+            catch (err) { showMessage(err.message, true); }
+        }
+
+        async function addMenuItem() {
+            const name = document.getElementById('new-menu-name').value.trim();
+            const details = document.getElementById('new-menu-details').value.trim();
+            const priceText = document.getElementById('new-menu-price').value;
+            const price = Number(priceText);
+            if (!name || priceText === '' || !Number.isFinite(price) || price < 0) {
+                showMessage('Item ka naam aur valid price bharein.', true);
+                return;
+            }
+            const itemId = 'MENU-' + Date.now();
+            try {
+                await appendSheetData('Menu', [itemId, name, details, price, 'TRUE', formatDateTimeForSheet()]);
+                document.getElementById('new-menu-name').value = '';
+                document.getElementById('new-menu-details').value = '';
+                document.getElementById('new-menu-price').value = '';
+                toggleMenuAddForm();
+                await loadAllData();
+                showMessage('Menu item add ho gaya.');
+            } catch (err) {
+                showMessage('Menu item save nahi hua: ' + err.message, true);
+            }
+        }
+
+        function addPurchaseItemRow() {
+            const container = document.getElementById('purchase-items-container');
+            const row = document.createElement('div');
+            row.className = 'purchase-entry-row';
+            const latestItems = new Map();
+            sheetData.PurchaseItems.forEach(item => { if (item[3]) latestItems.set(item[3], item[4]); });
+            const savedOptions = [...latestItems.entries()].map(([name, price]) => `<button type="button" class="purchase-saved-option" data-item-name="${escapeHtml(name)}" data-item-price="${escapeHtml(price)}" onclick="selectSavedPurchaseItem(this)"><span>${escapeHtml(name)}</span><strong>₹${escapeHtml(price)}</strong></button>`).join('');
+            row.innerHTML = `
+                <div class="purchase-name-control">
+                    <input type="text" class="purchase-item-name" placeholder="Item name" aria-label="Purchase item name" oninput="calculatePurchaseTotals()">
+                    <button type="button" aria-label="Recent item" title="Recent items" onclick="toggleSavedPurchaseItems(this)">▾</button>
+                    <div class="purchase-saved-menu hidden">${savedOptions || '<div style="padding:8px; font-size:0.8rem; color:var(--text-muted);">No previous purchase items</div>'}</div>
+                </div>
+                <input type="number" class="purchase-item-price" placeholder="Price ₹" aria-label="Purchase price" min="0" step="0.01" oninput="calculatePurchaseTotals()">
+                <button type="button" class="icon-btn delete" aria-label="Remove item" title="Remove item" onclick="this.parentElement.remove(); calculatePurchaseTotals();">${ICONS.close}</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function toggleSavedPurchaseItems(button) {
+            const menu = button.parentElement.querySelector('.purchase-saved-menu');
+            document.querySelectorAll('.purchase-saved-menu').forEach(openMenu => {
+                if (openMenu !== menu) openMenu.classList.add('hidden');
+            });
+            menu.classList.toggle('hidden');
+        }
+
+        function selectSavedPurchaseItem(option) {
+            const row = option.closest('.purchase-entry-row');
+            row.querySelector('.purchase-item-name').value = option.dataset.itemName || '';
+            row.querySelector('.purchase-item-price').value = option.dataset.itemPrice || '';
+            row.querySelector('.purchase-saved-menu').classList.add('hidden');
+            calculatePurchaseTotals();
+        }
+
+        function getPurchaseItemName(row) {
+            return row.querySelector('.purchase-item-name').value.trim();
+        }
+
+        document.addEventListener('click', event => {
+            if (!event.target.closest('.purchase-name-control')) {
+                document.querySelectorAll('.purchase-saved-menu').forEach(menu => menu.classList.add('hidden'));
+            }
+        });
+
+        function calculatePurchaseTotals() {
+            let total = 0;
+            document.querySelectorAll('#purchase-items-container .purchase-entry-row').forEach(row => {
+                const price = parseFloat(row.querySelector('.purchase-item-price').value) || 0;
+                total += price;
+            });
+            document.getElementById('purchase-total-amount').innerText = total;
+        }
+
+        function addQuickPurchaseEntry() {
+            const nameEl = document.getElementById('quick-purchase-name');
+            const priceEl = document.getElementById('quick-purchase-price');
+            const name = (nameEl?.value || '').trim();
+            const price = Number(priceEl?.value);
+            if (!name) { nameEl?.focus(); return; }
+            if (priceEl?.value === '' || !Number.isFinite(price) || price < 0) { priceEl?.focus(); return; }
+            addPurchaseItemRow();
+            const rows = document.querySelectorAll('#purchase-items-container .purchase-entry-row');
+            const row = rows[rows.length - 1];
+            const itemName = row?.querySelector('.purchase-item-name');
+            const itemPrice = row?.querySelector('.purchase-item-price');
+            if (itemName) itemName.value = name;
+            if (itemPrice) itemPrice.value = String(price);
+            nameEl.value = ''; priceEl.value = '';
+            calculatePurchaseTotals();
+            renderRecentPurchaseShortcuts();
+        }
+
+        function addRecentPurchaseShortcutFromButton(button) {
+            addRecentPurchaseShortcut(button.dataset.name || '', button.dataset.price || 0);
+        }
+
+        function addRecentPurchaseShortcut(name, price) {
+            const nameEl = document.getElementById('quick-purchase-name');
+            const priceEl = document.getElementById('quick-purchase-price');
+            if (!nameEl || !priceEl) return;
+            nameEl.value = name; priceEl.value = price;
+            addQuickPurchaseEntry();
+        }
+
+        function renderRecentPurchaseShortcuts() {
+            const root = document.getElementById('recent-purchase-shortcuts');
+            if (!root) return;
+            const latest = new Map();
+            (sheetData.PurchaseItems || []).forEach(item => {
+                if (item[3]) latest.set(String(item[3]), item[4]);
+            });
+            const entries = [...latest.entries()].reverse().slice(0, 8);
+            root.innerHTML = entries.length ? entries.map(([name, price]) =>
+                `<button type="button" class="recent-purchase-chip" data-name="${escapeHtml(name)}" data-price="${escapeHtml(price)}" onclick="addRecentPurchaseShortcutFromButton(this)"><span>${escapeHtml(name)}</span><small>₹${escapeHtml(price)}</small></button>`
+            ).join('') : '<span style="font-size:0.8rem; color:var(--text-muted); padding:6px 0;">No previous items yet.</span>';
+        }
+
+        async function savePurchase() {
+            const items = [];
+            document.querySelectorAll('#purchase-items-container .purchase-entry-row').forEach(row => {
+                const name = getPurchaseItemName(row);
+                const price = parseFloat(row.querySelector('.purchase-item-price').value);
+                if (name && price >= 0) items.push({ name, price });
+            });
+
+            if (items.length === 0) {
+                showMessage('Kam se kam ek purchase item bharein.', true);
+                return;
+            }
+
+            const totalAmount = document.getElementById('purchase-total-amount').innerText;
+            const dateTime = formatDateTimeForSheet();
+            const purchaseId = 'PUR-' + Date.now();
+
+            try {
+                await appendSheetData('Purchases', [purchaseId, dateTime, totalAmount]);
+
+                for (const [index, item] of items.entries()) {
+                    const itemId = 'PITM-' + Date.now() + '-' + index;
+                    await appendSheetData('PurchaseItems', [itemId, purchaseId, dateTime, item.name, item.price]);
+                }
+
+                showMessage('Purchase successfully save ho gayi!');
+                document.getElementById('purchase-items-container').innerHTML = '';
+                calculatePurchaseTotals();
+                loadAllData();
+            } catch (err) {
+                showMessage('Error saving purchase: ' + err.message, true);
+            }
+        }
+
+        function setPurchaseGrouping(mode) {
+            currentPurchaseGrouping = mode;
+            document.querySelectorAll('[data-purchase-group]').forEach(btn => btn.classList.toggle('active', btn.dataset.purchaseGroup === mode));
+            renderPurchases();
+        }
+
+        function renderPurchases() {
+            const container = document.getElementById('purchase-history-list');
+            if (!container) return;
+            if (!sheetData.Purchases.length) { container.innerHTML = '<div class="card" style="text-align:center; padding:28px 16px; color:var(--text-muted);">Abhi koi purchase record nahi hai.</div>'; return; }
+            const rows = [...sheetData.Purchases].map(purchase => ({
+                purchase, items: sheetData.PurchaseItems.filter(item => item[1] === purchase[0])
+            })).reverse();
+
+            const renderRecord = ({purchase, items}) => {
+                const purchaseId = purchase[0];
+                const names = items.map(item => item[3]).filter(Boolean);
+                const detailRows = items.length ? items.map(item => `<div class="item-line"><span>${escapeHtml(item[3] || 'Item')}</span><strong>₹${escapeHtml(item[4] || 0)}</strong></div>`).join('') : '<div style="color:var(--text-muted); font-size:0.8rem;">No item breakdown available.</div>';
+                return `<details class="order-record">
+                    <summary class="record-summary-v5">
+                        <span class="record-main-v5" style="display:block;">
+                            <span class="record-top">
+                                <span><strong class="record-id">${escapeHtml(purchaseId || 'Purchase')}</strong><span class="record-date">${escapeHtml(formatDateTimeForDisplay(purchase[1]))}</span></span>
+                                <strong class="amount">₹${Number(purchase[2] || 0).toLocaleString('en-IN', {maximumFractionDigits:2})}</strong>
+                            </span>
+                            <span style="display:block; font-size:0.82rem; color:var(--text-secondary); margin-top:2px;">
+                                🛍️ ${escapeHtml(names.join(' · ') || 'Items')}
+                            </span>
+                            <span class="tap-hint"><span>＋</span> View item breakdown</span>
+                        </span>
+                    </summary>
+                    <div class="details">
+                        <div class="detail-label" style="margin-bottom:6px;">Purchase Breakdown</div>
+                        ${detailRows}
+                        <div class="item-line" style="margin-top:6px; padding-top:8px; border-top:1.5px solid var(--line); font-weight:700;">
+                            <span>Total Expense</span>
+                            <strong style="color:var(--brand-green);">₹${Number(purchase[2] || 0).toLocaleString('en-IN', {maximumFractionDigits:2})}</strong>
+                        </div>
+                        <div class="record-actions">${actionButtons('editPurchase','deletePurchase',purchaseId)}</div>
+                    </div>
+                </details>`;
+            };
+
+            if (currentPurchaseGrouping === 'none') { container.innerHTML = rows.map(renderRecord).join(''); return; }
+            const groups = new Map();
+            rows.forEach(entry => {
+                const parsed = parseSheetDate(entry.purchase[1]);
+                const key = !parsed ? 'Unknown date' : (currentPurchaseGrouping === 'month'
+                    ? parsed.toLocaleDateString('en-GB', {month:'long',year:'numeric'})
+                    : parsed.toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}));
+                if (!groups.has(key)) groups.set(key, {key,entries:[],total:0});
+                const group = groups.get(key); group.entries.push(entry); group.total += Number(entry.purchase[2]) || 0;
+            });
+            container.innerHTML = [...groups.values()].map(group => `<details class="location-group">
+                <summary>
+                    <span>
+                        <strong>${currentPurchaseGrouping === 'month' ? '🗓️' : '📅'} ${escapeHtml(group.key)}</strong>
+                        <span class="location-group-meta">${group.entries.length} purchases · Total ₹${group.total.toLocaleString('en-IN')}</span>
+                    </span>
+                    <div class="modern-chevron">${ICONS.chevronSvg}</div>
+                </summary>
+                <div class="location-group-orders">${group.entries.map(renderRecord).join('')}</div>
+            </details>`).join('');
+        }
+
+        async function editPurchase(purchaseId) {
+            openRecordEditor('purchase', purchaseId);
+        }
+
+        async function deletePurchase(purchaseId) {
+            if (!confirm(`Purchase ${purchaseId} delete kar dein?`)) return;
+            try {
+                const itemRows = sheetData.PurchaseItems.map((row, i) => row[1] === purchaseId ? i + 2 : null).filter(Boolean);
+                const index = sheetData.Purchases.findIndex(row => row[0] === purchaseId);
+                await deleteDataRows('PurchaseItems', itemRows);
+                if (index >= 0) await deleteDataRows('Purchases', [index + 2]);
+                await loadAllData(); showMessage('Purchase delete ho gayi.');
+            } catch (err) { showMessage(err.message, true); }
+        }
+
+        function renderSocietyTowerList() {
+            const container = document.getElementById('society-tower-list');
+            if (!container) return;
+            container.replaceChildren();
+            if (!sheetData.Societies.length) { container.textContent = 'Koi registered society nahi mili.'; return; }
+            sheetData.Societies.forEach(society => {
+                const towers = sheetData.Towers.filter(tower => tower[1] === society[0]);
+                const block = document.createElement('div'); block.className = 'society-manage-block';
+                const head = document.createElement('div'); head.className = 'society-manage-head';
+                const title = document.createElement('strong'); title.textContent = society[1] || '(Naam missing)';
+                head.appendChild(title); head.insertAdjacentHTML('beforeend', actionButtons('editSociety','deleteSociety',society[0])); block.appendChild(head);
+                if (towers.length) towers.forEach(tower => {
+                    const row = document.createElement('div'); row.className = 'tower-manage-row';
+                    const label = document.createElement('span'); label.textContent = `🏢 ${tower[2] || 'Unnamed tower'}`;
+                    row.appendChild(label); row.insertAdjacentHTML('beforeend', actionButtons('editTower','deleteTower',tower[0])); block.appendChild(row);
+                });
+                else { const empty = document.createElement('div'); empty.style.cssText = 'font-size:0.78rem; color:var(--text-muted); padding:6px 0 0 14px;'; empty.textContent = 'Abhi koi tower add nahi hai'; block.appendChild(empty); }
+                container.appendChild(block);
+            });
+        }
+
+        async function editTower(id) {
+            const index = sheetData.Towers.findIndex(row => row[0] === id);
+            if (index < 0) return;
+            const tower = sheetData.Towers[index];
+            const nextName = prompt('Tower ka naam edit karein:', tower[2] || '');
+            if (nextName === null) return;
+            const name = nextName.trim();
+            if (!name) { showMessage('Tower ka naam khaali nahi ho sakta.', true); return; }
+            const row = [...tower]; row[2] = name;
+            try { await updateDataRow('Towers', index + 2, row); await loadAllData(); showMessage('Tower update ho gaya.'); }
+            catch (err) { showMessage('Tower update nahi hua: ' + err.message, true); }
+        }
+
+        async function deleteTower(id) {
+            const index = sheetData.Towers.findIndex(row => row[0] === id);
+            if (index < 0) return;
+            if (!confirm(`Tower "${sheetData.Towers[index][2]}" delete kar dein? Purane orders safe rahenge.`)) return;
+            try { await deleteDataRows('Towers', [index + 2]); await loadAllData(); showMessage('Tower delete ho gaya.'); }
+            catch (err) { showMessage('Tower delete nahi hua: ' + err.message, true); }
+        }
+
+        async function editSociety(id) {
+            openRecordEditor('society', id);
+        }
+
+        async function deleteSociety(id) {
+            const index = sheetData.Societies.findIndex(row => row[0] === id); if (index < 0) return;
+            if (!confirm('Society aur uske towers delete kar dein? Purane orders ka record safe rahega.')) return;
+            try {
+                const towerRows = sheetData.Towers.map((row, i) => row[1] === id ? i + 2 : null).filter(Boolean);
+                await deleteDataRows('Towers', towerRows);
+                await deleteDataRows('Societies', [index + 2]);
+                await loadAllData(); showMessage('Society aur towers delete ho gaye.');
+            } catch (err) { showMessage(err.message, true); }
+        }
+
+        function toggleOrderAddForm(type) {
+            if (type === 'tower' && !document.getElementById('order-society').value) {
+                showMessage('Pehle Society select karein.', true);
+                return;
+            }
+            document.getElementById(`order-add-${type}-form`).classList.toggle('hidden');
+        }
+
+        async function addSocietyFromOrder() {
+            const name = document.getElementById('order-new-society-name').value.trim();
+            if (!name) { showMessage('Society name bharein.', true); return; }
+            const id = 'SOC-' + Date.now();
+            try {
+                await appendSheetData('Societies', [id, name, 'TRUE', formatDateTimeForSheet()]);
+                await loadAllData();
+                document.getElementById('order-society').value = id;
+                populateTowers();
+                document.getElementById('order-new-society-name').value = '';
+                document.getElementById('order-add-society-form').classList.add('hidden');
+                showMessage('Society add ho gayi.');
+            } catch (err) { showMessage('Society add nahi hui: ' + err.message, true); }
+        }
+
+        async function addTowerFromOrder() {
+            const societyId = document.getElementById('order-society').value;
+            const name = document.getElementById('order-new-tower-name').value.trim();
+            if (!societyId || !name) { showMessage('Society aur Tower name bharein.', true); return; }
+            const id = 'TWR-' + Date.now();
+            try {
+                await appendSheetData('Towers', [id, societyId, name, 'TRUE', formatDateTimeForSheet()]);
+                await loadAllData();
+                document.getElementById('order-society').value = societyId;
+                populateTowers();
+                document.getElementById('order-tower').value = id;
+                document.getElementById('order-new-tower-name').value = '';
+                document.getElementById('order-add-tower-form').classList.add('hidden');
+                showMessage('Tower add aur select ho gaya.');
+            } catch (err) { showMessage('Tower add nahi hua: ' + err.message, true); }
+        }
+
+        async function addSociety() {
+            const name = document.getElementById('new-society-name').value.trim();
+            if (!name) return;
+            const socId = 'SOC-' + Date.now();
+            const createdAt = formatDateTimeForSheet();
+            try {
+                await appendSheetData('Societies', [socId, name, 'TRUE', createdAt]);
+                showMessage('Society added!');
+                document.getElementById('new-society-name').value = '';
+                toggleCollapsible('society-add-content', 'society-chevron');
+                loadAllData();
+            } catch (err) {
+                showMessage('Error adding society: ' + err.message, true);
+            }
+        }
+
+        async function addTower() {
+            const socId = document.getElementById('manage-society').value;
+            const name = document.getElementById('new-tower-name').value.trim();
+            if (!socId || !name) {
+                showMessage('Please select society and enter tower name.', true);
+                return;
+            }
+            const towerId = 'TWR-' + Date.now();
+            const createdAt = formatDateTimeForSheet();
+            try {
+                await appendSheetData('Towers', [towerId, socId, name, 'TRUE', createdAt]);
+                showMessage('Tower added!');
+                document.getElementById('new-tower-name').value = '';
+                toggleCollapsible('tower-add-content', 'tower-chevron');
+                loadAllData();
+            } catch (err) {
+                showMessage('Error adding tower: ' + err.message, true);
+            }
+        }
+
+        async function listSavedImages(type) {
+            const q = encodeURIComponent(`trashed = false and name contains '${type}_'`);
+            const fields = encodeURIComponent('files(id,name,mimeType,createdTime)');
+            const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=${fields}&pageSize=100&orderBy=createdTime%20desc`, {
+                headers: {Authorization: `Bearer ${accessToken}`}
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error?.message || 'Drive images load nahi hui');
+            return data.files || [];
+        }
+
+        const savedImageObjectUrls = {};
+        function setImageControls(type, hasImage) {
+            document.getElementById(`${type}-upload-first`).classList.toggle('hidden', hasImage);
+            document.getElementById(`${type}-edit`).classList.toggle('hidden', !hasImage);
+        }
+
+        async function showDriveImage(type, file) {
+            const display = document.getElementById('qr-display');
+            display.replaceChildren();
+            if (savedImageObjectUrls[type]) { URL.revokeObjectURL(savedImageObjectUrls[type]); delete savedImageObjectUrls[type]; }
+            if (!file) { display.textContent = 'Abhi image upload nahi hai.'; setImageControls(type,false); return; }
+            setImageControls(type,true);
+            const img = document.createElement('img');
+            img.alt = 'Payment QR code';
+            img.style.cssText = 'max-width:100%; max-height:360px; object-fit:contain; border-radius:12px; border:1px solid var(--line); margin:8px auto; display:block;';
+            display.textContent = 'Image load ho rahi hai…';
+            try {
+                const res = await fetch(`https://www.googleapis.com/drive/v3/files/${encodeURIComponent(file.id)}?alt=media`, {
+                    headers: {Authorization: `Bearer ${accessToken}`}
+                });
+                if (!res.ok) { const error = await res.json(); throw new Error(error.error?.message || 'Image download nahi hui'); }
+                savedImageObjectUrls[type] = URL.createObjectURL(await res.blob());
+                img.src = savedImageObjectUrls[type];
+                display.replaceChildren(img);
+            } catch (err) {
+                img.referrerPolicy = 'no-referrer';
+                img.src = `https://drive.google.com/thumbnail?id=${encodeURIComponent(file.id)}&sz=w1200`;
+                img.onerror = () => { display.textContent = 'Image load nahi hui. Drive permissions check karein.'; };
+                display.replaceChildren(img);
+            }
+        }
+
+        async function loadSavedImages() {
+            for (const type of ['qr']) {
+                try { const files = await listSavedImages(type); await showDriveImage(type, files[0] || null); }
+                catch (err) { console.warn(type + ' image load failed:', err.message); }
+            }
+        }
+
+        async function uploadImage(event, type) {
+            const file = event.target.files?.[0]; if (!file) return;
+            showMessage('Image upload ho rahi hai…');
+            const previousFiles = await listSavedImages(type).catch(() => []);
+            const metadata = {name: `${type}_${Date.now()}_${file.name}`, mimeType: file.type};
+            const form = new FormData();
+            form.append('metadata', new Blob([JSON.stringify(metadata)], {type: 'application/json'}));
+            form.append('file', file);
+            try {
+                const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name', {
+                    method: 'POST', headers: {Authorization: `Bearer ${accessToken}`}, body: form
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error?.message || 'Drive upload fail hua');
+                const permissionRes = await fetch(`https://www.googleapis.com/drive/v3/files/${data.id}/permissions`, {
+                    method: 'POST', headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
+                    body: JSON.stringify({role: 'reader', type: 'anyone'})
+                });
+                if (!permissionRes.ok) {
+                    const permissionError = await permissionRes.json();
+                    throw new Error(permissionError.error?.message || 'Image permission set nahi hui');
+                }
+                for (const oldFile of previousFiles) {
+                    try { await fetch(`https://www.googleapis.com/drive/v3/files/${oldFile.id}`, {method:'DELETE',headers:{Authorization:`Bearer ${accessToken}`}}); }
+                    catch (cleanupError) { console.warn('Old cleanup skipped:', cleanupError.message); }
+                }
+                await loadSavedImages();
+                showMessage('Image upload aur set ho gayi.');
+            } catch (err) { showMessage('Upload error: ' + err.message, true); }
+            finally { event.target.value = ''; }
+        }
+
+        function saveSettingUPI(val) {
+            localStorage.setItem('dwivedi_kitchen_upi', val.trim());
+            showMessage('UPI ID save ho gaya.');
+        }
+
+        function saveSettingGemini(val) {
+            localStorage.setItem('gemini_api_key', val.trim());
+            showMessage('Gemini API Key save ho gayi.');
+        }
+
+        function loadSavedSettings() {
+            const upi = localStorage.getItem('dwivedi_kitchen_upi') || '';
+            const gemini = getGeminiApiKey();
+            const upiInput = document.getElementById('setting-upi-id');
+            const geminiInput = document.getElementById('setting-gemini-key');
+            if (upiInput) upiInput.value = upi;
+            if (geminiInput) geminiInput.value = gemini;
+        }
+
+        function triggerPWAInstall() {
+            if (deferredPWAInstallPrompt) {
+                deferredPWAInstallPrompt.prompt();
+                deferredPWAInstallPrompt.userChoice.then((choice) => {
+                    if (choice.outcome === 'accepted') showMessage('App successfully install ho gaya!');
+                    deferredPWAInstallPrompt = null;
+                });
+            } else {
+                alert('App phone par install karne ke liye:\n\n• Android Chrome: Upar 3 dots (⋮) par tap karein -> "Add to Home screen"\n• iPhone Safari: Niche Share button (↑) par tap karein -> "Add to Home Screen"');
+            }
+        }
+    </script>
+</body>
+</html>
