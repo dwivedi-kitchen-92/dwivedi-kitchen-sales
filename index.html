@@ -444,6 +444,10 @@
         .card-setting-field label { margin-bottom:4px; }
         .order-card-meta { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:8px 0; }
         .order-card-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:12px; padding-top:10px; border-top:1px solid rgba(104,75,49,.1); }
+        .orders-group-bar { display:flex; gap:6px; margin:0 0 14px; padding:4px; border-radius:14px; background:rgba(104,75,49,.08); overflow-x:auto; -webkit-overflow-scrolling:touch; }
+        .group-pill { flex:1; min-width:75px; padding:8px 10px; border:none; border-radius:10px; background:transparent; color:#594638; font-size:12px; font-weight:700; cursor:pointer; text-align:center; white-space:nowrap; transition:all .15s ease; }
+        .group-pill.active { background:#fff; color:var(--brand-green); box-shadow:0 2px 7px rgba(75,37,24,.1); }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
     </style>
 </head>
@@ -456,9 +460,15 @@
           <div class="brand-logo-wrap"><span class="brand-fallback" aria-hidden="true">🍲</span><img class="brand-logo" src="static/logo.png" alt="Dwivedi Kitchen logo" onerror="this.style.display='none'"></div>
           <div><span class="brand-name">Dwivedi Kitchen</span><span class="brand-tagline">Ghar jaisa swad, har roz</span></div>
         </div>
-        <p>Please sign in with your authorized Google account to manage sales.</p>
-        <p id="login-msg" style="color: red; margin-top: 20px;"></p>
-        <button id="auth-btn" class="btn" onclick="initAuth()" style="margin-top: 20px;">Sign in with Google</button>
+        <div id="login-connecting" style="padding:16px 0;">
+            <p style="margin:0;color:#6d5d50;font-size:14px;font-weight:600">Connecting to your kitchen…</p>
+            <div style="margin:16px auto 0;width:24px;height:24px;border:3px solid rgba(23,99,63,.2);border-top-color:var(--brand-green);border-radius:50%;animation:spin 1s linear infinite;"></div>
+        </div>
+        <div id="login-manual" class="hidden" style="margin-top:10px;">
+            <p style="color:#6d5d50;font-size:14px;">Sign in with your Google account to manage your kitchen sales.</p>
+            <p id="login-msg" style="color: red; margin-top: 10px; font-size:13px;"></p>
+            <button id="auth-btn" class="btn" onclick="initAuth()" style="margin-top: 15px;">Sign in with Google</button>
+        </div>
       </div>
     </div>
 
@@ -597,9 +607,11 @@
                     <button type="button" class="order-filter-btn" data-filter="pending" onclick="setOrderFilter('pending')">🟡 Pending (<span id="count-filter-pending">0</span>)</button>
                     <button type="button" class="order-filter-btn" data-filter="paid" onclick="setOrderFilter('paid')">🟢 Paid (<span id="count-filter-paid">0</span>)</button>
                 </div>
-                <div class="orders-toolbar">
-                    <div><strong>Order view</strong><div style="font-size:12px;color:#76675b;margin-top:3px">Location ke hisaab se similar flats ke orders dekhein</div></div>
-                    <button id="orders-group-toggle" type="button" class="btn btn-secondary" onclick="toggleOrdersGrouping()">Group by Location</button>
+                <div class="orders-group-bar">
+                    <button type="button" class="group-pill active" data-group="none" onclick="setOrderGrouping('none')">List</button>
+                    <button type="button" class="group-pill" data-group="date" onclick="setOrderGrouping('date')">📅 By Date</button>
+                    <button type="button" class="group-pill" data-group="location" onclick="setOrderGrouping('location')">📍 By Location</button>
+                    <button type="button" class="group-pill" data-group="items" onclick="setOrderGrouping('items')">🍽️ By Item</button>
                 </div>
                 <div id="orders-list"></div>
             </div>
@@ -745,16 +757,20 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
                         <label>Physical receipt ki photo ya grocery app ka screenshot select karein:</label>
                         <input type="file" id="ai-image-file" accept="image/*" style="margin-bottom:10px">
                         <button type="button" class="btn btn-ai-magic btn-small" id="ai-scan-btn" onclick="parsePurchaseInput('image')">🔍 Scan & Extract with AI</button>
-                        <p style="font-size:12px;color:#76675b;margin-top:8px">Photo scan karne ke liye free Gemini API key use hoti hai.</p>
+                        <p style="font-size:12px;color:#76675b;margin-top:8px">Gemini 3.8 Flash Vision receipt & bill screenshot se items aur price extract karega.</p>
                     </div>
 
-                    <!-- API Key banner if not saved -->
-                    <div id="ai-key-banner" style="background:#fff8e6;border:1px solid #e6c875;padding:10px;border-radius:12px;margin:12px 0;font-size:12px;">
-                        <strong>🔑 AI Vision / Complex parsing:</strong> Free Google Gemini API Key use karein. <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--brand-green);font-weight:700">Google AI Studio se Free Key lein</a> (No credit card needed).
+                    <!-- API Key banner (shown only if key is missing) -->
+                    <div id="ai-key-banner" class="hidden" style="background:rgba(23,99,63,.06);border:1px solid rgba(23,99,63,.2);padding:10px 12px;border-radius:12px;margin:10px 0;font-size:12px;">
+                        <strong>🔑 Gemini AI Key:</strong> <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--brand-green);font-weight:700">Google AI Studio se Free Key lein</a> (No credit card needed).
                         <div style="display:flex;gap:6px;margin-top:6px;">
                             <input type="password" id="modal-gemini-key" placeholder="AIzaSy..." style="margin:0;padding:6px 8px;font-size:13px;">
                             <button type="button" class="btn btn-small" style="margin:0;min-height:36px;width:auto;" onclick="saveGeminiKeyFromModal()">Save</button>
                         </div>
+                    </div>
+                    <div id="ai-key-status" style="font-size:11px;color:#76675b;margin-top:6px;display:flex;justify-content:space-between;align-items:center;">
+                        <span>✨ Powered by Gemini 3.8 Flash</span>
+                        <button type="button" style="background:none;border:none;color:var(--brand-green);font-size:11px;cursor:pointer;text-decoration:underline;padding:0;" onclick="toggleAIKeyBanner()">Settings / Change Key</button>
                     </div>
 
                     <!-- Parsed Items Result -->
@@ -795,6 +811,7 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
         const CLIENT_ID = '91521766084-r2ekts6unmvvnh0ho640qh7vjvbem10v.apps.googleusercontent.com';
         const SPREADSHEET_ID = '1kRoEzjDq2r9HCA58ehasg_6lFYeDJzo-ze4qlXrEggc';
         const SCOPES = 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file';
+        const DEFAULT_GEMINI_KEY = ''; // Optional embedded fallback key
 
         let tokenClient;
         let accessToken = null;
@@ -808,11 +825,45 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
             PurchaseItems: []
         };
         let menuItemsData = [];
-        let ordersGroupedByLocation = false;
-        const selectedMenuItemIds = new Set();
-        let currentOrderFilter = 'all';
+        let currentOrderGrouping = 'none'; // 'none' | 'date' | 'location' | 'items'
+        let currentOrderFilter = 'all'; // 'all' | 'pending' | 'paid'
         let aiParsedItems = [];
         let deferredPWAInstallPrompt = null;
+        const selectedMenuItemIds = new Set();
+
+        function getGeminiApiKey() {
+            return (typeof DEFAULT_GEMINI_KEY !== 'undefined' && DEFAULT_GEMINI_KEY) ? DEFAULT_GEMINI_KEY : (localStorage.getItem('gemini_api_key') || '');
+        }
+
+        // Instant silent check for cached OAuth token
+        function getSavedValidOAuthToken() {
+            const token = localStorage.getItem('dwivedi_access_token');
+            const expiresAt = Number(localStorage.getItem('dwivedi_token_expires_at')) || 0;
+            if (token && Date.now() < expiresAt) return token;
+            return null;
+        }
+
+        function saveOAuthToken(token, expiresInSec = 3500) {
+            accessToken = token;
+            localStorage.setItem('dwivedi_access_token', token);
+            localStorage.setItem('dwivedi_token_expires_at', String(Date.now() + (expiresInSec - 120) * 1000));
+        }
+
+        (function checkInstantCachedLogin() {
+            const cachedToken = getSavedValidOAuthToken();
+            if (cachedToken) {
+                accessToken = cachedToken;
+                const hideLogin = () => {
+                    document.getElementById('login-view')?.classList.add('hidden');
+                    document.getElementById('app-view')?.classList.remove('hidden');
+                };
+                if (document.readyState === 'loading') {
+                    window.addEventListener('DOMContentLoaded', hideLogin);
+                } else {
+                    hideLogin();
+                }
+            }
+        })();
 
         // Register Service Worker for PWA
         if ('serviceWorker' in navigator) {
@@ -858,7 +909,14 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
             return Number.isNaN(date.getTime()) ? null : date;
         }
 
-        // --- AUTHENTICATION ---
+        // --- AUTHENTICATION (Silent Auto-Login) ---
+        function showManualLoginPrompt() {
+            const conn = document.getElementById('login-connecting');
+            const manual = document.getElementById('login-manual');
+            if (conn) conn.classList.add('hidden');
+            if (manual) manual.classList.remove('hidden');
+        }
+
         function onGoogleIdentityLoaded() {
             if (!window.google?.accounts?.oauth2) return;
             tokenClient = google.accounts.oauth2.initTokenClient({
@@ -868,15 +926,41 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
                 login_hint: 'dwivedi.kitchen.92@gmail.com',
                 callback: (tokenResponse) => {
                     if (tokenResponse && tokenResponse.access_token) {
-                        accessToken = tokenResponse.access_token;
+                        saveOAuthToken(tokenResponse.access_token, Number(tokenResponse.expires_in) || 3500);
                         document.getElementById('login-view').classList.add('hidden');
                         document.getElementById('app-view').classList.remove('hidden');
                         loadAllData();
                         loadSavedImages();
                         loadSavedSettings();
+                    } else {
+                        showManualLoginPrompt();
                     }
                 },
+                error_callback: () => {
+                    showManualLoginPrompt();
+                }
             });
+
+            // If we already have a valid cached token, load data directly
+            const validToken = getSavedValidOAuthToken();
+            if (validToken) {
+                accessToken = validToken;
+                document.getElementById('login-view').classList.add('hidden');
+                document.getElementById('app-view').classList.remove('hidden');
+                loadAllData();
+                loadSavedImages();
+                loadSavedSettings();
+            } else {
+                // Otherwise silently request token in background without popup
+                try {
+                    tokenClient.requestAccessToken({ prompt: '' });
+                    setTimeout(() => {
+                        if (!accessToken) showManualLoginPrompt();
+                    }, 2500);
+                } catch(e) {
+                    showManualLoginPrompt();
+                }
+            }
         }
 
         function initAuth() {
@@ -900,6 +984,12 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
             const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${range}`, {
                 headers: { Authorization: `Bearer ${accessToken}` }
             });
+            if (res.status === 401) {
+                localStorage.removeItem('dwivedi_access_token');
+                localStorage.removeItem('dwivedi_token_expires_at');
+                if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+                throw new Error('Session auto-refresh ho raha hai. Thodi der mein retry karein.');
+            }
             const data = await res.json();
             if (!res.ok) throw new Error(data.error?.message || `Could not read ${tabName}`);
             return data.values || [];
@@ -915,6 +1005,12 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
                 },
                 body: JSON.stringify({ values: [values] })
             });
+            if (res.status === 401) {
+                localStorage.removeItem('dwivedi_access_token');
+                localStorage.removeItem('dwivedi_token_expires_at');
+                if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+                throw new Error('Session auto-refresh ho raha hai. Thodi der mein dobara save karein.');
+            }
             const data = await res.json();
             if (!res.ok) throw new Error(data.error?.message || `Failed to save to ${tabName}`);
             return data;
@@ -925,6 +1021,11 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
             if (!spreadsheetSheetIds) {
                 const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}?fields=sheets(properties(sheetId,title))`;
                 const res = await fetch(url, {headers: {Authorization: `Bearer ${accessToken}`}});
+                if (res.status === 401) {
+                    localStorage.removeItem('dwivedi_access_token');
+                    localStorage.removeItem('dwivedi_token_expires_at');
+                    if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+                }
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error?.message || 'Sheet list load nahi hui');
                 spreadsheetSheetIds = Object.fromEntries((data.sheets || []).map(s => [s.properties.title, s.properties.sheetId]));
@@ -940,6 +1041,12 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
                 method: 'PUT', headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
                 body: JSON.stringify({values: [values]})
             });
+            if (res.status === 401) {
+                localStorage.removeItem('dwivedi_access_token');
+                localStorage.removeItem('dwivedi_token_expires_at');
+                if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+                throw new Error('Session auto-refresh ho raha hai. Thodi der mein dobara try karein.');
+            }
             const data = await res.json();
             if (!res.ok) throw new Error(data.error?.message || `Edit ${tabName} mein save nahi hua`);
             return data;
@@ -954,6 +1061,12 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
                 method: 'POST', headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
                 body: JSON.stringify({requests})
             });
+            if (res.status === 401) {
+                localStorage.removeItem('dwivedi_access_token');
+                localStorage.removeItem('dwivedi_token_expires_at');
+                if (tokenClient) tokenClient.requestAccessToken({ prompt: '' });
+                throw new Error('Session auto-refresh ho raha hai. Thodi der mein retry karein.');
+            }
             const data = await res.json();
             if (!res.ok) throw new Error(data.error?.message || `Delete ${tabName} mein nahi hua`);
         }
@@ -1449,13 +1562,16 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
             window.open(waUrl, '_blank');
         }
 
+        function setOrderGrouping(mode) {
+            currentOrderGrouping = mode;
+            document.querySelectorAll('.group-pill').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.group === mode);
+            });
+            renderOrders();
+        }
+
         function renderOrders() {
             const container = document.getElementById('orders-list');
-            const toggle = document.getElementById('orders-group-toggle');
-            if (toggle) {
-                toggle.textContent = ordersGroupedByLocation ? 'Show All Orders' : 'Group by Location';
-                toggle.setAttribute('aria-pressed', String(ordersGroupedByLocation));
-            }
             const allValidOrders = sheetData.Orders
                 .map((order, index) => ({order, rowNumber:index + 2}))
                 .filter(entry => entry.order && entry.order.length >= 12);
@@ -1478,37 +1594,122 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
             }).reverse();
 
             if (!filteredOrders.length) {
-                container.innerHTML = '<div class="card">Is filter mein koi order nahi mila.</div>';
+                container.innerHTML = '<div class="card" style="text-align:center;padding:25px;color:#76675b">Is filter mein koi order nahi mila.</div>';
                 return;
             }
 
-            if (!ordersGroupedByLocation) {
+            const money = value => '₹' + value.toLocaleString('en-IN', {maximumFractionDigits:2});
+
+            // 1. Flat List
+            if (currentOrderGrouping === 'none') {
                 container.innerHTML = filteredOrders.map(({order}) => renderSingleOrderCard(order)).join('');
                 return;
             }
 
-            const groups = new Map();
-            filteredOrders.forEach(({order}) => {
-                const keyParts = [order[2] || 'Society missing', order[3] || 'Tower missing', order[4] || 'Flat missing'];
-                const key = JSON.stringify(keyParts);
-                if (!groups.has(key)) groups.set(key, {society:keyParts[0], tower:keyParts[1], flat:keyParts[2], orders:[], total:0});
-                const group = groups.get(key);
-                group.orders.push(order);
-                group.total += Number(order[11]) || 0;
-            });
+            // 2. Group by Date
+            if (currentOrderGrouping === 'date') {
+                const dateGroups = new Map();
+                filteredOrders.forEach(({order}) => {
+                    const parsed = parseSheetDate(order[1]);
+                    let dateKey = 'Other Dates';
+                    if (parsed) {
+                        const now = new Date();
+                        const orderDay = new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate()).getTime();
+                        const todayDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+                        const diffDays = Math.round((todayDay - orderDay) / (1000 * 60 * 60 * 24));
+                        const dateLabel = parsed.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                        if (diffDays === 0) dateKey = `Aaj (Today) · ${dateLabel}`;
+                        else if (diffDays === 1) dateKey = `Kal (Yesterday) · ${dateLabel}`;
+                        else dateKey = dateLabel;
+                    }
+                    if (!dateGroups.has(dateKey)) {
+                        dateGroups.set(dateKey, { key: dateKey, orders: [], total: 0 });
+                    }
+                    const g = dateGroups.get(dateKey);
+                    g.orders.push(order);
+                    g.total += Number(order[11]) || 0;
+                });
 
-            const money = value => '₹' + value.toLocaleString('en-IN', {maximumFractionDigits:2});
-            container.innerHTML = [...groups.values()].map((group, index) => `
-                <details class="location-group" ${index === 0 ? 'open' : ''}>
-                    <summary>
-                        <span>
-                            <strong>${escapeHtml(group.society)} · Tower ${escapeHtml(group.tower)} · Flat ${escapeHtml(group.flat)}</strong>
-                            <span class="location-group-meta">${group.orders.length} order${group.orders.length === 1 ? '' : 's'} · Total sales ${money(group.total)}</span>
-                        </span>
-                    </summary>
-                    <div class="location-group-orders">${group.orders.map(renderSingleOrderCard).join('')}</div>
-                </details>
-            `).join('');
+                container.innerHTML = [...dateGroups.values()].map((group, index) => `
+                    <details class="location-group" ${index === 0 ? 'open' : ''}>
+                        <summary>
+                            <span>
+                                <strong>📅 ${escapeHtml(group.key)}</strong>
+                                <span class="location-group-meta">${group.orders.length} order${group.orders.length === 1 ? '' : 's'} · Total sales ${money(group.total)}</span>
+                            </span>
+                        </summary>
+                        <div class="location-group-orders">${group.orders.map(renderSingleOrderCard).join('')}</div>
+                    </details>
+                `).join('');
+                return;
+            }
+
+            // 3. Group by Location
+            if (currentOrderGrouping === 'location') {
+                const groups = new Map();
+                filteredOrders.forEach(({order}) => {
+                    const keyParts = [order[2] || 'Society missing', order[3] || 'Tower missing', order[4] || 'Flat missing'];
+                    const key = JSON.stringify(keyParts);
+                    if (!groups.has(key)) groups.set(key, {society:keyParts[0], tower:keyParts[1], flat:keyParts[2], orders:[], total:0});
+                    const group = groups.get(key);
+                    group.orders.push(order);
+                    group.total += Number(order[11]) || 0;
+                });
+
+                container.innerHTML = [...groups.values()].map((group, index) => `
+                    <details class="location-group" ${index === 0 ? 'open' : ''}>
+                        <summary>
+                            <span>
+                                <strong>📍 ${escapeHtml(group.society)} · Tower ${escapeHtml(group.tower)} · Flat ${escapeHtml(group.flat)}</strong>
+                                <span class="location-group-meta">${group.orders.length} order${group.orders.length === 1 ? '' : 's'} · Total sales ${money(group.total)}</span>
+                            </span>
+                        </summary>
+                        <div class="location-group-orders">${group.orders.map(renderSingleOrderCard).join('')}</div>
+                    </details>
+                `).join('');
+                return;
+            }
+
+            // 4. Group by Items
+            if (currentOrderGrouping === 'items') {
+                const itemMap = new Map();
+                filteredOrders.forEach(({order}) => {
+                    const orderId = order[0];
+                    const lines = sheetData.OrderItems.filter(item => item[1] === orderId);
+                    if (lines.length) {
+                        lines.forEach(it => {
+                            const itName = it[2] || 'Item';
+                            if (!itemMap.has(itName)) itemMap.set(itName, { name: itName, orders: [], totalQty: 0, totalAmount: 0 });
+                            const entry = itemMap.get(itName);
+                            if (!entry.orders.some(o => o[0] === orderId)) {
+                                entry.orders.push(order);
+                            }
+                            entry.totalQty += Number(it[3]) || 1;
+                            entry.totalAmount += Number(it[5]) || 0;
+                        });
+                    } else {
+                        const rawName = order[9] || 'Other Item';
+                        if (!itemMap.has(rawName)) itemMap.set(rawName, { name: rawName, orders: [], totalQty: Number(order[10]) || 1, totalAmount: Number(order[11]) || 0 });
+                        const entry = itemMap.get(rawName);
+                        if (!entry.orders.some(o => o[0] === orderId)) {
+                            entry.orders.push(order);
+                        }
+                    }
+                });
+
+                const sortedItems = [...itemMap.values()].sort((a, b) => b.totalQty - a.totalQty);
+                container.innerHTML = sortedItems.map((group, index) => `
+                    <details class="location-group" ${index === 0 ? 'open' : ''}>
+                        <summary>
+                            <span>
+                                <strong>🍽️ ${escapeHtml(group.name)}</strong>
+                                <span class="location-group-meta">${group.totalQty} plates/items sold · across ${group.orders.length} order${group.orders.length === 1 ? '' : 's'} · Revenue: ${money(group.totalAmount)}</span>
+                            </span>
+                        </summary>
+                        <div class="location-group-orders">${group.orders.map(renderSingleOrderCard).join('')}</div>
+                    </details>
+                `).join('');
+            }
         }
 
         async function editOrder(orderId) {
@@ -1997,16 +2198,20 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
             localStorage.setItem('gemini_api_key', val.trim());
             const modalKey = document.getElementById('modal-gemini-key');
             if (modalKey) modalKey.value = val.trim();
+            const keyBanner = document.getElementById('ai-key-banner');
+            if (keyBanner) keyBanner.classList.toggle('hidden', Boolean(val.trim()));
             showMessage('Gemini API Key save ho gayi.');
         }
 
         function loadSavedSettings() {
             const upi = localStorage.getItem('dwivedi_kitchen_upi') || '';
-            const gemini = localStorage.getItem('gemini_api_key') || '';
+            const gemini = getGeminiApiKey();
             const upiInput = document.getElementById('setting-upi-id');
             const geminiInput = document.getElementById('setting-gemini-key');
             if (upiInput) upiInput.value = upi;
             if (geminiInput) geminiInput.value = gemini;
+            const keyBanner = document.getElementById('ai-key-banner');
+            if (keyBanner) keyBanner.classList.toggle('hidden', Boolean(gemini));
         }
 
         function triggerPWAInstall() {
@@ -2024,6 +2229,11 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
         }
 
         // --- AI PURCHASE LIST IMPORTER ---
+        function toggleAIKeyBanner() {
+            const banner = document.getElementById('ai-key-banner');
+            if (banner) banner.classList.toggle('hidden');
+        }
+
         function openAIPurchaseModal() {
             aiParsedItems = [];
             const resultsContainer = document.getElementById('ai-results-container');
@@ -2034,9 +2244,15 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
             if (textInput) textInput.value = '';
             const fileInput = document.getElementById('ai-image-file');
             if (fileInput) fileInput.value = '';
-            const key = localStorage.getItem('gemini_api_key') || '';
+
+            const key = getGeminiApiKey();
             const modalKey = document.getElementById('modal-gemini-key');
             if (modalKey) modalKey.value = key;
+
+            // Automatically hide key banner if key is already saved or configured
+            const keyBanner = document.getElementById('ai-key-banner');
+            if (keyBanner) keyBanner.classList.toggle('hidden', Boolean(key));
+
             document.getElementById('ai-purchase-overlay').classList.add('open');
             document.body.style.overflow = 'hidden';
         }
@@ -2059,6 +2275,8 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
                 localStorage.setItem('gemini_api_key', key);
                 const settingInput = document.getElementById('setting-gemini-key');
                 if (settingInput) settingInput.value = key;
+                const keyBanner = document.getElementById('ai-key-banner');
+                if (keyBanner) keyBanner.classList.add('hidden');
                 showAIMessage('Gemini API Key save ho gayi!');
             }
         }
@@ -2127,45 +2345,67 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
         }
 
         async function parsePurchaseWithGemini(promptText, base64Image = null, mimeType = null) {
-            const key = localStorage.getItem('gemini_api_key');
-            if (!key) throw new Error('Gemini API Key missing. Box mein free key save karein.');
+            const key = getGeminiApiKey();
+            if (!key) throw new Error('Gemini API Key missing. "Settings / Change Key" par click karke key daalein.');
 
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(key)}`;
-            
-            const parts = [];
-            parts.push({
-                text: `You are an assistant for Dwivedi Kitchens (an Indian home food kitchen). Extract all grocery, vegetable, packaging, or kitchen expense line items and their prices in INR. Return strictly valid JSON array of objects with keys 'name' (string) and 'price' (number). Ignore taxes, discounts, delivery charges, and grand totals. Example output: [{"name":"Aloo","price":50},{"name":"Amul Milk 500ml","price":36}].`
-            });
+            // Supported models in priority order: gemini-3.8-flash, gemini-2.0-flash, gemini-1.5-flash
+            const models = ['gemini-3.8-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+            let lastError = null;
 
-            if (promptText) {
-                parts.push({ text: `Extract from this purchase text / invoice:\n${promptText}` });
-            }
+            for (const model of models) {
+                try {
+                    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+                    
+                    const parts = [];
+                    parts.push({
+                        text: `You are an assistant for Dwivedi Kitchens (an Indian home food kitchen). Extract all grocery, vegetable, packaging, or kitchen expense line items and their prices in INR. Return strictly valid JSON array of objects with keys 'name' (string) and 'price' (number). Ignore taxes, discounts, delivery charges, and grand totals. Example output: [{"name":"Aloo","price":50},{"name":"Amul Milk 500ml","price":36}].`
+                    });
 
-            if (base64Image && mimeType) {
-                parts.push({
-                    inlineData: {
-                        mimeType: mimeType,
-                        data: base64Image
+                    if (promptText) {
+                        parts.push({ text: `Extract from this purchase text / invoice:\n${promptText}` });
                     }
-                });
+
+                    if (base64Image && mimeType) {
+                        parts.push({
+                            inlineData: {
+                                mimeType: mimeType,
+                                data: base64Image
+                            }
+                        });
+                    }
+
+                    const res = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts }],
+                            generationConfig: { responseMimeType: 'application/json' }
+                        })
+                    });
+
+                    const data = await res.json();
+                    if (!res.ok) {
+                        const errMsg = data.error?.message || `HTTP ${res.status}`;
+                        if (errMsg.includes('not found') || errMsg.includes('no longer available') || res.status === 404) {
+                            lastError = new Error(errMsg);
+                            continue; // Try next fallback model in loop
+                        }
+                        throw new Error(errMsg);
+                    }
+
+                    const rawReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                    if (!rawReply) throw new Error('AI response khali aya');
+
+                    return JSON.parse(rawReply);
+                } catch(err) {
+                    lastError = err;
+                    if (err.message && (err.message.includes('not found') || err.message.includes('no longer available'))) {
+                        continue;
+                    }
+                    throw err;
+                }
             }
-
-            const res = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts }],
-                    generationConfig: { responseMimeType: 'application/json' }
-                })
-            });
-
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error?.message || 'Gemini API call failed');
-
-            const rawReply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (!rawReply) throw new Error('AI response khali aya');
-
-            return JSON.parse(rawReply);
+            throw lastError || new Error('Could not parse with Gemini models');
         }
 
         async function parsePurchaseInput(mode) {
@@ -2175,13 +2415,13 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
 
             try {
                 let results = [];
-                const hasGeminiKey = Boolean(localStorage.getItem('gemini_api_key'));
+                const key = getGeminiApiKey();
 
                 if (mode === 'text') {
                     const text = document.getElementById('ai-text-input').value.trim();
                     if (!text) throw new Error('Pehle text ya invoice paste karein.');
 
-                    if (hasGeminiKey) {
+                    if (key) {
                         try {
                             results = await parsePurchaseWithGemini(text);
                         } catch (geminiErr) {
@@ -2195,7 +2435,7 @@ Blinkit / Zepto / Bigbasket bill copy-paste..."></textarea>
                     const fileInput = document.getElementById('ai-image-file');
                     const file = fileInput?.files?.[0];
                     if (!file) throw new Error('Pehle bill photo ya screenshot select karein.');
-                    if (!hasGeminiKey) throw new Error('Photo scan ke liye free Gemini API Key zaroori hai. Upar wale box mein key save karein.');
+                    if (!key) throw new Error('Photo scan ke liye free Gemini API Key zaroori hai. "Settings / Change Key" par click karke key daalein.');
 
                     const base64Data = await new Promise((resolve, reject) => {
                         const reader = new FileReader();
